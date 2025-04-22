@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,14 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Needyfy custom colors
+				needyfy: {
+					blue: '#3B82F6',
+					green: '#10B981',
+					orange: '#F59E0B',
+					lightgray: '#F3F4F6',
+					darkgray: '#4B5563'
 				}
 			},
 			borderRadius: {
