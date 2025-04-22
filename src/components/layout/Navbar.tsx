@@ -1,9 +1,8 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, User, Menu, X } from 'lucide-react';
+import { Search, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Navbar = () => {
@@ -13,13 +12,11 @@ const Navbar = () => {
     <nav className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <span className="bg-needyfy-blue text-white font-bold p-2 rounded-md">N</span>
             <span className="font-bold text-xl text-needyfy-darkgray hidden sm:block">Needyfy</span>
           </Link>
 
-          {/* Search bar - hidden on mobile */}
           <div className="hidden md:flex flex-1 max-w-md mx-4">
             <div className="relative w-full">
               <Input 
@@ -31,7 +28,6 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/categories" className="text-gray-600 hover:text-needyfy-blue font-medium">
               Categories
@@ -42,13 +38,16 @@ const Navbar = () => {
             <Link to="/list-equipment" className="text-gray-600 hover:text-needyfy-blue font-medium">
               List Equipment
             </Link>
-            <Button variant="outline" size="sm" className="mr-2">
-              Log In
-            </Button>
-            <Button size="sm">Sign Up</Button>
+            <Link to="/login">
+              <Button variant="outline" size="sm" className="mr-2">
+                Log In
+              </Button>
+            </Link>
+            <Link to="/register">
+              <Button size="sm">Sign Up</Button>
+            </Link>
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -63,7 +62,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Search - visible only on mobile */}
         <div className="mt-3 md:hidden">
           <div className="relative">
             <Input 
@@ -75,7 +73,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         <div className={cn(
           "md:hidden absolute left-0 right-0 bg-white shadow-md transition-all duration-300 ease-in-out z-40",
           isMenuOpen ? "max-h-64 py-4" : "max-h-0 py-0 overflow-hidden"
@@ -91,8 +88,12 @@ const Navbar = () => {
               List Equipment
             </Link>
             <div className="flex flex-col space-y-2 pt-2">
-              <Button variant="outline" className="w-full">Log In</Button>
-              <Button className="w-full">Sign Up</Button>
+              <Link to="/login">
+                <Button variant="outline" className="w-full">Log In</Button>
+              </Link>
+              <Link to="/register">
+                <Button className="w-full">Sign Up</Button>
+              </Link>
             </div>
           </div>
         </div>
