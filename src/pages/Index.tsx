@@ -7,6 +7,8 @@ import FeaturedEquipment from '@/components/home/FeaturedEquipment';
 import HowItWorks from '@/components/home/HowItWorks';
 import Testimonials from '@/components/home/Testimonials';
 import CallToAction from '@/components/home/CallToAction';
+import UserFeatures from '@/components/home/UserFeatures';
+import ProviderFeatures from '@/components/home/ProviderFeatures';
 
 const Index = () => {
   return (
@@ -17,8 +19,10 @@ const Index = () => {
         <CategorySection />
         <FeaturedEquipment />
         <HowItWorks />
-        <CallToAction />
+        <UserFeatures />
+        <ProviderFeatures />
         <Testimonials />
+        <CallToAction />
       </main>
       <Footer />
     </div>
