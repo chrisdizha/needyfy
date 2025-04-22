@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -77,6 +78,7 @@ const EquipmentCard = ({
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
         equipmentTitle={title}
+        equipmentId={id}
         pricePerDay={price}
       />
     </>

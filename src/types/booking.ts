@@ -5,5 +5,14 @@ export interface BookingDetails {
   startDate: Date;
   endDate: Date;
   totalPrice: number;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  paymentId?: string;
+  created?: Date;
+  notes?: string;
+}
+
+export type BookingFilters = {
+  status?: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  startDate?: Date;
+  endDate?: Date;
 }
