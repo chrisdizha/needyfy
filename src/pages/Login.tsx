@@ -2,11 +2,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import RegisterForm from '@/components/auth/RegisterForm';
+import LoginForm from '@/components/auth/LoginForm';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import SocialAuth from '@/components/auth/SocialAuth';
 
-const Register = () => {
+const Login = () => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   
@@ -22,15 +22,15 @@ const Register = () => {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogTitle className="text-2xl font-semibold tracking-tight mb-1 text-center">
-          Create an account
+          Welcome back
         </DialogTitle>
         
         <div className="flex flex-col gap-6">
           <p className="text-sm text-muted-foreground text-center">
-            Enter your details below to create your account
+            Sign in to your account to continue
           </p>
 
-          <RegisterForm />
+          <LoginForm />
           
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -46,9 +46,9 @@ const Register = () => {
           <SocialAuth />
 
           <p className="text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
-            <Link to="/login" className="text-primary hover:underline">
-              Login
+            Don't have an account?{' '}
+            <Link to="/register" className="text-primary hover:underline">
+              Sign up
             </Link>
           </p>
         </div>
@@ -57,4 +57,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;
