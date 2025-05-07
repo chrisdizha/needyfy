@@ -187,20 +187,21 @@ const ListEquipment = () => {
                     className="w-2/3"
                   />
                   
-                  <Select
-                    value={formData.priceUnit}
-                    onValueChange={(value) => handleSelectChange('priceUnit', value)}
-                    className="w-1/3"
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Per" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="hour">Per Hour</SelectItem>
-                      <SelectItem value="day">Per Day</SelectItem>
-                      <SelectItem value="week">Per Week</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="w-1/3">
+                    <Select
+                      value={formData.priceUnit}
+                      onValueChange={(value) => handleSelectChange('priceUnit', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Per" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="hour">Per Hour</SelectItem>
+                        <SelectItem value="day">Per Day</SelectItem>
+                        <SelectItem value="week">Per Week</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
             </div>
