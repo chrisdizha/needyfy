@@ -13,6 +13,10 @@ import ProviderResources from "./pages/ProviderResources";
 import ProviderGuidelines from "./pages/ProviderGuidelines";
 import SuccessStories from "./pages/SuccessStories";
 import ProviderFAQ from "./pages/ProviderFAQ";
+import Categories from "./pages/Categories";
+import HowItWorks from "./pages/HowItWorks";
+import Pricing from "./pages/Pricing";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +35,10 @@ const App = () => (
           <Route path="/provider-guidelines" element={<ProviderGuidelines />} />
           <Route path="/success-stories" element={<SuccessStories />} />
           <Route path="/provider-faq" element={<ProviderFAQ />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
