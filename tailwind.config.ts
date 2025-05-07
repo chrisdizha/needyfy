@@ -48,13 +48,18 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         needyfy: {
-          blue: "#3B82F6",
+          blue: "#00A1D6", // Updated to match brand guideline
           green: "#10B981",
-          darkgray: "#374151",
-          lightgray: "#F3F4F6",
-          orange: "#F97316",
+          darkgray: "#333333", // Updated to match brand guideline
+          lightgray: "#F9F9F9", // Updated to match brand guideline
+          orange: "#F5A623", // Updated to match brand guideline
           yellow: "#FBBF24"
         }
+      },
+      fontFamily: {
+        sans: ['Poppins', 'sans-serif'],
+        lato: ['Lato', 'sans-serif'],
+        poppins: ['Poppins', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",

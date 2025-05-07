@@ -14,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 217 91.2% 59.8%; /* Blue */
+    --primary: 195 100% 42%; /* Sky Blue (#00A1D6) */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 152 61% 39%; /* Green */
@@ -23,7 +23,7 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 33 93.2% 53.5%; /* Orange */
+    --accent: 33 91% 55%; /* Warm Orange (#F5A623) */
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -46,7 +46,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 217 91.2% 59.8%;
+    --primary: 195 100% 42%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 152 61% 39%;
@@ -55,7 +55,7 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 33 93.2% 53.5%;
+    --accent: 33 91% 55%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -73,7 +73,15 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-poppins;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-poppins font-bold;
+  }
+  
+  .font-lato {
+    @apply font-lato;
   }
 }
 
@@ -97,4 +105,30 @@
 
 .fade-in {
   animation: fadeIn 0.5s ease forwards;
+}
+
+/* Updated styling for pages */
+.page-title {
+  @apply text-3xl font-bold mb-6 text-needyfy-darkgray;
+}
+
+.page-subtitle {
+  @apply text-xl font-medium mb-4 text-needyfy-blue;
+}
+
+.tagline-primary {
+  @apply text-2xl md:text-3xl font-bold text-needyfy-blue;
+}
+
+.tagline-secondary {
+  @apply text-lg md:text-xl font-medium text-needyfy-orange;
+}
+
+/* Button variants */
+.btn-primary {
+  @apply bg-needyfy-blue text-white hover:bg-opacity-90 transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-needyfy-orange text-white hover:bg-opacity-90 transition-colors;
 }
