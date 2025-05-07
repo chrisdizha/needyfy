@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { List, FileText, Award, HelpCircle } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -52,11 +53,36 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">For Providers</h3>
             <ul className="space-y-2">
-              <li><Link to="/list-equipment" className="text-gray-400 hover:text-white">List Equipment</Link></li>
-              <li><Link to="/provider-resources" className="text-gray-400 hover:text-white">Resources</Link></li>
-              <li><Link to="/provider-guidelines" className="text-gray-400 hover:text-white">Guidelines</Link></li>
-              <li><Link to="/success-stories" className="text-gray-400 hover:text-white">Success Stories</Link></li>
-              <li><Link to="/provider-faq" className="text-gray-400 hover:text-white">FAQ</Link></li>
+              <li>
+                <Link to="/list-equipment" className="text-gray-400 hover:text-white flex items-center gap-2">
+                  <List className="h-4 w-4" />
+                  <span>List Equipment</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/provider-resources" className="text-gray-400 hover:text-white flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  <span>Resources</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/provider-guidelines" className="text-gray-400 hover:text-white flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  <span>Guidelines</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/success-stories" className="text-gray-400 hover:text-white flex items-center gap-2">
+                  <Award className="h-4 w-4" />
+                  <span>Success Stories</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/provider-faq" className="text-gray-400 hover:text-white flex items-center gap-2">
+                  <HelpCircle className="h-4 w-4" />
+                  <span>FAQ</span>
+                </Link>
+              </li>
             </ul>
           </div>
           
