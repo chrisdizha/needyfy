@@ -1,9 +1,11 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,7 +15,15 @@ const Navbar = () => {
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <span className="bg-needyfy-blue text-white font-bold p-2 rounded-md">N</span>
+            <div className="h-10 w-10">
+              <AspectRatio ratio={1/1}>
+                <img 
+                  src="/lovable-uploads/49fb9ab1-3945-4c06-8d58-a45f786e28fd.png" 
+                  alt="Needyfy Logo" 
+                  className="h-full w-full object-contain" 
+                />
+              </AspectRatio>
+            </div>
             <span className="font-bold text-xl text-needyfy-darkgray hidden sm:block">Needyfy</span>
           </Link>
 
