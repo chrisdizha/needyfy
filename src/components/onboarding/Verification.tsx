@@ -18,6 +18,7 @@ import { Check, Phone } from 'lucide-react';
 
 const verificationSchema = z.object({
   verificationCode: z.string().length(6, { message: 'Verification code must be 6 digits' }),
+  phoneVerified: z.boolean().optional(),
 });
 
 type VerificationData = z.infer<typeof verificationSchema>;
@@ -37,6 +38,7 @@ const OnboardingVerification = ({ userData, onNext, onBack }: VerificationProps)
     resolver: zodResolver(verificationSchema),
     defaultValues: {
       verificationCode: '',
+      phoneVerified: false,
     },
   });
 

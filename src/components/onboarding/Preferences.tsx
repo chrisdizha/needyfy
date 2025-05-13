@@ -1,4 +1,3 @@
-
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -9,7 +8,8 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormDescription
+  FormDescription,
+  FormMessage,
 } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 
@@ -113,7 +113,6 @@ const OnboardingPreferences = ({ userData, onNext, onBack }: PreferencesProps) =
                     />
                   ))}
                 </div>
-                <FormMessage />
               </FormItem>
             )}
           />
