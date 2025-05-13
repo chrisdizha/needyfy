@@ -34,7 +34,7 @@ const HeroSection = () => {
             List. Rent. Earn.
           </h1>
           <h2 className="text-2xl md:text-3xl text-needyfy-blue font-semibold mb-4">
-            Hire or Rent Anything, Anytime, All on Your Phone
+            Hire Anything, Anytime, All on Your Phone!
           </h2>
           <p className="text-xl text-gray-600 mb-8">
             Join thousands of users renting and listing equipment - from tools and vehicles to party supplies. Start earning or find what you need today.
