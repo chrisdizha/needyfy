@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
@@ -46,7 +45,10 @@ const BookingModal = ({
   };
 
   const handleProceedToPayment = () => {
-    if (!startDate || !endDate) return;
+    if (!startDate || !endDate) {
+      toast.error('Please select both start and end dates');
+      return;
+    }
     setStep('payment');
   };
 
