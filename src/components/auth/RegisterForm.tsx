@@ -1,9 +1,7 @@
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Eye, EyeOff, User, Mail, Lock, Phone } from 'lucide-react';
+import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -17,29 +15,14 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-
-const registerSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
-  email: z.string().email({ message: 'Please enter a valid email address' }),
-  phone: z.string().optional(),
-  password: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters' })
-    .regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter' })
-    .regex(/[0-9]/, { message: 'Password must contain at least one number' }),
-  agreeToTerms: z.boolean().refine(val => val === true, {
-    message: 'You must agree to the terms and conditions',
-  }),
-});
-
-type FormData = z.infer<typeof registerSchema>;
+import { registerSchema, RegisterFormData } from '@/lib/schemas/registerSchema';
+import ContactInput from './ContactInput';
+import PasswordInput from './PasswordInput';
 
 const RegisterForm = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [isUsingPhone, setIsUsingPhone] = useState(false);
   const navigate = useNavigate();
   
-  const form = useForm<FormData>({
+  const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: '',
@@ -50,7 +33,7 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: RegisterFormData) => {
     console.log('Form submitted:', data);
     toast.success("Registration successful! Let's set up your profile.");
     // Store user data in localStorage to simulate authentication
@@ -60,10 +43,6 @@ const RegisterForm = () => {
       isAuthenticated: true,
     }));
     navigate('/onboarding');
-  };
-
-  const toggleInputMethod = () => {
-    setIsUsingPhone(!isUsingPhone);
   };
 
   return (
@@ -90,95 +69,9 @@ const RegisterForm = () => {
           )}
         />
 
-        {!isUsingPhone ? (
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Email</FormLabel>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="Enter your email"
-                      className="pl-10"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </div>
-              </FormItem>
-            )}
-          />
-        ) : (
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Phone Number</FormLabel>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                  <FormControl>
-                    <Input
-                      type="tel"
-                      placeholder="Enter your phone number"
-                      className="pl-10"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </div>
-              </FormItem>
-            )}
-          />
-        )}
+        <ContactInput />
 
-        <div className="text-center">
-          <Button
-            type="button"
-            variant="link"
-            className="text-needyfy-blue text-sm p-0"
-            onClick={toggleInputMethod}
-          >
-            {isUsingPhone ? "Use email instead" : "Use phone number instead"}
-          </Button>
-        </div>
-
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel>Password</FormLabel>
-              <div className="relative">
-                <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                <FormControl>
-                  <Input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Create a password"
-                    className="pl-10 pr-10"
-                    {...field}
-                  />
-                </FormControl>
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 text-muted-foreground"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
-        />
+        <PasswordInput />
         
         <FormField
           control={form.control}
