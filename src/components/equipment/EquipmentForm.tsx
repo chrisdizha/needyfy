@@ -11,6 +11,11 @@ import PhotoUploader from './PhotoUploader';
 import TermsPreviewModal from './TermsPreviewModal';
 import TermsEditor from "./TermsEditor";
 import EquipmentPolicyInfo from './EquipmentPolicyInfo';
+import EquipmentTitleField from './EquipmentTitleField';
+import EquipmentDescriptionField from './EquipmentDescriptionField';
+import EquipmentCategoryPriceFields from './EquipmentCategoryPriceFields';
+import EquipmentLocationField from './EquipmentLocationField';
+import EquipmentPhotosField from './EquipmentPhotosField';
 
 const SAMPLE_TERMS = `Full refund for cancellations made at least 48 hours before the rental start date.
 50% refund for cancellations within 48 hours, no refund if cancelled on the day of rental.
@@ -133,56 +138,28 @@ const EquipmentForm = () => {
           <CardTitle>Equipment Details</CardTitle>
         </CardHeader>
         <CardContent>
-          {/* --- NEW: Show insurance/policy info at the top --- */}
           <EquipmentPolicyInfo />
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium mb-1">
-                Title <span className="text-destructive">*</span>
-              </label>
-              <Input
-                id="title"
-                name="title"
-                placeholder="e.g., Professional DSLR Camera"
-                value={formData.title}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            
+            <EquipmentTitleField
+              title={formData.title}
+              onChange={handleInputChange}
+            />
             {/* Description */}
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium mb-1">
-                Description <span className="text-destructive">*</span>
-              </label>
-              <Textarea
-                id="description"
-                name="description"
-                placeholder="Describe your equipment, condition, special features, etc."
-                rows={4}
-                value={formData.description}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            
+            <EquipmentDescriptionField
+              description={formData.description}
+              onChange={handleInputChange}
+            />
             {/* Category and Price */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <CategorySelector 
-                categories={equipmentCategories} 
-                selectedCategory={formData.category} 
-                onCategoryChange={(value) => handleSelectChange('category', value)} 
-              />
-              
-              <PriceField 
-                price={formData.price} 
-                priceUnit={formData.priceUnit} 
-                onPriceChange={handleInputChange} 
-                onPriceUnitChange={(value) => handleSelectChange('priceUnit', value)} 
-              />
-            </div>
-
+            <EquipmentCategoryPriceFields
+              categories={equipmentCategories}
+              selectedCategory={formData.category}
+              price={formData.price}
+              priceUnit={formData.priceUnit}
+              onCategoryChange={value => handleSelectChange('category', value)}
+              onPriceChange={handleInputChange}
+              onPriceUnitChange={value => handleSelectChange('priceUnit', value)}
+            />
             {/* Cancellation Policy (now using TermsEditor) */}
             <div>
               <label htmlFor="cancellationPolicy" className="block text-sm font-medium mb-1">
@@ -200,32 +177,20 @@ const EquipmentForm = () => {
                   : ""}
               </p>
             </div>
-            
             {/* Location */}
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium mb-1">
-                Location <span className="text-destructive">*</span>
-              </label>
-              <Input
-                id="location"
-                name="location"
-                placeholder="Enter city, state or zip code"
-                value={formData.location}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            
-            {/* Photos */}
-            <PhotoUploader 
-              photos={formData.photos} 
-              onPhotosChange={handlePhotosChange} 
+            <EquipmentLocationField
+              location={formData.location}
+              onChange={handleInputChange}
             />
-            
+            {/* Photos */}
+            <EquipmentPhotosField
+              photos={formData.photos}
+              onPhotosChange={handlePhotosChange}
+            />
             {/* Submit Button */}
             <div className="pt-4">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full"
                 disabled={isSubmitting}
               >
