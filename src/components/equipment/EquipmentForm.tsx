@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -9,6 +10,11 @@ import CategorySelector from './CategorySelector';
 import PriceField from './PriceField';
 import PhotoUploader from './PhotoUploader';
 import TermsPreviewModal from './TermsPreviewModal';
+
+const SAMPLE_TERMS = `Full refund for cancellations made at least 48 hours before the rental start date.
+50% refund for cancellations within 48 hours, no refund if cancelled on the day of rental.
+Equipment must be returned in the same condition as provided; damage or loss may result in fees.
+Late return incurs a penalty fee of $25/hour.`;
 
 const equipmentCategories = [
   "Construction Equipment",
@@ -32,13 +38,13 @@ const EquipmentForm = () => {
     price: '',
     priceUnit: 'day', // day, hour, week
     location: '',
-    cancellationPolicy: '',
+    cancellationPolicy: SAMPLE_TERMS,
     photos: [] as File[]
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreviewing, setIsPreviewing] = useState(false);
-  
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -51,30 +57,48 @@ const EquipmentForm = () => {
   const handlePhotosChange = (photos: File[]) => {
     setFormData({ ...formData, photos });
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Validation
     if (!formData.title.trim()) {
-      toast.error("Please enter a title");
+      toast.error("Please enter a title for your equipment.");
       setIsSubmitting(false);
       return;
     }
-    
+    if (!formData.description.trim()) {
+      toast.error("Please describe your equipment.");
+      setIsSubmitting(false);
+      return;
+    }
     if (!formData.category) {
-      toast.error("Please select a category");
+      toast.error("Please select a category.");
       setIsSubmitting(false);
       return;
     }
-    
     if (!formData.price || isNaN(Number(formData.price))) {
-      toast.error("Please enter a valid price");
+      toast.error("Please enter a valid price.");
       setIsSubmitting(false);
       return;
     }
-    
+    if (!formData.location.trim()) {
+      toast.error("Please enter your location.");
+      setIsSubmitting(false);
+      return;
+    }
+    if (!formData.cancellationPolicy.trim() || formData.cancellationPolicy.trim().length < 20) {
+      toast.error("Please provide detailed rental terms/cancellation policy.");
+      setIsSubmitting(false);
+      return;
+    }
+    if (formData.photos.length === 0) {
+      toast.error("Please upload at least one photo of your equipment.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -82,8 +106,6 @@ const EquipmentForm = () => {
       // Success
       toast.success("Equipment listed successfully!");
       setIsSubmitting(false);
-      
-      // Redirect to dashboard or equipment page
       setTimeout(() => {
         navigate('/bookings');
       }, 1500);
@@ -92,7 +114,7 @@ const EquipmentForm = () => {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
     <>
       <Card>
@@ -104,7 +126,7 @@ const EquipmentForm = () => {
             {/* Title */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium mb-1">
-                Title
+                Title <span className="text-destructive">*</span>
               </label>
               <Input
                 id="title"
@@ -112,13 +134,14 @@ const EquipmentForm = () => {
                 placeholder="e.g., Professional DSLR Camera"
                 value={formData.title}
                 onChange={handleInputChange}
+                required
               />
             </div>
             
             {/* Description */}
             <div>
               <label htmlFor="description" className="block text-sm font-medium mb-1">
-                Description
+                Description <span className="text-destructive">*</span>
               </label>
               <Textarea
                 id="description"
@@ -127,6 +150,7 @@ const EquipmentForm = () => {
                 rows={4}
                 value={formData.description}
                 onChange={handleInputChange}
+                required
               />
             </div>
             
@@ -150,7 +174,7 @@ const EquipmentForm = () => {
             <div>
               <div className="flex justify-between items-center mb-1">
                 <label htmlFor="cancellationPolicy" className="block text-sm font-medium">
-                  Cancellation Policy
+                  Rental Terms / Cancellation Policy <span className="text-destructive">*</span>
                 </label>
                 <Button
                   type="button"
@@ -166,16 +190,22 @@ const EquipmentForm = () => {
                 id="cancellationPolicy"
                 name="cancellationPolicy"
                 placeholder="e.g., Full refund for cancellations made within 48 hours of booking."
-                rows={3}
+                rows={4}
                 value={formData.cancellationPolicy}
                 onChange={handleInputChange}
+                required
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                {formData.cancellationPolicy.trim() === SAMPLE_TERMS
+                  ? "Sample terms provided. Edit as needed for your situation."
+                  : ""}
+              </p>
             </div>
             
             {/* Location */}
             <div>
               <label htmlFor="location" className="block text-sm font-medium mb-1">
-                Location
+                Location <span className="text-destructive">*</span>
               </label>
               <Input
                 id="location"
@@ -183,6 +213,7 @@ const EquipmentForm = () => {
                 placeholder="Enter city, state or zip code"
                 value={formData.location}
                 onChange={handleInputChange}
+                required
               />
             </div>
             
@@ -215,3 +246,4 @@ const EquipmentForm = () => {
 };
 
 export default EquipmentForm;
+
