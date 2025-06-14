@@ -1,44 +1,33 @@
 
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText } from "lucide-react";
+import { FileText, Award, HelpCircle, List } from "lucide-react";
 
 const ProviderResources = () => {
   const resources = [
     {
-      title: "Equipment Listing Guide",
-      description: "Learn how to create effective equipment listings",
-      link: "#",
+      title: "Provider Guidelines",
+      description: "Important rules and standards for equipment providers.",
+      link: "/provider-guidelines",
       icon: <FileText className="h-8 w-8 text-needyfy-blue" />
     },
     {
-      title: "Pricing Strategies",
-      description: "How to set competitive and profitable rental rates",
-      link: "#",
-      icon: <FileText className="h-8 w-8 text-needyfy-blue" />
+      title: "Provider FAQ",
+      description: "Answers to common questions from our providers.",
+      link: "/provider-faq",
+      icon: <HelpCircle className="h-8 w-8 text-needyfy-blue" />
     },
     {
-      title: "Photography Tips",
-      description: "Take better photos of your equipment",
-      link: "#",
-      icon: <FileText className="h-8 w-8 text-needyfy-blue" />
+      title: "Success Stories",
+      description: "Learn from other providers who are succeeding on Needyfy.",
+      link: "/success-stories",
+      icon: <Award className="h-8 w-8 text-needyfy-blue" />
     },
     {
-      title: "Maintenance Guide",
-      description: "Keep your rental equipment in top condition",
-      link: "#",
-      icon: <FileText className="h-8 w-8 text-needyfy-blue" />
-    },
-    {
-      title: "Customer Service Best Practices",
-      description: "How to provide excellent service to renters",
-      link: "#",
-      icon: <FileText className="h-8 w-8 text-needyfy-blue" />
-    },
-    {
-      title: "Tax Guidelines for Equipment Rental",
-      description: "Understanding your tax obligations as a provider",
-      link: "#",
-      icon: <FileText className="h-8 w-8 text-needyfy-blue" />
+      title: "List Your Equipment",
+      description: "Ready to start earning? List your equipment now.",
+      link: "/list-equipment",
+      icon: <List className="h-8 w-8 text-needyfy-blue" />
     }
   ];
 
@@ -58,12 +47,12 @@ const ProviderResources = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <a 
-                href={resource.link} 
+              <Link 
+                to={resource.link} 
                 className="text-needyfy-blue hover:underline font-medium"
               >
                 View Resource →
-              </a>
+              </Link>
             </CardContent>
           </Card>
         ))}
