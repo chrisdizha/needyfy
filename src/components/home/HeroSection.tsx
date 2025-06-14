@@ -34,10 +34,10 @@ const HeroSection = () => {
             List. Rent. Earn.
           </h1>
           <h2 className="text-2xl md:text-3xl text-needyfy-blue font-semibold mb-4">
-            Hire Anything, Anywhere!
+            Everything you need—just when you need it.
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            Join thousands of users renting and listing equipment - from tools and vehicles to party supplies. Start earning or find what you need today.
+            Rent what you need, from tools and vehicles to party supplies. Earn extra income from what you own. It's a smarter, more sustainable way to live and work.
           </p>
           
           <form onSubmit={handleSearch} className="bg-white p-5 rounded-lg shadow-lg max-w-2xl mx-auto">

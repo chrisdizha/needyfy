@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart2, FileText, DollarSign, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,7 @@ const ProviderFeatures = () => {
     },
     {
       title: "Secure Payments",
-      description: "Get paid quickly and securely for every rental transaction.",
+      description: "We handle all payments securely, so you can focus on earning. Get paid on time, every time.",
       icon: <DollarSign className="h-10 w-10 text-primary p-2 bg-primary/10 rounded-full" />
     },
     {

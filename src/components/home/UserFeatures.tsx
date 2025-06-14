@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Calendar, CreditCard, MessageSquare, Bell, MapPin, Star, Shield } from "lucide-react";
 
@@ -16,7 +15,7 @@ const UserFeatures = () => {
     },
     {
       title: "Secure Payments",
-      description: "Pay securely with multiple payment options and optional security deposits.",
+      description: "Your money’s safe until your item is delivered—peace of mind, built in.",
       icon: <CreditCard className="h-10 w-10 text-needyfy-blue p-2 bg-blue-100 rounded-full" />
     },
     {
