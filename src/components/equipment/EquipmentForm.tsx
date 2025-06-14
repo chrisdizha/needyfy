@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -10,6 +9,7 @@ import CategorySelector from './CategorySelector';
 import PriceField from './PriceField';
 import PhotoUploader from './PhotoUploader';
 import TermsPreviewModal from './TermsPreviewModal';
+import TermsEditor from "./TermsEditor";
 
 const SAMPLE_TERMS = `Full refund for cancellations made at least 48 hours before the rental start date.
 50% refund for cancellations within 48 hours, no refund if cancelled on the day of rental.
@@ -44,6 +44,7 @@ const EquipmentForm = () => {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreviewing, setIsPreviewing] = useState(false);
+  const [termsHistory, setTermsHistory] = useState<string[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -115,6 +116,15 @@ const EquipmentForm = () => {
     }
   };
 
+  // Intercept for our terms editor
+  const handleTermsChange = (terms: string) => {
+    setFormData({ ...formData, cancellationPolicy: terms });
+  };
+  const handleSaveVersion = (terms: string) => {
+    setTermsHistory([terms, ...termsHistory]);
+    toast.success("Version saved.");
+  };
+
   return (
     <>
       <Card>
@@ -170,30 +180,16 @@ const EquipmentForm = () => {
               />
             </div>
 
-            {/* Cancellation Policy */}
+            {/* Cancellation Policy (now using TermsEditor) */}
             <div>
-              <div className="flex justify-between items-center mb-1">
-                <label htmlFor="cancellationPolicy" className="block text-sm font-medium">
-                  Rental Terms / Cancellation Policy <span className="text-destructive">*</span>
-                </label>
-                <Button
-                  type="button"
-                  variant="link"
-                  className="p-0 h-auto text-sm text-needyfy-blue hover:text-needyfy-darkgray"
-                  onClick={() => setIsPreviewing(true)}
-                  disabled={!formData.cancellationPolicy.trim()}
-                >
-                  Preview
-                </Button>
-              </div>
-              <Textarea
-                id="cancellationPolicy"
-                name="cancellationPolicy"
-                placeholder="e.g., Full refund for cancellations made within 48 hours of booking."
-                rows={4}
+              <label htmlFor="cancellationPolicy" className="block text-sm font-medium mb-1">
+                Rental Terms / Cancellation Policy <span className="text-destructive">*</span>
+              </label>
+              <TermsEditor
                 value={formData.cancellationPolicy}
-                onChange={handleInputChange}
-                required
+                onChange={handleTermsChange}
+                versionHistory={termsHistory}
+                onSaveVersion={handleSaveVersion}
               />
               <p className="text-xs text-muted-foreground mt-1">
                 {formData.cancellationPolicy.trim() === SAMPLE_TERMS
@@ -246,4 +242,3 @@ const EquipmentForm = () => {
 };
 
 export default EquipmentForm;
-
