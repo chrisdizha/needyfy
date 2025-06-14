@@ -9,12 +9,15 @@ import OnboardingVerification from '@/components/onboarding/Verification';
 import OnboardingComplete from '@/components/onboarding/Complete';
 import { toast } from 'sonner';
 import { Check } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { User } from '@supabase/supabase-js';
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
   const [userData, setUserData] = useState<any>({});
+  const [user, setUser] = useState<User | null>(null);
 
   const steps = [
     { title: "Profile Information", component: OnboardingProfileInfo },
@@ -24,51 +27,77 @@ const Onboarding = () => {
   ];
 
   useEffect(() => {
-    // Check if user is authenticated
-    const storedUser = localStorage.getItem('needyfy-user');
-    if (!storedUser) {
-      toast.error("Please log in to continue");
-      navigate('/login');
-      return;
-    }
+    const checkSessionAndFetchProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error("Please log in to continue");
+        navigate('/login');
+        return;
+      }
 
-    const user = JSON.parse(storedUser);
-    if (!user.isAuthenticated) {
-      toast.error("Please log in to continue");
-      navigate('/login');
-      return;
-    }
+      setUser(session.user);
+      
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*, full_name')
+        .eq('id', session.user.id)
+        .single();
+        
+      if (profileError && profileError.code !== 'PGRST116') { // PGRST116: no rows returned
+        toast.error('Failed to fetch profile: ' + profileError.message);
+      }
+      
+      setUserData({
+        ...(session.user.user_metadata || {}),
+        ...(profile || {}),
+        name: profile?.full_name || session.user.user_metadata.name, // Ensure 'name' is available for ProfileInfo form
+        email: session.user.email,
+      });
+    };
 
-    // Set current onboarding step if it exists
-    if (user.onboardingStep !== undefined) {
-      setCurrentStep(user.onboardingStep);
-      setProgress(calculateProgress(user.onboardingStep));
-    }
+    checkSessionAndFetchProfile();
 
-    setUserData(user);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        toast.info("You have been logged out.");
+        navigate('/login');
+      } else {
+        setUser(session.user);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const calculateProgress = (step: number): number => {
     return Math.min(100, Math.round((step / (steps.length - 1)) * 100));
   };
 
-  const handleNext = (stepData: any) => {
+  const handleNext = async (stepData: any) => {
     const nextStep = currentStep + 1;
     const updatedUserData = { ...userData, ...stepData };
-    
-    // Update user data in local storage
-    localStorage.setItem('needyfy-user', JSON.stringify({
-      ...updatedUserData,
-      onboardingStep: nextStep,
-      onboardingCompleted: nextStep >= steps.length - 1
-    }));
-    
     setUserData(updatedUserData);
+    
+    if (user && currentStep === 0) { // Step 0 is Profile Information
+      const { name, phone } = stepData;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ full_name: name, phone: phone, updated_at: new Date().toISOString() })
+        .eq('id', user.id);
+
+      if (error) {
+        toast.error("Failed to update profile: " + error.message);
+      }
+    }
+    
     setCurrentStep(nextStep);
     setProgress(calculateProgress(nextStep));
     
     if (nextStep >= steps.length) {
-      // Onboarding completed
+      toast.success("Onboarding complete!");
       navigate('/');
     }
   };
@@ -77,25 +106,12 @@ const Onboarding = () => {
     const prevStep = Math.max(0, currentStep - 1);
     setCurrentStep(prevStep);
     setProgress(calculateProgress(prevStep));
-    
-    // Update user data in local storage
-    localStorage.setItem('needyfy-user', JSON.stringify({
-      ...userData,
-      onboardingStep: prevStep
-    }));
   };
 
   const handleSkip = () => {
     const skipToStep = steps.length - 1; // Skip to complete step
     setCurrentStep(skipToStep);
     setProgress(calculateProgress(skipToStep));
-    
-    // Update user data in local storage
-    localStorage.setItem('needyfy-user', JSON.stringify({
-      ...userData,
-      onboardingStep: skipToStep,
-      onboardingCompleted: true
-    }));
   };
 
   // Get current step component

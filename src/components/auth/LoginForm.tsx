@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,6 +15,7 @@ import {
 } from '@/components/ui/form';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -36,33 +36,17 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log('Login submitted:', data);
-    toast.success("Login successful!");
-    
-    // Check if user has completed onboarding
-    const storedUser = localStorage.getItem('needyfy-user');
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      localStorage.setItem('needyfy-user', JSON.stringify({
-        ...user,
-        email: data.email,
-        isAuthenticated: true,
-      }));
-      
-      if (user.onboardingCompleted) {
-        navigate('/');
-      } else {
-        navigate('/onboarding');
-      }
+  const onSubmit = async (data: FormData) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
+
+    if (error) {
+      toast.error(error.message);
     } else {
-      // Create new user if not exists
-      localStorage.setItem('needyfy-user', JSON.stringify({
-        email: data.email,
-        onboardingStep: 0,
-        isAuthenticated: true,
-      }));
-      navigate('/onboarding');
+      toast.success("Login successful!");
+      navigate('/');
     }
   };
 

@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { registerSchema, RegisterFormData } from '@/lib/schemas/registerSchema';
 import ContactInput from './ContactInput';
 import PasswordInput from './PasswordInput';
+import { supabase } from '@/integrations/supabase/client';
 
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -33,16 +34,25 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (data: RegisterFormData) => {
-    console.log('Form submitted:', data);
-    toast.success("Registration successful! Let's set up your profile.");
-    // Store user data in localStorage to simulate authentication
-    localStorage.setItem('needyfy-user', JSON.stringify({
-      ...data,
-      onboardingStep: 0, // Starting the onboarding process
-      isAuthenticated: true,
-    }));
-    navigate('/onboarding');
+  const onSubmit = async (data: RegisterFormData) => {
+    const { error } = await supabase.auth.signUp({
+      email: data.email!,
+      password: data.password,
+      options: {
+        data: {
+          name: data.name,
+          phone: data.phone,
+        },
+        emailRedirectTo: `${window.location.origin}/`,
+      },
+    });
+
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Registration successful! Please check your email to verify your account.");
+      navigate('/');
+    }
   };
 
   return (
