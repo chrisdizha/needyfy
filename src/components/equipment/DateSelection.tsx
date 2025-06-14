@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ interface DateSelectionProps {
   startDate?: Date;
   endDate?: Date;
   pricePerDay: number;
+  bookedDates?: Date[];
   onDateSelect: (date: Date | undefined) => void;
   onProceedToPayment: () => void;
   onCancel: () => void;
@@ -17,6 +17,7 @@ const DateSelection = ({
   startDate,
   endDate,
   pricePerDay,
+  bookedDates = [],
   onDateSelect,
   onProceedToPayment,
   onCancel
@@ -28,6 +29,12 @@ const DateSelection = ({
   const totalDays = startDate && endDate 
     ? Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1
     : 0;
+
+  const isDateBooked = (date: Date) => {
+    return bookedDates.some(
+      bookedDate => format(bookedDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
+    );
+  };
 
   return (
     <div className="py-4">
@@ -43,7 +50,7 @@ const DateSelection = ({
         mode="single"
         selected={startDate}
         onSelect={onDateSelect}
-        disabled={(date) => date < new Date()}
+        disabled={(date) => date < new Date() || isDateBooked(date)}
         className="rounded-md border"
       />
 

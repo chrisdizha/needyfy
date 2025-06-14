@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -32,6 +31,7 @@ const EquipmentForm = () => {
     price: '',
     priceUnit: 'day', // day, hour, week
     location: '',
+    cancellationPolicy: '',
     photos: [] as File[]
   });
   
@@ -140,6 +140,21 @@ const EquipmentForm = () => {
               priceUnit={formData.priceUnit} 
               onPriceChange={handleInputChange} 
               onPriceUnitChange={(value) => handleSelectChange('priceUnit', value)} 
+            />
+          </div>
+
+          {/* Cancellation Policy */}
+          <div>
+            <label htmlFor="cancellationPolicy" className="block text-sm font-medium mb-1">
+              Cancellation Policy
+            </label>
+            <Textarea
+              id="cancellationPolicy"
+              name="cancellationPolicy"
+              placeholder="e.g., Full refund for cancellations made within 48 hours of booking."
+              rows={3}
+              value={formData.cancellationPolicy}
+              onChange={handleInputChange}
             />
           </div>
           

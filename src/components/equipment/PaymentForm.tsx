@@ -1,6 +1,9 @@
 
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+
 
 interface PaymentFormProps {
   equipmentTitle: string;
@@ -8,6 +11,8 @@ interface PaymentFormProps {
   endDate: Date;
   totalPrice: number;
   isProcessing: boolean;
+  agreedToTerms: boolean;
+  onAgreeToTermsChange: (agreed: boolean) => void;
   onPayment: () => void;
   onBack: () => void;
 }
@@ -18,6 +23,8 @@ const PaymentForm = ({
   endDate,
   totalPrice,
   isProcessing,
+  agreedToTerms,
+  onAgreeToTermsChange,
   onPayment,
   onBack
 }: PaymentFormProps) => {
@@ -72,13 +79,25 @@ const PaymentForm = ({
         </div>
       </div>
 
+      <div className="flex items-center space-x-2 mt-4">
+        <Checkbox 
+          id="terms" 
+          checked={agreedToTerms} 
+          onCheckedChange={(checked) => onAgreeToTermsChange(checked === true)}
+          disabled={isProcessing}
+        />
+        <Label htmlFor="terms" className="text-sm font-normal text-muted-foreground">
+          I agree to the rental terms and cancellation policy.
+        </Label>
+      </div>
+
       <div className="flex justify-end gap-4 mt-6">
         <Button variant="outline" onClick={onBack} disabled={isProcessing}>
           Back
         </Button>
         <Button 
           onClick={onPayment}
-          disabled={isProcessing}
+          disabled={isProcessing || !agreedToTerms}
         >
           {isProcessing ? 'Processing...' : 'Complete Booking'}
         </Button>
