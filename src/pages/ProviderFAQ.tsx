@@ -1,8 +1,9 @@
-
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const ProviderFAQ = () => {
   const [activeCategory, setActiveCategory] = useState('general');
@@ -110,6 +111,15 @@ const ProviderFAQ = () => {
   
   return (
     <div className="container mx-auto px-4 py-12">
+      <div className="flex items-center justify-between mb-4">
+        <div />
+        <Link to="/" className="mb-2">
+          <Button variant="outline" size="sm" className="flex items-center gap-2">
+            <Home className="w-4 h-4" />
+            Back to Home
+          </Button>
+        </Link>
+      </div>
       <div className="text-center mb-12">
         <HelpCircle className="h-12 w-12 text-needyfy-blue mx-auto mb-4" />
         <h1 className="text-3xl font-bold">Provider FAQ</h1>
