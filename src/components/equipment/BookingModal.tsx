@@ -6,6 +6,7 @@ import { eachDayOfInterval } from 'date-fns';
 import DateSelection from './DateSelection';
 import PaymentForm from './PaymentForm';
 import BookingConfirmation from './BookingConfirmation';
+import EquipmentPolicyInfo from './EquipmentPolicyInfo';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -15,7 +16,7 @@ interface BookingModalProps {
   pricePerDay: number;
 }
 
-const BookingModal = ({ 
+const BookingModal = ({
   isOpen, 
   onClose, 
   equipmentTitle, 
@@ -149,7 +150,7 @@ const BookingModal = ({
             {getDialogDescription()}
           </DialogDescription>
         </DialogHeader>
-        
+        <EquipmentPolicyInfo />
         {step === 'dates' && (
           <DateSelection
             startDate={startDate}

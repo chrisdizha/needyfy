@@ -10,6 +10,7 @@ import PriceField from './PriceField';
 import PhotoUploader from './PhotoUploader';
 import TermsPreviewModal from './TermsPreviewModal';
 import TermsEditor from "./TermsEditor";
+import EquipmentPolicyInfo from './EquipmentPolicyInfo';
 
 const SAMPLE_TERMS = `Full refund for cancellations made at least 48 hours before the rental start date.
 50% refund for cancellations within 48 hours, no refund if cancelled on the day of rental.
@@ -132,6 +133,8 @@ const EquipmentForm = () => {
           <CardTitle>Equipment Details</CardTitle>
         </CardHeader>
         <CardContent>
+          {/* --- NEW: Show insurance/policy info at the top --- */}
+          <EquipmentPolicyInfo />
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
             <div>
