@@ -12,6 +12,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
 
 const categoryItems = [
   { id: 'construction', label: 'Construction' },
@@ -201,49 +203,51 @@ const OnboardingPreferences = ({ userData, onNext, onBack }: PreferencesProps) =
                 <FormDescription>
                   Select your primary role on the platform
                 </FormDescription>
-                <div className="grid grid-cols-1 gap-4 mt-3">
-                  <div className="flex flex-col space-y-4">
-                    <label className={`border rounded-md p-4 cursor-pointer ${field.value === 'renter' ? 'border-needyfy-blue bg-blue-50' : 'border-gray-200'}`}>
-                      <input
-                        type="radio"
-                        value="renter"
-                        className="sr-only"
-                        checked={field.value === 'renter'}
-                        onChange={() => field.onChange('renter')}
-                      />
-                      <div className="font-medium">I want to rent equipment</div>
-                      <div className="text-sm text-muted-foreground">
-                        Browse and rent items from providers
-                      </div>
-                    </label>
-                    <label className={`border rounded-md p-4 cursor-pointer ${field.value === 'provider' ? 'border-needyfy-blue bg-blue-50' : 'border-gray-200'}`}>
-                      <input
-                        type="radio"
-                        value="provider"
-                        className="sr-only"
-                        checked={field.value === 'provider'}
-                        onChange={() => field.onChange('provider')}
-                      />
-                      <div className="font-medium">I want to list equipment</div>
-                      <div className="text-sm text-muted-foreground">
-                        List your items for others to rent
-                      </div>
-                    </label>
-                    <label className={`border rounded-md p-4 cursor-pointer ${field.value === 'both' ? 'border-needyfy-blue bg-blue-50' : 'border-gray-200'}`}>
-                      <input
-                        type="radio"
-                        value="both"
-                        className="sr-only"
-                        checked={field.value === 'both'}
-                        onChange={() => field.onChange('both')}
-                      />
-                      <div className="font-medium">I want to do both</div>
-                      <div className="text-sm text-muted-foreground">
-                        Rent items and list my own equipment
-                      </div>
-                    </label>
-                  </div>
-                </div>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    className="grid grid-cols-1 gap-4 mt-3"
+                  >
+                    <div>
+                      <RadioGroupItem value="renter" id="renter" className="sr-only" />
+                      <Label
+                        htmlFor="renter"
+                        className={`border rounded-md p-4 cursor-pointer block font-normal ${field.value === 'renter' ? 'border-needyfy-blue bg-blue-50' : 'border-gray-200'}`}
+                      >
+                        <span className="font-medium block">I want to rent equipment</span>
+                        <span className="text-sm text-muted-foreground block">
+                          Browse and rent items from providers
+                        </span>
+                      </Label>
+                    </div>
+                    <div>
+                      <RadioGroupItem value="provider" id="provider" className="sr-only" />
+                      <Label
+                        htmlFor="provider"
+                        className={`border rounded-md p-4 cursor-pointer block font-normal ${field.value === 'provider' ? 'border-needyfy-blue bg-blue-50' : 'border-gray-200'}`}
+                      >
+                        <span className="font-medium block">I want to list equipment</span>
+                        <span className="text-sm text-muted-foreground block">
+                          List your items for others to rent
+                        </span>
+                      </Label>
+                    </div>
+                    <div>
+                      <RadioGroupItem value="both" id="both" className="sr-only" />
+                      <Label
+                        htmlFor="both"
+                        className={`border rounded-md p-4 cursor-pointer block font-normal ${field.value === 'both' ? 'border-needyfy-blue bg-blue-50' : 'border-gray-200'}`}
+                      >
+                        <span className="font-medium block">I want to do both</span>
+                        <span className="text-sm text-muted-foreground block">
+                          Rent items and list my own equipment
+                        </span>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
