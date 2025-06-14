@@ -1,9 +1,8 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Star } from 'lucide-react';
+import { Star, Heart } from 'lucide-react';
 import BookingModal from './BookingModal';
 
 interface EquipmentCardProps {
@@ -32,6 +31,12 @@ const EquipmentCard = ({
   isVerified = false
 }: EquipmentCardProps) => {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  const toggleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFavorited(!isFavorited);
+  };
 
   return (
     <>
@@ -52,7 +57,21 @@ const EquipmentCard = ({
           )}
         </div>
         <CardContent className="p-4">
-          <h3 className="font-semibold text-lg mb-1 truncate">{title}</h3>
+          <div className="flex justify-between items-start gap-2">
+            <h3 className="font-semibold text-lg mb-1 truncate flex-grow">{title}</h3>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 flex-shrink-0 rounded-full"
+              onClick={toggleFavorite}
+            >
+              <Heart
+                className={`h-5 w-5 transition-colors ${
+                  isFavorited ? 'text-red-500 fill-red-500' : 'text-gray-500 hover:text-red-500'
+                }`}
+              />
+            </Button>
+          </div>
           <p className="text-sm text-gray-500 mb-2">{location}</p>
           <div className="flex items-center mb-2">
             <div className="flex items-center">
