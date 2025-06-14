@@ -2,10 +2,11 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { CheckCircle, Loader2 } from 'lucide-react';
+import { CheckCircle, Loader2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const BookingSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -17,7 +18,9 @@ const BookingSuccess = () => {
     const confirmBooking = async () => {
       const sessionId = searchParams.get('session_id');
       if (!sessionId) {
-        setError('No session ID found.');
+        setError(
+          "We couldn't find your payment session. This can happen if you navigated here directly, refreshed the page, or if there was an issue completing payment. Please check your email for updates, try your booking again, or contact our support team if you need help."
+        );
         setLoading(false);
         return;
       }
@@ -58,8 +61,20 @@ const BookingSuccess = () => {
             </>
           ) : error ? (
             <>
-              <h1 className="text-2xl font-bold text-destructive mb-2">Error</h1>
-              <p className="text-muted-foreground">{error}</p>
+              <Alert variant="destructive" className="mb-4 text-left">
+                <AlertTriangle className="w-6 h-6 text-destructive" />
+                <div>
+                  <AlertTitle>There was a problem confirming your booking</AlertTitle>
+                  <AlertDescription>
+                    <p className="mb-3">{error}</p>
+                    <ul className="list-disc ml-6 text-sm mb-2">
+                      <li>Make sure you completed payment with Stripe.</li>
+                      <li>If unsure, check your email for booking/payment confirmation from Needyfy.</li>
+                      <li><span className="font-semibold">Still having trouble?</span> <a href="/contact" className="underline text-primary">Contact support</a></li>
+                    </ul>
+                  </AlertDescription>
+                </div>
+              </Alert>
               <Button asChild className="mt-4">
                 <Link to="/">Go to Homepage</Link>
               </Button>

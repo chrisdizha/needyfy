@@ -22,6 +22,7 @@ import BookingSuccess from "./pages/BookingSuccess";
 import BookingCancelled from "./pages/BookingCancelled";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProviderBookingDashboard from "./pages/ProviderBookingDashboard";
+import PromotionsAndDiscounts from "./pages/PromotionsAndDiscounts";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/booking-cancelled" element={<BookingCancelled />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/provider-bookings" element={<ProviderBookingDashboard />} />
+          <Route path="/promotions-discounts" element={<PromotionsAndDiscounts />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
