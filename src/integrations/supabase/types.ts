@@ -95,6 +95,39 @@ export type Database = {
           },
         ]
       }
+      equipment_documents: {
+        Row: {
+          date_uploaded: string
+          doc_type: string
+          equipment_id: string
+          expiry_date: string | null
+          file_name: string
+          file_path: string
+          id: string
+          uploaded_by: string
+        }
+        Insert: {
+          date_uploaded?: string
+          doc_type: string
+          equipment_id: string
+          expiry_date?: string | null
+          file_name: string
+          file_path: string
+          id?: string
+          uploaded_by: string
+        }
+        Update: {
+          date_uploaded?: string
+          doc_type?: string
+          equipment_id?: string
+          expiry_date?: string | null
+          file_name?: string
+          file_path?: string
+          id?: string
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           booking_id: string
