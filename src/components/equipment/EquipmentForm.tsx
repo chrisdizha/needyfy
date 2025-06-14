@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import CategorySelector from './CategorySelector';
 import PriceField from './PriceField';
 import PhotoUploader from './PhotoUploader';
+import TermsPreviewModal from './TermsPreviewModal';
 
 const equipmentCategories = [
   "Construction Equipment",
@@ -36,6 +37,7 @@ const EquipmentForm = () => {
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPreviewing, setIsPreviewing] = useState(false);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -92,105 +94,123 @@ const EquipmentForm = () => {
   };
   
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Equipment Details</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Title */}
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium mb-1">
-              Title
-            </label>
-            <Input
-              id="title"
-              name="title"
-              placeholder="e.g., Professional DSLR Camera"
-              value={formData.title}
-              onChange={handleInputChange}
-            />
-          </div>
-          
-          {/* Description */}
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium mb-1">
-              Description
-            </label>
-            <Textarea
-              id="description"
-              name="description"
-              placeholder="Describe your equipment, condition, special features, etc."
-              rows={4}
-              value={formData.description}
-              onChange={handleInputChange}
-            />
-          </div>
-          
-          {/* Category and Price */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <CategorySelector 
-              categories={equipmentCategories} 
-              selectedCategory={formData.category} 
-              onCategoryChange={(value) => handleSelectChange('category', value)} 
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Equipment Details</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Title */}
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium mb-1">
+                Title
+              </label>
+              <Input
+                id="title"
+                name="title"
+                placeholder="e.g., Professional DSLR Camera"
+                value={formData.title}
+                onChange={handleInputChange}
+              />
+            </div>
+            
+            {/* Description */}
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium mb-1">
+                Description
+              </label>
+              <Textarea
+                id="description"
+                name="description"
+                placeholder="Describe your equipment, condition, special features, etc."
+                rows={4}
+                value={formData.description}
+                onChange={handleInputChange}
+              />
+            </div>
+            
+            {/* Category and Price */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CategorySelector 
+                categories={equipmentCategories} 
+                selectedCategory={formData.category} 
+                onCategoryChange={(value) => handleSelectChange('category', value)} 
+              />
+              
+              <PriceField 
+                price={formData.price} 
+                priceUnit={formData.priceUnit} 
+                onPriceChange={handleInputChange} 
+                onPriceUnitChange={(value) => handleSelectChange('priceUnit', value)} 
+              />
+            </div>
+
+            {/* Cancellation Policy */}
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <label htmlFor="cancellationPolicy" className="block text-sm font-medium">
+                  Cancellation Policy
+                </label>
+                <Button
+                  type="button"
+                  variant="link"
+                  className="p-0 h-auto text-sm text-needyfy-blue hover:text-needyfy-darkgray"
+                  onClick={() => setIsPreviewing(true)}
+                  disabled={!formData.cancellationPolicy.trim()}
+                >
+                  Preview
+                </Button>
+              </div>
+              <Textarea
+                id="cancellationPolicy"
+                name="cancellationPolicy"
+                placeholder="e.g., Full refund for cancellations made within 48 hours of booking."
+                rows={3}
+                value={formData.cancellationPolicy}
+                onChange={handleInputChange}
+              />
+            </div>
+            
+            {/* Location */}
+            <div>
+              <label htmlFor="location" className="block text-sm font-medium mb-1">
+                Location
+              </label>
+              <Input
+                id="location"
+                name="location"
+                placeholder="Enter city, state or zip code"
+                value={formData.location}
+                onChange={handleInputChange}
+              />
+            </div>
+            
+            {/* Photos */}
+            <PhotoUploader 
+              photos={formData.photos} 
+              onPhotosChange={handlePhotosChange} 
             />
             
-            <PriceField 
-              price={formData.price} 
-              priceUnit={formData.priceUnit} 
-              onPriceChange={handleInputChange} 
-              onPriceUnitChange={(value) => handleSelectChange('priceUnit', value)} 
-            />
-          </div>
-
-          {/* Cancellation Policy */}
-          <div>
-            <label htmlFor="cancellationPolicy" className="block text-sm font-medium mb-1">
-              Cancellation Policy
-            </label>
-            <Textarea
-              id="cancellationPolicy"
-              name="cancellationPolicy"
-              placeholder="e.g., Full refund for cancellations made within 48 hours of booking."
-              rows={3}
-              value={formData.cancellationPolicy}
-              onChange={handleInputChange}
-            />
-          </div>
-          
-          {/* Location */}
-          <div>
-            <label htmlFor="location" className="block text-sm font-medium mb-1">
-              Location
-            </label>
-            <Input
-              id="location"
-              name="location"
-              placeholder="Enter city, state or zip code"
-              value={formData.location}
-              onChange={handleInputChange}
-            />
-          </div>
-          
-          {/* Photos */}
-          <PhotoUploader 
-            photos={formData.photos} 
-            onPhotosChange={handlePhotosChange} 
-          />
-          
-          {/* Submit Button */}
-          <div className="pt-4">
-            <Button 
-              type="submit" 
-              className="w-full"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Submitting..." : "List Equipment"}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+            {/* Submit Button */}
+            <div className="pt-4">
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "List Equipment"}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+      <TermsPreviewModal
+        isOpen={isPreviewing}
+        onClose={() => setIsPreviewing(false)}
+        terms={formData.cancellationPolicy}
+      />
+    </>
   );
 };
 
