@@ -1,7 +1,8 @@
 
 import { Toaster } from "@/components/ui/sonner";
 import EquipmentForm from "@/components/equipment/EquipmentForm";
-import { Wrench } from "lucide-react";
+import { Wrench, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ListEquipment = () => {
   return (
@@ -11,6 +12,15 @@ const ListEquipment = () => {
           <h1 className="text-3xl md:text-4xl font-bold mb-3 text-needyfy-darkgray">
             List Your Equipment
           </h1>
+          <div className="mb-4">
+            <Link
+              to="/"
+              className="inline-flex items-center text-needyfy-blue hover:text-needyfy-darkgray text-sm font-medium"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Home
+            </Link>
+          </div>
           <div className="flex items-center justify-center mb-2">
             <div className="bg-needyfy-orange h-1 w-16 rounded-full mr-3"></div>
             <p className="tagline-primary">List. Rent. Earn.</p>
