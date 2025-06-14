@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Percent, Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Pricing = () => {
   return (
@@ -52,9 +53,14 @@ const Pricing = () => {
         <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
           We may be able to offer custom rates for large businesses and organizations with significant rental volume.
         </p>
-        <Button className="bg-needyfy-blue hover:bg-blue-600">
-          Contact Sales
-        </Button>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button asChild className="bg-needyfy-blue hover:bg-blue-600">
+            <Link to="/contact">Contact Sales</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/">Back to Home</Link>
+          </Button>
+        </div>
       </div>
     </div>
   );
