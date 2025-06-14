@@ -51,6 +51,50 @@ export type Database = {
         }
         Relationships: []
       }
+      disputes: {
+        Row: {
+          against_user_id: string | null
+          booking_id: string | null
+          created_at: string
+          id: string
+          opened_by: string | null
+          reason: string
+          resolution: string | null
+          resolved_at: string | null
+          status: string
+        }
+        Insert: {
+          against_user_id?: string | null
+          booking_id?: string | null
+          created_at?: string
+          id?: string
+          opened_by?: string | null
+          reason: string
+          resolution?: string | null
+          resolved_at?: string | null
+          status?: string
+        }
+        Update: {
+          against_user_id?: string | null
+          booking_id?: string | null
+          created_at?: string
+          id?: string
+          opened_by?: string | null
+          reason?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disputes_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           booking_id: string
@@ -110,6 +154,42 @@ export type Database = {
           suspended_at?: string | null
           suspension_reason?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          created_at: string
+          details: string
+          id: string
+          reported_listing_id: string | null
+          reported_user_id: string | null
+          reporter_id: string | null
+          resolved_at: string | null
+          status: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          details: string
+          id?: string
+          reported_listing_id?: string | null
+          reported_user_id?: string | null
+          reporter_id?: string | null
+          resolved_at?: string | null
+          status?: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          details?: string
+          id?: string
+          reported_listing_id?: string | null
+          reported_user_id?: string | null
+          reporter_id?: string | null
+          resolved_at?: string | null
+          status?: string
+          type?: string
         }
         Relationships: []
       }
