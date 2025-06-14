@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { 
   Table, 
@@ -10,36 +9,54 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { BookingDetails } from '@/types/booking';
+import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+
+interface Booking {
+  id: string;
+  start_date: string;
+  end_date: string;
+  total_price: number;
+  status: string;
+}
 
 interface BookingHistoryProps {
   limit?: number;
 }
 
 const BookingHistory = ({ limit }: BookingHistoryProps) => {
-  const [bookings, setBookings] = useState<BookingDetails[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch bookings from localStorage in a real app this would be an API call
-    const storedBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    
-    // Convert date strings to Date objects
-    const processedBookings = storedBookings.map((booking: any) => ({
-      ...booking,
-      startDate: new Date(booking.startDate),
-      endDate: new Date(booking.endDate),
-      created: booking.created ? new Date(booking.created) : new Date(),
-    }));
-    
-    // Sort by created date, newest first
-    processedBookings.sort((a: BookingDetails, b: BookingDetails) => {
-      return (b.created?.getTime() || 0) - (a.created?.getTime() || 0);
-    });
-    
-    // Apply limit if provided
-    setBookings(limit ? processedBookings.slice(0, limit) : processedBookings);
+    const fetchBookings = async () => {
+      setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        let query = supabase
+          .from('bookings')
+          .select('id, start_date, end_date, total_price, status')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (limit) {
+          query = query.limit(limit);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          console.error('Error fetching bookings', error);
+        } else {
+          setBookings(data as Booking[]);
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchBookings();
   }, [limit]);
 
   const getStatusBadge = (status: string) => {
@@ -56,6 +73,10 @@ const BookingHistory = ({ limit }: BookingHistoryProps) => {
         return <Badge>{status}</Badge>;
     }
   };
+
+  if (loading) {
+    return <p>Loading booking history...</p>
+  }
 
   if (bookings.length === 0) {
     return (
@@ -85,9 +106,9 @@ const BookingHistory = ({ limit }: BookingHistoryProps) => {
               {booking.id.substring(0, 8)}...
             </TableCell>
             <TableCell>
-              {format(booking.startDate, 'MMM d, yyyy')} - {format(booking.endDate, 'MMM d, yyyy')}
+              {format(new Date(booking.start_date), 'MMM d, yyyy')} - {format(new Date(booking.end_date), 'MMM d, yyyy')}
             </TableCell>
-            <TableCell>${booking.totalPrice}</TableCell>
+            <TableCell>${booking.total_price / 100}</TableCell>
             <TableCell>{getStatusBadge(booking.status)}</TableCell>
             <TableCell className="text-right">
               <Button variant="outline" size="sm">

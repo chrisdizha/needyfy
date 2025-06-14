@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { v4 as uuidv4 } from 'uuid';
-import { BookingDetails } from '@/types/booking';
+import { supabase } from '@/integrations/supabase/client';
+import { eachDayOfInterval } from 'date-fns';
 import DateSelection from './DateSelection';
 import PaymentForm from './PaymentForm';
 import BookingConfirmation from './BookingConfirmation';
@@ -32,19 +32,27 @@ const BookingModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      const allBookings: BookingDetails[] = JSON.parse(localStorage.getItem('bookings') || '[]');
-      const equipmentBookings = allBookings.filter(b => b.equipmentId === equipmentId);
-      
-      const disabledDates: Date[] = [];
-      equipmentBookings.forEach(booking => {
-          let currentDate = new Date(booking.startDate);
-          const lastDate = new Date(booking.endDate);
-          while (currentDate <= lastDate) {
-              disabledDates.push(new Date(currentDate));
-              currentDate.setDate(currentDate.getDate() + 1);
-          }
-      });
-      setBookedDates(disabledDates);
+      const fetchBookedDates = async () => {
+        const { data, error } = await supabase
+          .from('bookings')
+          .select('start_date, end_date')
+          .eq('equipment_id', equipmentId)
+          .in('status', ['confirmed', 'pending']); // consider pending as booked too
+
+        if (error) {
+          toast.error('Could not fetch booked dates.');
+          return;
+        }
+        
+        const disabledDates = data.flatMap(booking => 
+          eachDayOfInterval({
+            start: new Date(booking.start_date),
+            end: new Date(booking.end_date)
+          })
+        );
+        setBookedDates(disabledDates);
+      };
+      fetchBookedDates();
     }
   }, [isOpen, equipmentId]);
 
@@ -72,30 +80,34 @@ const BookingModal = ({
     setStep('payment');
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!startDate || !endDate) return;
     
     setIsProcessing(true);
     
-    // Simulate payment processing
-    setTimeout(() => {
-      const bookingDetails: BookingDetails = {
-        id: uuidv4(),
-        equipmentId,
-        startDate,
-        endDate,
-        totalPrice,
-        status: 'confirmed',
-      };
-      
-      // Store booking in localStorage (in a real app, this would go to a database)
-      const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-      localStorage.setItem('bookings', JSON.stringify([...existingBookings, bookingDetails]));
-      
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          equipmentId,
+          equipmentTitle,
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+          totalPrice: totalPrice,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error('Could not initiate payment. Please try again.');
+        setIsProcessing(false);
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'An error occurred during payment.');
       setIsProcessing(false);
-      setStep('confirmation');
-      toast.success('Booking confirmed successfully!');
-    }, 1500);
+    }
   };
 
   const handleClose = () => {

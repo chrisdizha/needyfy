@@ -1,1 +1,5 @@
+
 project_id = "figxavvmvnjldkzcscaf"
+
+[functions.create-checkout-session]
+[functions.confirm-booking]
