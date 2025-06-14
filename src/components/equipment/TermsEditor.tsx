@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -97,7 +96,7 @@ const TermsEditor = ({
                 <div className="font-semibold">{tpl.name}</div>
                 <div className="whitespace-pre-wrap text-xs text-gray-700">{tpl.content}</div>
                 <Button
-                  size="xs"
+                  size="sm"
                   variant="outline"
                   className="mt-1 self-end"
                   onClick={() => {
@@ -155,7 +154,7 @@ const TermsEditor = ({
                 <div className="whitespace-pre-wrap">{ver.substring(0, 110)}{ver.length > 110 ? "..." : ""}</div>
                 <Button
                   type="button"
-                  size="xs"
+                  size="sm"
                   variant="ghost"
                   onClick={() => onChange(ver)}
                   className="ml-2"
@@ -172,4 +171,3 @@ const TermsEditor = ({
 };
 
 export default TermsEditor;
-
