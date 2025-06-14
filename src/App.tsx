@@ -21,6 +21,7 @@ import Contact from "./pages/Contact";
 import BookingSuccess from "./pages/BookingSuccess";
 import BookingCancelled from "./pages/BookingCancelled";
 import AdminDashboard from "./pages/AdminDashboard";
+import ProviderBookingDashboard from "./pages/ProviderBookingDashboard";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
           <Route path="/booking-success" element={<BookingSuccess />} />
           <Route path="/booking-cancelled" element={<BookingCancelled />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/provider-bookings" element={<ProviderBookingDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

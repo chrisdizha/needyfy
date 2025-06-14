@@ -16,6 +16,7 @@ export type Database = {
           equipment_id: string
           equipment_title: string | null
           id: string
+          owner_id: string | null
           start_date: string
           status: string
           stripe_session_id: string | null
@@ -28,6 +29,7 @@ export type Database = {
           equipment_id: string
           equipment_title?: string | null
           id?: string
+          owner_id?: string | null
           start_date: string
           status?: string
           stripe_session_id?: string | null
@@ -40,6 +42,7 @@ export type Database = {
           equipment_id?: string
           equipment_title?: string | null
           id?: string
+          owner_id?: string | null
           start_date?: string
           status?: string
           stripe_session_id?: string | null
@@ -47,6 +50,38 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      messages: {
+        Row: {
+          booking_id: string
+          created_at: string
+          id: string
+          message: string
+          sender_id: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          id?: string
+          message: string
+          sender_id: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
