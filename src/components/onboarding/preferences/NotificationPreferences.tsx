@@ -2,6 +2,7 @@
 import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Bell } from 'lucide-react';
 
 export const NotificationPreferences = () => {
   const { control } = useFormContext();
@@ -16,6 +17,15 @@ export const NotificationPreferences = () => {
           <FormDescription>
             Select how you would like to receive notifications
           </FormDescription>
+
+          {/* Push engagement callout - highlights benefits */}
+          <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-md px-4 py-3 mb-4">
+            <Bell className="text-needyfy-blue h-6 w-6" />
+            <span className="text-sm text-needyfy-blue font-medium">
+              Enable push notifications to get real-time updates about bookings, messages, and opportunities—never miss important events!
+            </span>
+          </div>
+
           <div className="grid grid-cols-1 gap-4 mt-3">
             <FormField
               control={control}
@@ -83,3 +93,4 @@ export const NotificationPreferences = () => {
     />
   );
 };
+
