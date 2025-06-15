@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +14,12 @@ interface Profile {
   suspended_at: string | null;
 }
 
+interface UserRole {
+  id: string;
+  user_id: string;
+  role: "admin" | "moderator" | "user";
+}
+
 const ADMIN_EMAILS = [
   "youradmin@email.com", // <-- set your admin email(s) here
 ];
@@ -24,9 +29,12 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
   const [suspendReasons, setSuspendReasons] = useState<Record<string, string>>({});
+  const [userRoles, setUserRoles] = useState<UserRole[]>([]);
+  const [roleLoading, setRoleLoading] = useState(false);
+  const [selectedRoleUserId, setSelectedRoleUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProfiles = async () => {
+    const fetchProfilesAndRoles = async () => {
       setLoading(true);
       // Get session user to check admin status
       const { data: { session } } = await supabase.auth.getSession();
@@ -49,10 +57,23 @@ const AdminDashboard = () => {
       } else {
         setProfiles(data as Profile[]);
       }
+      // Fetch all user admin roles
+      const { data: rolesData, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("id,user_id,role");
+      if (rolesError) {
+        toast.error("Failed to fetch roles.");
+      } else {
+        setUserRoles(rolesData as UserRole[]);
+      }
       setLoading(false);
     };
-    fetchProfiles();
+    fetchProfilesAndRoles();
   }, []);
+
+  // Helper function: does user have admin role?
+  const userRoleFor = (userId: string, role: "admin" | "moderator" | "user") =>
+    userRoles.find(r => r.user_id === userId && r.role === role);
 
   const handleSuspend = async (profile: Profile) => {
     const reason = suspendReasons[profile.id]?.trim();
@@ -107,6 +128,47 @@ const AdminDashboard = () => {
     }
   };
 
+  // ADMIN ROLE ASSIGNMENT HANDLERS
+
+  const handleAssignAdmin = async (userId: string) => {
+    setRoleLoading(true);
+    setSelectedRoleUserId(userId);
+    const { error } = await supabase.from("user_roles").insert([
+      { user_id: userId, role: "admin" }
+    ]);
+    setRoleLoading(false);
+    setSelectedRoleUserId(null);
+    if (error) {
+      if (error.code === "23505") {
+        toast.error("User is already an admin.");
+      } else {
+        toast.error("Failed to assign admin role.");
+      }
+      return;
+    }
+    setUserRoles(prev => [...prev, { id: crypto.randomUUID(), user_id: userId, role: "admin" }]);
+    toast.success("Admin role assigned!");
+  };
+
+  const handleRemoveAdmin = async (userId: string) => {
+    setRoleLoading(true);
+    setSelectedRoleUserId(userId);
+    // Remove JUST the 'admin' role for this user
+    const { error } = await supabase
+      .from("user_roles")
+      .delete()
+      .eq("user_id", userId)
+      .eq("role", "admin");
+    setRoleLoading(false);
+    setSelectedRoleUserId(null);
+    if (error) {
+      toast.error("Failed to remove admin role.");
+      return;
+    }
+    setUserRoles(prev => prev.filter(r => !(r.user_id === userId && r.role === "admin")));
+    toast.success("Admin role removed.");
+  };
+
   if (loading) {
     return <div className="text-center py-16">Loading...</div>;
   }
@@ -117,6 +179,52 @@ const AdminDashboard = () => {
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-6">Admin Dashboard - Provider Suspension</h1>
+      {/* Admin Role Assignment Section */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Admin Role Assignment</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {profiles.map(profile => (
+              <div key={profile.id} className="flex flex-col border rounded px-3 py-2 bg-muted mb-2">
+                <div className="font-medium">
+                  {profile.full_name || "(No name)"}
+                  {userRoleFor(profile.id, "admin") && (
+                    <span className="text-xs ml-2 px-2 py-1 bg-green-200 text-green-900 rounded">
+                      Admin
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-muted-foreground mb-1">User ID: {profile.id}</div>
+                {/* Prevent removing yourself or assigning admin to self */}
+                <div className="flex gap-2 mt-2">
+                  {!userRoleFor(profile.id, "admin") ? (
+                    <Button
+                      disabled={roleLoading && selectedRoleUserId === profile.id}
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handleAssignAdmin(profile.id)}
+                    >
+                      {roleLoading && selectedRoleUserId === profile.id ? "Assigning..." : "Assign Admin"}
+                    </Button>
+                  ) : (
+                    <Button
+                      disabled={roleLoading && selectedRoleUserId === profile.id}
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleRemoveAdmin(profile.id)}
+                    >
+                      {roleLoading && selectedRoleUserId === profile.id ? "Removing..." : "Remove Admin"}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+      {/* End of Admin Role Assignment Section */}
       <div className="grid gap-6">
         {profiles.map(profile => (
           <Card key={profile.id} className="p-2">
