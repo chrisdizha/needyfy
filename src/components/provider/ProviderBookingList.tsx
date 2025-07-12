@@ -10,6 +10,7 @@ interface ProviderBooking {
   id: string;
   user_id: string | null;
   owner_id: string | null;
+  equipment_id: string;
   equipment_title: string | null;
   start_date: string;
   end_date: string;
@@ -36,7 +37,7 @@ const ProviderBookingList = () => {
       // Load provider's bookings
       const { data, error } = await supabase
         .from("bookings")
-        .select("id, user_id, owner_id, equipment_title, start_date, end_date, total_price, status")
+        .select("id, user_id, owner_id, equipment_id, equipment_title, start_date, end_date, total_price, status")
         .eq("owner_id", user.id)
         .order("created_at", { ascending: false });
 

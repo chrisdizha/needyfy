@@ -12,9 +12,13 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import { FileText } from 'lucide-react';
+import { ConditionVerificationModal } from '@/components/equipment/ConditionVerificationModal';
 
 interface Booking {
   id: string;
+  equipment_id: string;
+  equipment_title: string | null;
   start_date: string;
   end_date: string;
   total_price: number;
@@ -28,6 +32,8 @@ interface BookingHistoryProps {
 const BookingHistory = ({ limit }: BookingHistoryProps) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showConditionForm, setShowConditionForm] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -37,7 +43,7 @@ const BookingHistory = ({ limit }: BookingHistoryProps) => {
       if (user) {
         let query = supabase
           .from('bookings')
-          .select('id, start_date, end_date, total_price, status')
+          .select('id, equipment_id, equipment_title, start_date, end_date, total_price, status')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
 
@@ -88,37 +94,69 @@ const BookingHistory = ({ limit }: BookingHistoryProps) => {
   }
 
   return (
-    <Table>
-      <TableCaption>Your booking history</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Booking ID</TableHead>
-          <TableHead>Dates</TableHead>
-          <TableHead>Price</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {bookings.map((booking) => (
-          <TableRow key={booking.id}>
-            <TableCell className="font-medium">
-              {booking.id.substring(0, 8)}...
-            </TableCell>
-            <TableCell>
-              {format(new Date(booking.start_date), 'MMM d, yyyy')} - {format(new Date(booking.end_date), 'MMM d, yyyy')}
-            </TableCell>
-            <TableCell>${booking.total_price / 100}</TableCell>
-            <TableCell>{getStatusBadge(booking.status)}</TableCell>
-            <TableCell className="text-right">
-              <Button variant="outline" size="sm">
-                View Details
-              </Button>
-            </TableCell>
+    <>
+      <Table>
+        <TableCaption>Your booking history</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Booking ID</TableHead>
+            <TableHead>Dates</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {bookings.map((booking) => (
+            <TableRow key={booking.id}>
+              <TableCell className="font-medium">
+                {booking.id.substring(0, 8)}...
+              </TableCell>
+              <TableCell>
+                {format(new Date(booking.start_date), 'MMM d, yyyy')} - {format(new Date(booking.end_date), 'MMM d, yyyy')}
+              </TableCell>
+              <TableCell>${booking.total_price / 100}</TableCell>
+              <TableCell>{getStatusBadge(booking.status)}</TableCell>
+              <TableCell className="text-right">
+                <div className="flex gap-2 justify-end">
+                  <Button variant="outline" size="sm">
+                    View Details
+                  </Button>
+                  {(booking.status === 'confirmed' || booking.status === 'completed') && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        setSelectedBooking(booking);
+                        setShowConditionForm(true);
+                      }}
+                    >
+                      <FileText className="h-4 w-4 mr-1" />
+                      Condition Form
+                    </Button>
+                  )}
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      
+      {selectedBooking && (
+        <ConditionVerificationModal
+          isOpen={showConditionForm}
+          onClose={() => {
+            setShowConditionForm(false);
+            setSelectedBooking(null);
+          }}
+          bookingId={selectedBooking.id}
+          equipmentId={selectedBooking.equipment_id}
+          equipmentTitle={selectedBooking.equipment_title || 'Equipment'}
+          handoverType="pickup"
+          userRole="renter"
+        />
+      )}
+    </>
   );
 };
 

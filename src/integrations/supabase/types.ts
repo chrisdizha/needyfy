@@ -95,6 +95,66 @@ export type Database = {
         }
         Relationships: []
       }
+      condition_verification_forms: {
+        Row: {
+          booking_id: string
+          completed: boolean
+          condition_notes: string | null
+          condition_rating: number
+          created_at: string
+          damages_reported: string[] | null
+          equipment_id: string
+          equipment_title: string | null
+          handover_type: string
+          id: string
+          photos: string[] | null
+          provider_name: string | null
+          provider_signature: string | null
+          provider_signed_at: string | null
+          renter_name: string
+          renter_signature: string | null
+          renter_signed_at: string | null
+        }
+        Insert: {
+          booking_id: string
+          completed?: boolean
+          condition_notes?: string | null
+          condition_rating: number
+          created_at?: string
+          damages_reported?: string[] | null
+          equipment_id: string
+          equipment_title?: string | null
+          handover_type: string
+          id?: string
+          photos?: string[] | null
+          provider_name?: string | null
+          provider_signature?: string | null
+          provider_signed_at?: string | null
+          renter_name: string
+          renter_signature?: string | null
+          renter_signed_at?: string | null
+        }
+        Update: {
+          booking_id?: string
+          completed?: boolean
+          condition_notes?: string | null
+          condition_rating?: number
+          created_at?: string
+          damages_reported?: string[] | null
+          equipment_id?: string
+          equipment_title?: string | null
+          handover_type?: string
+          id?: string
+          photos?: string[] | null
+          provider_name?: string | null
+          provider_signature?: string | null
+          provider_signed_at?: string | null
+          renter_name?: string
+          renter_signature?: string | null
+          renter_signed_at?: string | null
+        }
+        Relationships: []
+      }
       disputes: {
         Row: {
           against_user_id: string
