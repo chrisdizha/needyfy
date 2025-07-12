@@ -14,17 +14,40 @@ const Navbar = () => {
     <nav className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="h-10 w-10">
-              <AspectRatio ratio={1/1}>
-                <img 
-                  src="/lovable-uploads/49fb9ab1-3945-4c06-8d58-a45f786e28fd.png" 
-                  alt="Needyfy Logo" 
-                  className="h-full w-full object-contain" 
-                />
-              </AspectRatio>
+          <Link to="/" className="flex items-center space-x-3">
+            <div className="relative">
+              <svg width="40" height="40" viewBox="0 0 48 48" className="text-needyfy-blue">
+                <defs>
+                  <linearGradient id="navGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#06b6d4" />
+                    <stop offset="100%" stopColor="#3b82f6" />
+                  </linearGradient>
+                </defs>
+                
+                {/* Tractor base */}
+                <rect x="12" y="20" width="20" height="12" rx="2" fill="url(#navGradient)" stroke="currentColor" strokeWidth="1.5"/>
+                
+                {/* Cabin */}
+                <rect x="8" y="12" width="8" height="8" rx="1" fill="none" stroke="url(#navGradient)" strokeWidth="1.5"/>
+                
+                {/* Wheels */}
+                <circle cx="18" cy="35" r="5" fill="none" stroke="url(#navGradient)" strokeWidth="1.5"/>
+                <circle cx="30" cy="35" r="3" fill="none" stroke="url(#navGradient)" strokeWidth="1.5"/>
+                
+                {/* Price tag */}
+                <path d="M32 8 L40 8 L42 12 L40 16 L32 16 Z" fill="url(#navGradient)" opacity="0.8"/>
+                <text x="36" y="13" fill="white" fontSize="6" textAnchor="middle">%</text>
+                
+                {/* Connection line */}
+                <line x1="32" y1="12" x2="28" y2="16" stroke="url(#navGradient)" strokeWidth="1"/>
+              </svg>
             </div>
-            <span className="font-bold text-xl text-needyfy-darkgray hidden sm:block">Needyfy</span>
+            <div className="hidden sm:block">
+              <span className="font-bold text-xl bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
+                Needyfy
+              </span>
+              <div className="text-xs text-gray-500 font-medium -mt-1">Equipment Rental</div>
+            </div>
           </Link>
 
           <div className="hidden md:flex flex-1 max-w-md mx-4">

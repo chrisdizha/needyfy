@@ -45,9 +45,40 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand info */}
           <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center space-x-2 mb-4">
-              <span className="bg-needyfy-blue text-white font-bold p-2 rounded-md">N</span>
-              <span className="font-bold text-xl">Needyfy</span>
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="relative">
+                <svg width="48" height="48" viewBox="0 0 48 48" className="text-needyfy-blue">
+                  <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#06b6d4" />
+                      <stop offset="100%" stopColor="#3b82f6" />
+                    </linearGradient>
+                  </defs>
+                  
+                  {/* Tractor base */}
+                  <rect x="12" y="20" width="20" height="12" rx="2" fill="url(#logoGradient)" stroke="currentColor" strokeWidth="1.5"/>
+                  
+                  {/* Cabin */}
+                  <rect x="8" y="12" width="8" height="8" rx="1" fill="none" stroke="url(#logoGradient)" strokeWidth="1.5"/>
+                  
+                  {/* Wheels */}
+                  <circle cx="18" cy="35" r="5" fill="none" stroke="url(#logoGradient)" strokeWidth="1.5"/>
+                  <circle cx="30" cy="35" r="3" fill="none" stroke="url(#logoGradient)" strokeWidth="1.5"/>
+                  
+                  {/* Price tag */}
+                  <path d="M32 8 L40 8 L42 12 L40 16 L32 16 Z" fill="url(#logoGradient)" opacity="0.8"/>
+                  <text x="36" y="13" fill="white" fontSize="6" textAnchor="middle">%</text>
+                  
+                  {/* Connection line */}
+                  <line x1="32" y1="12" x2="28" y2="16" stroke="url(#logoGradient)" strokeWidth="1"/>
+                </svg>
+              </div>
+              <div>
+                <span className="font-bold text-xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                  Needyfy
+                </span>
+                <div className="text-xs text-gray-400 font-medium">Equipment Rental</div>
+              </div>
             </div>
             <p className="text-gray-400 mb-4">
               The all-in-one equipment rental marketplace. Rent anything, anytime, anywhere.
