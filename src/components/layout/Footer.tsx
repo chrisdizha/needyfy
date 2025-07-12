@@ -1,10 +1,44 @@
 
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { List, FileText, Award, HelpCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Footer = () => {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleWaitingListSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim()) {
+      toast.error('Please enter your email address');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      // Simulate API call for now
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success('Successfully joined the waiting list! We\'ll notify you when the app launches.');
+      setEmail('');
+    } catch (error) {
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
@@ -92,16 +126,23 @@ const Footer = () => {
             <p className="text-gray-400 mb-4">
               Join the waiting list for exclusive early access to our mobile app and be among the first to experience the future of equipment rental.
             </p>
-            <div className="flex gap-2">
+            <form onSubmit={handleWaitingListSignup} className="flex gap-2">
               <Input 
                 type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email" 
                 className="bg-gray-800 border-gray-700 text-white"
+                disabled={isSubmitting}
               />
-              <Button className="bg-needyfy-blue hover:bg-blue-600 whitespace-nowrap">
-                Join the Waiting List
+              <Button 
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-needyfy-blue hover:bg-blue-600 whitespace-nowrap"
+              >
+                {isSubmitting ? 'Joining...' : 'Join the Waiting List'}
               </Button>
-            </div>
+            </form>
           </div>
         </div>
         
