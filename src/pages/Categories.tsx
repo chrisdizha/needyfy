@@ -135,13 +135,35 @@ const Categories = () => {
     );
   };
 
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+    
+    if (!searchQuery.trim()) {
+      toast.error("Please enter what you're looking for");
+      return;
+    }
+
+    // Show search results in the existing page
+    toast.success(`Searching for "${searchQuery}"${location ? ` in ${location}` : ''}...`);
+    
+    // Here you would typically make an API call to search for equipment
+    // For now, we'll just update the display
+    console.log('Search parameters:', {
+      query: searchQuery,
+      location: location,
+      dateRange: dateRange
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
         <div className="bg-gray-50 py-6">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 items-end">
+            <form onSubmit={handleSearch} className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 items-end">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <Input 
@@ -189,10 +211,13 @@ const Categories = () => {
                 />
               </div>
               
-              <Button className="whitespace-nowrap px-6 bg-needyfy-blue hover:bg-blue-600">
+              <Button 
+                type="submit" 
+                className="whitespace-nowrap px-6 bg-needyfy-blue hover:bg-blue-600"
+              >
                 Search Now
               </Button>
-            </div>
+            </form>
           </div>
         </div>
         
