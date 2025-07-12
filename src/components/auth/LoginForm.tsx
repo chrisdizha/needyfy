@@ -37,16 +37,32 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (data: FormData) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
 
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success("Login successful!");
-      navigate('/');
+      if (error) {
+        console.error('Login error:', error);
+        
+        // Handle specific error cases
+        if (error.message.includes('Invalid login credentials')) {
+          toast.error('Invalid email or password. Please check your credentials and try again.');
+        } else if (error.message.includes('Email not confirmed')) {
+          toast.error('Please check your email and click the verification link before signing in.');
+        } else if (error.message.includes('Too many requests')) {
+          toast.error('Too many login attempts. Please wait a moment before trying again.');
+        } else {
+          toast.error(`Login failed: ${error.message}`);
+        }
+      } else {
+        toast.success("Login successful!");
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Unexpected login error:', error);
+      toast.error('An unexpected error occurred. Please try again.');
     }
   };
 

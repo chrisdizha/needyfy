@@ -35,23 +35,39 @@ const RegisterForm = () => {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    const { error } = await supabase.auth.signUp({
-      email: data.email!,
-      password: data.password,
-      options: {
-        data: {
-          name: data.name,
-          phone: data.phone,
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: data.email!,
+        password: data.password,
+        options: {
+          data: {
+            name: data.name,
+            phone: data.phone,
+          },
+          emailRedirectTo: `${window.location.origin}/`,
         },
-        emailRedirectTo: `${window.location.origin}/`,
-      },
-    });
+      });
 
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success("Registration successful! Please check your email to verify your account.");
-      navigate('/');
+      if (error) {
+        console.error('Registration error:', error);
+        
+        // Handle specific error cases
+        if (error.message.includes('User already registered')) {
+          toast.error('An account with this email already exists. Please try logging in instead.');
+        } else if (error.message.includes('Invalid email')) {
+          toast.error('Please enter a valid email address.');
+        } else if (error.message.includes('Password')) {
+          toast.error('Password must be at least 6 characters long.');
+        } else {
+          toast.error(`Registration failed: ${error.message}`);
+        }
+      } else {
+        toast.success("Registration successful! Please check your email to verify your account.");
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Unexpected registration error:', error);
+      toast.error('An unexpected error occurred. Please try again.');
     }
   };
 
