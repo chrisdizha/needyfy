@@ -1,4 +1,5 @@
 
+// Fixed Calendar reference error
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Search, MapPin, Loader2 } from 'lucide-react';
