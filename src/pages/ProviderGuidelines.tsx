@@ -87,6 +87,12 @@ const ProviderGuidelines = () => {
           </CardContent>
         </Card>
       </div>
+      
+      <div className="mt-8 text-center">
+        <a href="/" className="text-needyfy-blue hover:underline font-medium">
+          ← Back to Home
+        </a>
+      </div>
     </div>
   );
 };

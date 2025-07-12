@@ -78,9 +78,9 @@ const Contact = () => {
                     <Phone className="h-5 w-5 text-needyfy-blue mt-1" />
                     <div>
                       <h3 className="font-medium">Call Us</h3>
-                      <p className="text-gray-600 text-sm mt-1">Mon-Fri from 8am to 6pm</p>
-                      <a href="tel:+15551234567" className="text-needyfy-blue hover:underline mt-1 block">
-                        +1 (555) 123-4567
+                      <p className="text-gray-600 text-sm mt-1">Mon-Fri from 8am to 5pm</p>
+                      <a href="tel:+26773343501" className="text-needyfy-blue hover:underline mt-1 block">
+                        +267-73343501/74402828
                       </a>
                     </div>
                   </div>
@@ -95,8 +95,8 @@ const Contact = () => {
                       <h3 className="font-medium">Visit Us</h3>
                       <p className="text-gray-600 text-sm mt-1">Our headquarters</p>
                       <address className="not-italic text-sm mt-1">
-                        123 Equipment Street<br />
-                        San Francisco, CA 94103
+                        Plot 163/164, Unit 15, Gaborone International<br />
+                        Commerce Park, GICP, Gaborone. Botswana
                       </address>
                     </div>
                   </div>
