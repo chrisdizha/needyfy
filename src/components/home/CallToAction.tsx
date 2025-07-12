@@ -31,7 +31,7 @@ const CallToAction = () => {
               Turn your idle equipment into income. List your items on Needyfy 
               and start earning money from rentals.
             </p>
-            <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/20">
+            <Button variant="secondary" size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
               List Your Equipment
             </Button>
           </div>
