@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart2, FileText, DollarSign, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const ProviderFeatures = () => {
   const features = [
@@ -61,8 +62,8 @@ const ProviderFeatures = () => {
                 <span>Manage bookings with our intuitive dashboard</span>
               </li>
             </ul>
-            <Button size="lg" className="w-full sm:w-auto">
-              List Your Equipment
+            <Button size="lg" className="w-full sm:w-auto" asChild>
+              <Link to="/list-equipment">List Your Equipment</Link>
             </Button>
           </div>
           <div className="md:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-6">

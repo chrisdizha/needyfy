@@ -1,5 +1,6 @@
 
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const CallToAction = () => {
   return (
@@ -19,8 +20,8 @@ const CallToAction = () => {
               Browse thousands of items available for rent from local providers. 
               Find exactly what you need without the high cost of buying.
             </p>
-            <Button variant="secondary" size="lg" className="bg-white text-needyfy-blue hover:bg-gray-100">
-              Rent Equipment
+            <Button variant="secondary" size="lg" className="bg-white text-needyfy-blue hover:bg-gray-100" asChild>
+              <Link to="/categories">Rent Equipment</Link>
             </Button>
           </div>
           
@@ -31,8 +32,8 @@ const CallToAction = () => {
               Turn your idle equipment into income. List your items on Needyfy 
               and start earning money from rentals.
             </p>
-            <Button variant="secondary" size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
-              List Your Equipment
+            <Button variant="secondary" size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90" asChild>
+              <Link to="/list-equipment">List Your Equipment</Link>
             </Button>
           </div>
         </div>
