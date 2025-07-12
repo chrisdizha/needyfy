@@ -60,12 +60,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       if (error) {
         console.error('Error fetching user roles:', error)
+        // Return empty array instead of failing completely
         return []
       }
       
       return data || []
     } catch (error) {
       console.error('Failed to fetch user roles:', error)
+      // Return empty array instead of failing completely
       return []
     }
   }
@@ -87,18 +89,30 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(session?.user || null)
 
       if (session?.user) {
-        // Fetch user roles
-        const roles = await fetchUserRoles(session.user.id)
-        setUserRoles(roles)
-        
-        // Check admin status
-        const adminStatus = roles.includes('admin')
-        setIsAdmin(adminStatus)
-        
-        // Double-check with backend for critical admin operations
-        if (adminStatus) {
-          const backendVerified = await verifyAdminStatus()
-          setIsAdmin(backendVerified)
+        // Try to fetch user roles, but don't fail if it doesn't work
+        try {
+          const roles = await fetchUserRoles(session.user.id)
+          setUserRoles(roles)
+          
+          // Check admin status
+          const adminStatus = roles.includes('admin')
+          setIsAdmin(adminStatus)
+          
+          // Double-check with backend for critical admin operations (optional)
+          if (adminStatus) {
+            try {
+              const backendVerified = await verifyAdminStatus()
+              setIsAdmin(backendVerified)
+            } catch (error) {
+              console.error('Admin verification failed, keeping local status:', error)
+              // Keep the local admin status if backend verification fails
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch user roles during auth refresh:', error)
+          // Continue with authentication even if roles fail
+          setUserRoles([])
+          setIsAdmin(false)
         }
       } else {
         setIsAdmin(false)
@@ -144,16 +158,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(session?.user || null)
 
         if (session?.user) {
-          // Refresh roles when user signs in
-          const roles = await fetchUserRoles(session.user.id)
-          setUserRoles(roles)
-          
-          const adminStatus = roles.includes('admin')
-          setIsAdmin(adminStatus)
-          
-          if (adminStatus) {
-            const backendVerified = await verifyAdminStatus()
-            setIsAdmin(backendVerified)
+          // Try to refresh roles when user signs in, but don't block authentication
+          try {
+            const roles = await fetchUserRoles(session.user.id)
+            setUserRoles(roles)
+            
+            const adminStatus = roles.includes('admin')
+            setIsAdmin(adminStatus)
+            
+            if (adminStatus) {
+              try {
+                const backendVerified = await verifyAdminStatus()
+                setIsAdmin(backendVerified)
+              } catch (error) {
+                console.error('Admin verification failed during auth change:', error)
+                // Keep the local admin status if backend verification fails
+              }
+            }
+          } catch (error) {
+            console.error('Failed to fetch user roles during auth state change:', error)
+            // Continue with authentication even if roles fail
+            setUserRoles([])
+            setIsAdmin(false)
           }
         } else {
           setIsAdmin(false)
