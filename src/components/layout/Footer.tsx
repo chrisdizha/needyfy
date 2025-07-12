@@ -88,18 +88,18 @@ const Footer = () => {
           
           {/* Newsletter */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Stay Updated</h3>
+            <h3 className="text-lg font-semibold mb-4">Be First to Know</h3>
             <p className="text-gray-400 mb-4">
-              Subscribe to our newsletter for the latest equipment and special offers.
+              Join the waiting list for exclusive early access to our mobile app and be among the first to experience the future of equipment rental.
             </p>
             <div className="flex gap-2">
               <Input 
                 type="email" 
-                placeholder="Your email" 
+                placeholder="Enter your email" 
                 className="bg-gray-800 border-gray-700 text-white"
               />
-              <Button className="bg-needyfy-blue hover:bg-blue-600">
-                Subscribe
+              <Button className="bg-needyfy-blue hover:bg-blue-600 whitespace-nowrap">
+                Join the Waiting List
               </Button>
             </div>
           </div>
