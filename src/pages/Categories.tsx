@@ -1,17 +1,19 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { DateRange } from 'react-day-picker';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, MapPin, Calendar } from 'lucide-react';
+import { Search, MapPin } from 'lucide-react';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
 
 const Categories = () => {
   const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [location, setLocation] = useState(searchParams.get('location') || '');
-  const [dates, setDates] = useState(searchParams.get('dates') || '');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
 
   const categories = [
@@ -50,12 +52,6 @@ const Categories = () => {
     if (locationParam) {
       setLocation(locationParam);
     }
-    
-    // Set dates from URL if present
-    const datesParam = searchParams.get('dates');
-    if (datesParam) {
-      setDates(datesParam);
-    }
   }, [searchParams]);
 
   return (
@@ -87,14 +83,12 @@ const Categories = () => {
                 />
               </div>
               
-              <div className="relative flex-1">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <Input 
-                  type="text" 
-                  placeholder="Rental dates"
-                  className="pl-10 w-full border-gray-200" 
-                  value={dates}
-                  onChange={(e) => setDates(e.target.value)}
+              <div className="flex-1">
+                <DateRangePicker
+                  value={dateRange}
+                  onChange={setDateRange}
+                  placeholder="Select rental dates"
+                  className="w-full"
                 />
               </div>
               
@@ -113,7 +107,7 @@ const Categories = () => {
                 Showing results for <span className="font-semibold text-needyfy-blue">{selectedCategory}</span>
                 {searchQuery && <> matching "<span className="font-semibold">{searchQuery}</span>"</>}
                 {location && <> in <span className="font-semibold">{location}</span></>}
-                {dates && <> for <span className="font-semibold">{dates}</span></>}
+                {dateRange?.from && <> for <span className="font-semibold">{dateRange.from.toLocaleDateString()}{dateRange.to ? ` - ${dateRange.to.toLocaleDateString()}` : ''}</span></>}
               </p>
               <Button 
                 variant="link" 
