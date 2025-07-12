@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 
 interface Profile {
   id: string;
@@ -20,14 +22,10 @@ interface UserRole {
   role: "admin" | "moderator" | "user";
 }
 
-const ADMIN_EMAILS = [
-  "youradmin@email.com", // <-- set your admin email(s) here
-];
-
-const AdminDashboard = () => {
+const AdminDashboardContent = () => {
+  const { user } = useAuth();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
   const [suspendReasons, setSuspendReasons] = useState<Record<string, string>>({});
   const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const [roleLoading, setRoleLoading] = useState(false);
@@ -36,40 +34,36 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchProfilesAndRoles = async () => {
       setLoading(true);
-      // Get session user to check admin status
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        toast.error("No user session found.");
+      try {
+        // Fetch all profiles using secure backend call
+        const { data, error } = await supabase.from("profiles").select("*");
+        if (error) {
+          toast.error("Failed to fetch profiles.");
+        } else {
+          setProfiles(data as Profile[]);
+        }
+        
+        // Fetch user roles using secure backend call
+        const { data: rolesData, error: rolesError } = await supabase
+          .from("user_roles")
+          .select("id,user_id,role");
+        if (rolesError) {
+          toast.error("Failed to fetch roles.");
+        } else {
+          setUserRoles(rolesData as UserRole[]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load admin data.");
+      } finally {
         setLoading(false);
-        return;
       }
-      setCurrentUserEmail(session.user.email);
-      // Only allow admin user access
-      if (!ADMIN_EMAILS.includes(session.user.email ?? "")) {
-        toast.error("You are not authorized to access this page.");
-        setLoading(false);
-        return;
-      }
-      // Fetch all profiles
-      const { data, error } = await supabase.from("profiles").select("*");
-      if (error) {
-        toast.error("Failed to fetch profiles.");
-      } else {
-        setProfiles(data as Profile[]);
-      }
-      // Fetch all user admin roles
-      const { data: rolesData, error: rolesError } = await supabase
-        .from("user_roles")
-        .select("id,user_id,role");
-      if (rolesError) {
-        toast.error("Failed to fetch roles.");
-      } else {
-        setUserRoles(rolesData as UserRole[]);
-      }
-      setLoading(false);
     };
-    fetchProfilesAndRoles();
-  }, []);
+    
+    if (user) {
+      fetchProfilesAndRoles();
+    }
+  }, [user]);
 
   // Helper function: does user have admin role?
   const userRoleFor = (userId: string, role: "admin" | "moderator" | "user") =>
@@ -81,18 +75,20 @@ const AdminDashboard = () => {
       toast.error("You must specify a suspension reason.");
       return;
     }
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        suspended: true,
-        suspension_reason: reason,
-        suspended_at: new Date().toISOString(),
-      })
-      .eq("id", profile.id);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-verify', {
+        body: {
+          action: 'suspend_user',
+          target_user_id: profile.id,
+          suspension_reason: reason
+        }
+      });
 
-    if (error) {
-      toast.error("Error suspending provider.");
-    } else {
+      if (error || !data?.success) {
+        throw new Error(data?.error || 'Failed to suspend user');
+      }
+
       setProfiles(p =>
         p.map(pr =>
           pr.id === profile.id
@@ -101,22 +97,25 @@ const AdminDashboard = () => {
         )
       );
       toast.success("Provider suspended.");
+    } catch (error) {
+      console.error("Suspension error:", error);
+      toast.error(error instanceof Error ? error.message : "Error suspending provider.");
     }
   };
 
   const handleReactivate = async (profile: Profile) => {
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        suspended: false,
-        suspension_reason: null,
-        suspended_at: null,
-      })
-      .eq("id", profile.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-verify', {
+        body: {
+          action: 'reactivate_user',
+          target_user_id: profile.id
+        }
+      });
 
-    if (error) {
-      toast.error("Error reactivating provider.");
-    } else {
+      if (error || !data?.success) {
+        throw new Error(data?.error || 'Failed to reactivate user');
+      }
+
       setProfiles(p =>
         p.map(pr =>
           pr.id === profile.id
@@ -125,6 +124,9 @@ const AdminDashboard = () => {
         )
       );
       toast.success("Provider reactivated.");
+    } catch (error) {
+      console.error("Reactivation error:", error);
+      toast.error(error instanceof Error ? error.message : "Error reactivating provider.");
     }
   };
 
@@ -133,52 +135,71 @@ const AdminDashboard = () => {
   const handleAssignAdmin = async (userId: string) => {
     setRoleLoading(true);
     setSelectedRoleUserId(userId);
-    const { error } = await supabase.from("user_roles").insert([
-      { user_id: userId, role: "admin" }
-    ]);
-    setRoleLoading(false);
-    setSelectedRoleUserId(null);
-    if (error) {
-      if (error.code === "23505") {
-        toast.error("User is already an admin.");
-      } else {
-        toast.error("Failed to assign admin role.");
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-verify', {
+        body: {
+          action: 'assign_role',
+          target_user_id: userId,
+          role: 'admin'
+        }
+      });
+
+      if (error || !data?.success) {
+        throw new Error(data?.error || 'Failed to assign admin role');
       }
-      return;
+
+      setUserRoles(prev => [...prev, { id: crypto.randomUUID(), user_id: userId, role: "admin" }]);
+      toast.success("Admin role assigned!");
+    } catch (error) {
+      console.error("Role assignment error:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to assign admin role");
+    } finally {
+      setRoleLoading(false);
+      setSelectedRoleUserId(null);
     }
-    setUserRoles(prev => [...prev, { id: crypto.randomUUID(), user_id: userId, role: "admin" }]);
-    toast.success("Admin role assigned!");
   };
 
   const handleRemoveAdmin = async (userId: string) => {
     setRoleLoading(true);
     setSelectedRoleUserId(userId);
-    // Remove JUST the 'admin' role for this user
-    const { error } = await supabase
-      .from("user_roles")
-      .delete()
-      .eq("user_id", userId)
-      .eq("role", "admin");
-    setRoleLoading(false);
-    setSelectedRoleUserId(null);
-    if (error) {
-      toast.error("Failed to remove admin role.");
-      return;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-verify', {
+        body: {
+          action: 'remove_role',
+          target_user_id: userId,
+          role: 'admin'
+        }
+      });
+
+      if (error || !data?.success) {
+        throw new Error(data?.error || 'Failed to remove admin role');
+      }
+
+      setUserRoles(prev => prev.filter(r => !(r.user_id === userId && r.role === "admin")));
+      toast.success("Admin role removed!");
+    } catch (error) {
+      console.error("Role removal error:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to remove admin role");
+    } finally {
+      setRoleLoading(false);
+      setSelectedRoleUserId(null);
     }
-    setUserRoles(prev => prev.filter(r => !(r.user_id === userId && r.role === "admin")));
-    toast.success("Admin role removed.");
   };
 
   if (loading) {
     return <div className="text-center py-16">Loading...</div>;
   }
-  if (!ADMIN_EMAILS.includes(currentUserEmail ?? "")) {
-    return <div className="text-center py-16 text-destructive">Not authorized.</div>;
-  }
 
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-6">Admin Dashboard - Provider Suspension</h1>
+      <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+        <p className="text-sm text-blue-800">
+          <strong>Logged in as:</strong> {user?.email} (Admin)
+        </p>
+      </div>
       {/* Admin Role Assignment Section */}
       <Card className="mb-8">
         <CardHeader>
@@ -284,6 +305,14 @@ const AdminDashboard = () => {
         ))}
       </div>
     </div>
+  );
+};
+
+const AdminDashboard = () => {
+  return (
+    <ProtectedRoute requireAdmin={true} fallbackPath="/">
+      <AdminDashboardContent />
+    </ProtectedRoute>
   );
 };
 
