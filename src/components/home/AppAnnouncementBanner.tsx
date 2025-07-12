@@ -1,7 +1,13 @@
 import { Button } from '@/components/ui/button';
-import { Smartphone, Download, Bell } from 'lucide-react';
+import { Smartphone, Bell, Apple } from 'lucide-react';
 
 const AppAnnouncementBanner = () => {
+  const scrollToSignup = () => {
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
   return (
     <section className="bg-gradient-to-r from-primary via-primary/90 to-primary text-white py-16">
       <div className="container mx-auto px-4">
@@ -31,21 +37,25 @@ const AppAnnouncementBanner = () => {
           {/* App Store Badges */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
-              <Download className="h-5 w-5" />
+              <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+              </svg>
               <div className="text-left">
                 <div className="text-sm opacity-80">Available on</div>
                 <div className="font-semibold">Google Play Store</div>
               </div>
             </div>
             <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
-              <Download className="h-5 w-5" />
+              <Apple className="h-6 w-6" />
               <div className="text-left">
                 <div className="text-sm opacity-80">Download on the</div>
                 <div className="font-semibold">Apple App Store</div>
               </div>
             </div>
             <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
-              <Download className="h-5 w-5" />
+              <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"/>
+              </svg>
               <div className="text-left">
                 <div className="text-sm opacity-80">Get it on</div>
                 <div className="font-semibold">Play Gallery</div>
@@ -59,6 +69,7 @@ const AppAnnouncementBanner = () => {
               variant="secondary" 
               size="lg" 
               className="bg-white text-primary hover:bg-white/90 font-semibold"
+              onClick={scrollToSignup}
             >
               <Bell className="h-5 w-5 mr-2" />
               Notify Me When Available
@@ -86,7 +97,9 @@ const AppAnnouncementBanner = () => {
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
               <div className="bg-white/20 rounded-full p-3 w-fit mx-auto mb-4">
-                <Download className="h-6 w-6" />
+                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"/>
+                </svg>
               </div>
               <h3 className="font-semibold mb-2">Offline Access</h3>
               <p className="text-white/80 text-sm">View your bookings and equipment details even when offline</p>
