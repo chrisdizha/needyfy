@@ -23,6 +23,9 @@ import BookingCancelled from "./pages/BookingCancelled";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProviderBookingDashboard from "./pages/ProviderBookingDashboard";
 import PromotionsAndDiscounts from "./pages/PromotionsAndDiscounts";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import CookiePolicy from "./pages/CookiePolicy";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +55,9 @@ const App = () => (
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/provider-bookings" element={<ProviderBookingDashboard />} />
           <Route path="/promotions-discounts" element={<PromotionsAndDiscounts />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/cookies" element={<CookiePolicy />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
