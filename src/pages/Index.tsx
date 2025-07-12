@@ -9,6 +9,7 @@ import Testimonials from '@/components/home/Testimonials';
 import CallToAction from '@/components/home/CallToAction';
 import UserFeatures from '@/components/home/UserFeatures';
 import ProviderFeatures from '@/components/home/ProviderFeatures';
+import AppAnnouncementBanner from '@/components/home/AppAnnouncementBanner';
 
 const Index = () => {
   return (
@@ -22,6 +23,7 @@ const Index = () => {
         <UserFeatures />
         <ProviderFeatures />
         <Testimonials />
+        <AppAnnouncementBanner />
         <CallToAction />
       </main>
       <Footer />
