@@ -1,7 +1,7 @@
 
 import { FileText } from "lucide-react";
 
-const INSURANCE_TEXT = "Basic insurance included: Covers accidental damage up to ₱20,000 per booking (deductible may apply).";
+const INSURANCE_TEXT = "Basic insurance included: Covers accidental damage up to USD$2,000 per booking (deductible may apply). Coverage will increase to USD$10,000 with time.";
 const LATE_FEES_TEXT = "Late return penalty: ₱250 per hour for the first 4 hours, then ₱1,000 per extra day. Strictly enforced.";
 const CANCELLATION_TEXT = "Cancellation policy: See details below. Standardized templates available—customize as needed before listing.";
 

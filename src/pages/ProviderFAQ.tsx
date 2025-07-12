@@ -100,7 +100,7 @@ const ProviderFAQ = () => {
       },
       {
         question: "What happens if my equipment is returned damaged?",
-        answer: "Report any damage within 48 hours of return through our app, including photos. Our team will review the claim and may use the security deposit to cover repairs. If costs exceed the deposit, our Provider Protection Plan may apply."
+        answer: "Report any damage within 48 hours of return through our app, including photos. Our team will review the claim and may use the security deposit to cover repairs. If costs exceed the deposit, our Provider Protection Plan covers up to USD$2,000 (increasing to USD$10,000 with time)."
       },
       {
         question: "Should I have my own insurance?",

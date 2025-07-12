@@ -21,7 +21,7 @@ const ProviderFeatures = () => {
     },
     {
       title: "Insurance Coverage",
-      description: "Comprehensive protection for your equipment during rentals.",
+      description: "Comprehensive protection for your equipment during rentals up to USD$2,000 (increasing to USD$10,000).",
       icon: <Shield className="h-10 w-10 text-primary p-2 bg-primary/10 rounded-full" />
     }
   ];
