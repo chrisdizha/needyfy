@@ -368,7 +368,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_profile_summary: {
+        Row: {
+          full_name: string | null
+          id: string | null
+          phone: string | null
+          suspended: boolean | null
+          suspended_at: string | null
+          suspension_reason: string | null
+        }
+        Insert: {
+          full_name?: string | null
+          id?: string | null
+          phone?: never
+          suspended?: boolean | null
+          suspended_at?: never
+          suspension_reason?: never
+        }
+        Update: {
+          full_name?: string | null
+          id?: string | null
+          phone?: never
+          suspended?: boolean | null
+          suspended_at?: never
+          suspension_reason?: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_roles: {
@@ -395,6 +421,10 @@ export type Database = {
           p_new_values?: Json
         }
         Returns: undefined
+      }
+      validate_admin_action: {
+        Args: { action_type: string; target_user_id?: string }
+        Returns: boolean
       }
     }
     Enums: {

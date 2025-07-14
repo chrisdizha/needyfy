@@ -3,6 +3,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { SecurityProvider } from "@/components/security/SecurityProvider";
+import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
 import Index from "./pages/Index";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -29,38 +32,50 @@ import CookiePolicy from "./pages/CookiePolicy";
 
 const queryClient = new QueryClient();
 
+const AppContent = () => {
+  useSecurityHeaders();
+  
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/bookings" element={<BookingDashboard />} />
+        <Route path="/list-equipment" element={<ListEquipment />} />
+        <Route path="/provider-resources" element={<ProviderResources />} />
+        <Route path="/provider-guidelines" element={<ProviderGuidelines />} />
+        <Route path="/success-stories" element={<SuccessStories />} />
+        <Route path="/provider-faq" element={<ProviderFAQ />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/booking-success" element={<BookingSuccess />} />
+        <Route path="/booking-cancelled" element={<BookingCancelled />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/provider-bookings" element={<ProviderBookingDashboard />} />
+        <Route path="/promotions-discounts" element={<PromotionsAndDiscounts />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/cookies" element={<CookiePolicy />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/bookings" element={<BookingDashboard />} />
-          <Route path="/list-equipment" element={<ListEquipment />} />
-          <Route path="/provider-resources" element={<ProviderResources />} />
-          <Route path="/provider-guidelines" element={<ProviderGuidelines />} />
-          <Route path="/success-stories" element={<SuccessStories />} />
-          <Route path="/provider-faq" element={<ProviderFAQ />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/booking-success" element={<BookingSuccess />} />
-          <Route path="/booking-cancelled" element={<BookingCancelled />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/provider-bookings" element={<ProviderBookingDashboard />} />
-          <Route path="/promotions-discounts" element={<PromotionsAndDiscounts />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/cookies" element={<CookiePolicy />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <SecurityProvider>
+          <Toaster />
+          <Sonner />
+          <AppContent />
+        </SecurityProvider>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

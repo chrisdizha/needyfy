@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
+import { SecurityAuditPanel } from "@/components/admin/SecurityAuditPanel";
+import { GDPRExport } from "@/components/admin/GDPRExport";
 
 interface Profile {
   id: string;
@@ -194,11 +196,21 @@ const AdminDashboardContent = () => {
 
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-6">Admin Dashboard - Provider Suspension</h1>
+      <h1 className="text-3xl font-bold mb-6">Admin Dashboard - Security Management</h1>
       <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
         <p className="text-sm text-blue-800">
           <strong>Logged in as:</strong> {user?.email} (Admin)
         </p>
+      </div>
+      
+      {/* Security Audit Panel */}
+      <div className="mb-8">
+        <SecurityAuditPanel />
+      </div>
+      
+      {/* GDPR Compliance Panel */}
+      <div className="mb-8">
+        <GDPRExport />
       </div>
       {/* Admin Role Assignment Section */}
       <Card className="mb-8">

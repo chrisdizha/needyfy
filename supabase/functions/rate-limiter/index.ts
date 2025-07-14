@@ -1,10 +1,27 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0"
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://needyfy.lovable.app",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+// Production domains for CORS - replace with your actual domains
+const allowedOrigins = [
+  "https://needyfy.lovable.app",
+  "https://yoodlize.lovable.app", 
+  "https://your-production-domain.com"
+]
+
+const getCorsHeaders = (origin: string | null) => {
+  const isAllowedOrigin = origin && allowedOrigins.includes(origin)
+  return {
+    "Access-Control-Allow-Origin": isAllowedOrigin ? origin : allowedOrigins[0],
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.gpteng.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.stripe.com",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "X-XSS-Protection": "1; mode=block",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+  }
 }
 
 interface RateLimitConfig {
@@ -61,18 +78,15 @@ async function checkRateLimit(
 }
 
 serve(async (req) => {
+  const origin = req.headers.get("origin")
+  const corsHeaders = getCorsHeaders(origin)
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders })
   }
 
   const securityHeaders = {
     ...corsHeaders,
-    "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.gpteng.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.stripe.com",
-    "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY",
-    "X-XSS-Protection": "1; mode=block",
-    "Referrer-Policy": "strict-origin-when-cross-origin",
-    "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+    "X-RateLimit-Policy": "strict"
   }
 
   try {

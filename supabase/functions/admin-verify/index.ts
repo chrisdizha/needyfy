@@ -1,15 +1,27 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0"
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://needyfy.lovable.app",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Content-Security-Policy": "default-src 'self'; script-src 'self'; connect-src 'self' https://*.supabase.co",
-  "X-Content-Type-Options": "nosniff",
-  "X-Frame-Options": "DENY",
-  "X-XSS-Protection": "1; mode=block",
-  "Referrer-Policy": "strict-origin-when-cross-origin"
+// Production domains for CORS - replace with your actual domains
+const allowedOrigins = [
+  "https://needyfy.lovable.app",
+  "https://yoodlize.lovable.app", 
+  "https://your-production-domain.com"
+]
+
+const getCorsHeaders = (origin: string | null) => {
+  const isAllowedOrigin = origin && allowedOrigins.includes(origin)
+  return {
+    "Access-Control-Allow-Origin": isAllowedOrigin ? origin : allowedOrigins[0],
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Content-Security-Policy": "default-src 'self'; script-src 'self'; connect-src 'self' https://*.supabase.co",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "X-XSS-Protection": "1; mode=block",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+  }
 }
 
 interface AdminVerificationRequest {
@@ -20,6 +32,9 @@ interface AdminVerificationRequest {
 }
 
 serve(async (req) => {
+  const origin = req.headers.get("origin")
+  const corsHeaders = getCorsHeaders(origin)
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders })
@@ -49,20 +64,31 @@ serve(async (req) => {
       throw new Error("Invalid authentication")
     }
 
-    // Verify admin status using our secure function
-    const { data: isAdminResult, error: adminCheckError } = await supabaseAdmin
-      .rpc('is_admin', { _user_id: user.id })
+    // Enhanced admin validation using new security function
+    const { data: isValidAdmin, error: adminCheckError } = await supabaseAdmin
+      .rpc('validate_admin_action', { 
+        action_type: 'verify',
+        target_user_id: user.id 
+      })
     
-    if (adminCheckError || !isAdminResult) {
-      // Log security violation
+    if (adminCheckError || !isValidAdmin) {
+      // Log security violation with additional context
+      const clientIP = req.headers.get('x-forwarded-for') || 'unknown'
+      const userAgent = req.headers.get('user-agent') || 'unknown'
+      
       await supabaseAdmin.rpc('log_admin_action', {
         p_action: 'unauthorized_admin_access_attempt',
         p_table_name: 'user_roles',
-        p_record_id: user.id
+        p_record_id: user.id,
+        p_new_values: { 
+          ip_address: clientIP,
+          user_agent: userAgent,
+          timestamp: new Date().toISOString()
+        }
       })
       
       return new Response(
-        JSON.stringify({ error: "Unauthorized: Admin access required" }), 
+        JSON.stringify({ error: "Access denied" }), 
         { 
           status: 403, 
           headers: { ...corsHeaders, "Content-Type": "application/json" } 
