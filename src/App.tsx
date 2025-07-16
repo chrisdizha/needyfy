@@ -5,7 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SecurityProvider } from "@/components/security/SecurityProvider";
+import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
+import { analytics } from "@/lib/analytics";
+import { useEffect } from "react";
 import Index from "./pages/Index";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -34,6 +37,19 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   useSecurityHeaders();
+  
+  useEffect(() => {
+    // Initialize analytics tracking on app load
+    analytics.trackPageView(window.location.pathname);
+    
+    // Track navigation changes
+    const handleLocationChange = () => {
+      analytics.trackPageView(window.location.pathname);
+    };
+    
+    window.addEventListener('popstate', handleLocationChange);
+    return () => window.removeEventListener('popstate', handleLocationChange);
+  }, []);
   
   return (
     <BrowserRouter>
@@ -71,9 +87,11 @@ const App = () => (
     <TooltipProvider>
       <AuthProvider>
         <SecurityProvider>
-          <Toaster />
-          <Sonner />
-          <AppContent />
+          <AnalyticsProvider>
+            <Toaster />
+            <Sonner />
+            <AppContent />
+          </AnalyticsProvider>
         </SecurityProvider>
       </AuthProvider>
     </TooltipProvider>

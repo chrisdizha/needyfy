@@ -1,5 +1,5 @@
 
-import Navbar from '@/components/layout/Navbar';
+import AuthenticatedNavbar from '@/components/layout/AuthenticatedNavbar';
 import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/home/HeroSection';
 import CategorySection from '@/components/home/CategorySection';
@@ -14,7 +14,7 @@ import AppAnnouncementBanner from '@/components/home/AppAnnouncementBanner';
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <AuthenticatedNavbar />
       <main className="flex-grow">
         <HeroSection />
         <CategorySection />

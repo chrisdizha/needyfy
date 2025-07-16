@@ -264,6 +264,42 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          data: Json | null
+          expires_at: string | null
+          id: string
+          message: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          expires_at?: string | null
+          id?: string
+          message: string
+          read?: boolean
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          expires_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           full_name: string | null
@@ -397,6 +433,10 @@ export type Database = {
       }
     }
     Functions: {
+      get_unread_count: {
+        Args: { p_user_id?: string }
+        Returns: number
+      }
       get_user_roles: {
         Args: { _user_id?: string }
         Returns: Database["public"]["Enums"]["app_role"][]
@@ -421,6 +461,21 @@ export type Database = {
           p_new_values?: Json
         }
         Returns: undefined
+      }
+      mark_notification_read: {
+        Args: { p_notification_id: string }
+        Returns: undefined
+      }
+      send_notification: {
+        Args: {
+          p_user_id: string
+          p_title: string
+          p_message: string
+          p_type?: string
+          p_data?: Json
+          p_expires_at?: string
+        }
+        Returns: string
       }
       validate_admin_action: {
         Args: { action_type: string; target_user_id?: string }
