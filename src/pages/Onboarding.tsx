@@ -7,6 +7,8 @@ import OnboardingProfileInfo from '@/components/onboarding/ProfileInfo';
 import OnboardingPreferences from '@/components/onboarding/Preferences';
 import OnboardingVerification from '@/components/onboarding/Verification';
 import OnboardingComplete from '@/components/onboarding/Complete';
+import { TourGuide } from '@/components/onboarding/TourGuide';
+import { FeedbackModal } from '@/components/feedback/FeedbackModal';
 import { toast } from 'sonner';
 import { Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,6 +20,8 @@ const Onboarding = () => {
   const [progress, setProgress] = useState(0);
   const [userData, setUserData] = useState<any>({});
   const [user, setUser] = useState<User | null>(null);
+  const [showTour, setShowTour] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const steps = [
     { title: "Profile Information", component: OnboardingProfileInfo },
@@ -98,6 +102,8 @@ const Onboarding = () => {
     
     if (nextStep >= steps.length) {
       toast.success("Onboarding complete!");
+      // Show feedback modal after completion
+      setTimeout(() => setShowFeedback(true), 1000);
       navigate('/');
     }
   };
@@ -113,6 +119,38 @@ const Onboarding = () => {
     setCurrentStep(skipToStep);
     setProgress(calculateProgress(skipToStep));
   };
+
+  const tourSteps = [
+    {
+      id: 'progress',
+      title: 'Track Your Progress',
+      content: 'Follow your onboarding progress with this visual indicator. Each step brings you closer to getting started!',
+      target: '.progress-indicator',
+      position: 'bottom' as const
+    },
+    {
+      id: 'form',
+      title: 'Complete Each Step',
+      content: 'Fill out each section carefully. This information helps us personalize your experience.',
+      target: '.onboarding-form',
+      position: 'top' as const
+    },
+    {
+      id: 'navigation',
+      title: 'Easy Navigation',
+      content: 'Use these buttons to move between steps, or skip if you prefer to complete setup later.',
+      target: '.navigation-buttons',
+      position: 'top' as const
+    }
+  ];
+
+  useEffect(() => {
+    // Show tour for first-time users
+    const hasSeenTour = localStorage.getItem('onboarding-tour-seen');
+    if (!hasSeenTour && currentStep === 0) {
+      setTimeout(() => setShowTour(true), 1500);
+    }
+  }, [currentStep]);
 
   // Get current step component
   const CurrentStepComponent = steps[currentStep]?.component;
@@ -147,7 +185,7 @@ const Onboarding = () => {
               Step {currentStep + 1} of {steps.length}
             </p>
             
-            <div className="relative mb-1">
+            <div className="relative mb-1 progress-indicator">
               <Progress value={progress} className="h-2" />
             </div>
             
@@ -180,7 +218,7 @@ const Onboarding = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-6 onboarding-form">
             {CurrentStepComponent && (
               <CurrentStepComponent 
                 userData={userData} 
@@ -188,9 +226,34 @@ const Onboarding = () => {
                 onBack={currentStep > 0 ? handleBack : undefined}
               />
             )}
+            
+            {/* Add navigation class for tour */}
+            <div className="navigation-buttons mt-4 opacity-0 pointer-events-none">
+              {/* Hidden element for tour targeting */}
+            </div>
           </div>
         </div>
       </main>
+
+      <TourGuide
+        steps={tourSteps}
+        isActive={showTour}
+        onComplete={() => {
+          setShowTour(false);
+          localStorage.setItem('onboarding-tour-seen', 'true');
+        }}
+        onSkip={() => {
+          setShowTour(false);
+          localStorage.setItem('onboarding-tour-seen', 'true');
+        }}
+      />
+
+      <FeedbackModal
+        isOpen={showFeedback}
+        onClose={() => setShowFeedback(false)}
+        context="onboarding"
+        title="How was your onboarding experience?"
+      />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SecurityProvider } from "@/components/security/SecurityProvider";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
+import { CookieConsent } from "@/components/security/CookieConsent";
 import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
 import { analytics } from "@/lib/analytics";
 import { useEffect } from "react";
@@ -90,6 +91,7 @@ const App = () => (
           <AnalyticsProvider>
             <Toaster />
             <Sonner />
+            <CookieConsent />
             <AppContent />
           </AnalyticsProvider>
         </SecurityProvider>
