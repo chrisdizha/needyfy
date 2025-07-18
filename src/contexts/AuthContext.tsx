@@ -1,7 +1,9 @@
+
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/integrations/supabase/client'
 import { toast } from 'sonner'
+import { getDeviceFingerprint } from '@/components/security/SecurityEnhancements'
 
 interface AuthContextType {
   user: User | null
@@ -60,14 +62,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       if (error) {
         console.error('Error fetching user roles:', error)
-        // Return empty array instead of failing completely
         return []
       }
       
       return data || []
     } catch (error) {
       console.error('Failed to fetch user roles:', error)
-      // Return empty array instead of failing completely
       return []
     }
   }
@@ -89,34 +89,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(session?.user || null)
 
       if (session?.user) {
-        // Try to fetch user roles, but don't fail if it doesn't work
+        // Store device fingerprint for security
+        const deviceFingerprint = getDeviceFingerprint()
+        localStorage.setItem('device_fingerprint', deviceFingerprint)
+        
         try {
           const roles = await fetchUserRoles(session.user.id)
           setUserRoles(roles)
           
-          // Check admin status
           const adminStatus = roles.includes('admin')
           setIsAdmin(adminStatus)
           
-          // Double-check with backend for critical admin operations (optional)
           if (adminStatus) {
             try {
               const backendVerified = await verifyAdminStatus()
               setIsAdmin(backendVerified)
             } catch (error) {
               console.error('Admin verification failed, keeping local status:', error)
-              // Keep the local admin status if backend verification fails
             }
           }
         } catch (error) {
           console.error('Failed to fetch user roles during auth refresh:', error)
-          // Continue with authentication even if roles fail
           setUserRoles([])
           setIsAdmin(false)
         }
       } else {
         setIsAdmin(false)
         setUserRoles([])
+        localStorage.removeItem('device_fingerprint')
+        localStorage.removeItem('active_sessions')
       }
     } catch (error) {
       console.error('Failed to refresh auth state:', error)
@@ -127,6 +128,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signOut = async () => {
     try {
+      // Clear security-related localStorage
+      localStorage.removeItem('device_fingerprint')
+      localStorage.removeItem('active_sessions')
+      localStorage.removeItem('security_events')
+      
       const { error } = await supabase.auth.signOut()
       if (error) {
         console.error('Sign out error:', error)
@@ -146,51 +152,57 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   useEffect(() => {
-    // Initial session check
-    refreshAuthState()
-
-    // Listen for auth changes
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event)
         
+        // Only synchronous state updates here
         setSession(session)
         setUser(session?.user || null)
 
         if (session?.user) {
-          // Try to refresh roles when user signs in, but don't block authentication
-          try {
-            const roles = await fetchUserRoles(session.user.id)
-            setUserRoles(roles)
+          // Defer Supabase calls with setTimeout to prevent deadlock
+          setTimeout(async () => {
+            const deviceFingerprint = getDeviceFingerprint()
+            localStorage.setItem('device_fingerprint', deviceFingerprint)
             
-            const adminStatus = roles.includes('admin')
-            setIsAdmin(adminStatus)
-            
-            if (adminStatus) {
-              try {
-                const backendVerified = await verifyAdminStatus()
-                setIsAdmin(backendVerified)
-              } catch (error) {
-                console.error('Admin verification failed during auth change:', error)
-                // Keep the local admin status if backend verification fails
+            try {
+              const roles = await fetchUserRoles(session.user.id)
+              setUserRoles(roles)
+              
+              const adminStatus = roles.includes('admin')
+              setIsAdmin(adminStatus)
+              
+              if (adminStatus) {
+                try {
+                  const backendVerified = await verifyAdminStatus()
+                  setIsAdmin(backendVerified)
+                } catch (error) {
+                  console.error('Admin verification failed during auth change:', error)
+                }
               }
+            } catch (error) {
+              console.error('Failed to fetch user roles during auth state change:', error)
+              setUserRoles([])
+              setIsAdmin(false)
             }
-          } catch (error) {
-            console.error('Failed to fetch user roles during auth state change:', error)
-            // Continue with authentication even if roles fail
-            setUserRoles([])
-            setIsAdmin(false)
-          }
+          }, 0)
         } else {
           setIsAdmin(false)
           setUserRoles([])
+          localStorage.removeItem('device_fingerprint')
+          localStorage.removeItem('active_sessions')
         }
         
         setLoading(false)
       }
     )
 
-    // Session timeout handler (30 minutes)
+    // THEN check for existing session
+    refreshAuthState()
+
+    // Enhanced session timeout handler (30 minutes)
     const sessionTimeout = setInterval(() => {
       if (session && session.expires_at) {
         const now = Math.floor(Date.now() / 1000)
@@ -213,7 +225,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       subscription.unsubscribe()
       clearInterval(sessionTimeout)
     }
-  }, [session])
+  }, [])
 
   const value: AuthContextType = {
     user,

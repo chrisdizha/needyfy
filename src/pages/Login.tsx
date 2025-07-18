@@ -1,16 +1,14 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import LoginForm from '@/components/auth/LoginForm';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { SecureLoginForm } from '@/components/auth/SecureLoginForm';
 import SocialAuth from '@/components/auth/SocialAuth';
 
 const Login = () => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   
-  // Redirect to home if dialog is closed
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
     if (!open) {
@@ -27,10 +25,10 @@ const Login = () => {
         
         <div className="flex flex-col gap-6">
           <p className="text-sm text-muted-foreground text-center">
-            Sign in to your account to continue
+            Sign in to your secure account to continue
           </p>
 
-          <LoginForm />
+          <SecureLoginForm />
           
           <div className="relative">
             <div className="absolute inset-0 flex items-center">

@@ -1,16 +1,14 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import RegisterForm from '@/components/auth/RegisterForm';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { SecureRegisterForm } from '@/components/auth/SecureRegisterForm';
 import SocialAuth from '@/components/auth/SocialAuth';
 
 const Register = () => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   
-  // Redirect to home if dialog is closed
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
     if (!open) {
@@ -27,10 +25,10 @@ const Register = () => {
         
         <div className="flex flex-col gap-6">
           <p className="text-sm text-muted-foreground text-center">
-            Enter your details below to create your account
+            Enter your details below to create your secure account
           </p>
 
-          <RegisterForm />
+          <SecureRegisterForm />
           
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
