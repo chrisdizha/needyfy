@@ -39,8 +39,12 @@ const PaymentForm = ({
             <p className="text-sm">{format(startDate, 'PPP')}</p>
             <p className="text-sm text-muted-foreground">End Date:</p>
             <p className="text-sm">{format(endDate, 'PPP')}</p>
-            <p className="text-sm text-muted-foreground">Total Price:</p>
-            <p className="text-sm font-bold">${totalPrice}</p>
+            <p className="text-sm text-muted-foreground">Rental Amount:</p>
+            <p className="text-sm">${Math.round(totalPrice / 1.1).toFixed(2)}</p>
+            <p className="text-sm text-muted-foreground">Service Fee (10%):</p>
+            <p className="text-sm">${(totalPrice - Math.round(totalPrice / 1.1)).toFixed(2)}</p>
+            <p className="text-sm text-muted-foreground font-medium">Total Price:</p>
+            <p className="text-sm font-bold">${totalPrice.toFixed(2)}</p>
           </div>
         </div>
       </div>

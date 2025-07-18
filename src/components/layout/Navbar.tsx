@@ -68,6 +68,9 @@ const Navbar = () => {
             <Link to="/how-it-works" className="text-gray-600 hover:text-needyfy-blue font-medium">
               How It Works
             </Link>
+            <Link to="/pricing" className="text-gray-600 hover:text-needyfy-blue font-medium">
+              Pricing
+            </Link>
             <Link to="/list-equipment" className="text-gray-600 hover:text-needyfy-blue font-medium">
               List Equipment
             </Link>
@@ -116,6 +119,9 @@ const Navbar = () => {
             </Link>
             <Link to="/how-it-works" className="text-gray-600 hover:text-needyfy-blue font-medium py-2">
               How It Works
+            </Link>
+            <Link to="/pricing" className="text-gray-600 hover:text-needyfy-blue font-medium py-2">
+              Pricing
             </Link>
             <Link to="/list-equipment" className="text-gray-600 hover:text-needyfy-blue font-medium py-2">
               List Equipment

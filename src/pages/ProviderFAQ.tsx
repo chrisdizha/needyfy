@@ -68,7 +68,7 @@ const ProviderFAQ = () => {
       },
       {
         question: "What fees does Needyfy charge?",
-        answer: "Needyfy charges a 15% commission on the rental amount (excluding security deposits). This fee covers payment processing, platform maintenance, marketing, and our protection policies."
+        answer: "Needyfy charges a 15% commission to equipment providers and a 10% service fee to renters on the rental amount. These fees cover payment processing, platform maintenance, marketing, and our protection policies."
       }
     ],
     bookings: [

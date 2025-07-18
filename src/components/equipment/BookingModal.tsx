@@ -65,7 +65,9 @@ const BookingModal = ({
       setEndDate(date);
       // Calculate total days and price
       const days = Math.ceil((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-      setTotalPrice(days * pricePerDay);
+      const basePrice = days * pricePerDay;
+      const serviceFee = Math.round(basePrice * 0.1); // 10% renter service fee
+      setTotalPrice(basePrice + serviceFee);
     } else {
       setStartDate(date);
       setEndDate(undefined);

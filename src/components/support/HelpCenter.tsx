@@ -81,7 +81,7 @@ const faqs = [
       },
       {
         question: 'What are the service fees?',
-        answer: 'Service fees vary by rental value and are clearly displayed before you confirm your booking.'
+        answer: 'Providers pay a 15% service fee and renters pay a 10% service fee on the rental amount. All fees are clearly displayed before you confirm your booking.'
       }
     ]
   },
