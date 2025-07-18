@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,6 +9,7 @@ interface SecurityEvent {
   timestamp: number;
   details: string;
   deviceFingerprint: string;
+  [key: string]: string | number; // Add index signature for Json compatibility
 }
 
 export const useSecureAuth = () => {
@@ -34,11 +34,19 @@ export const useSecureAuth = () => {
     // Send to audit log if user is authenticated
     if (user) {
       try {
+        // Convert to a plain object that matches Json type requirements
+        const auditData = {
+          type: securityEvent.type,
+          timestamp: securityEvent.timestamp.toString(),
+          details: securityEvent.details,
+          deviceFingerprint: securityEvent.deviceFingerprint
+        };
+        
         await supabase.rpc('log_admin_action', {
           p_action: 'security_event',
           p_table_name: 'security_monitoring',
           p_record_id: user.id,
-          p_new_values: securityEvent
+          p_new_values: auditData
         });
       } catch (error) {
         console.error('Failed to log security event:', error);
