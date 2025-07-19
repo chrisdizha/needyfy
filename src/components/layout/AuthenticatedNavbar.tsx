@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -9,59 +10,41 @@ import { useAuth } from "@/contexts/AuthContext";
 import { NotificationCenter } from "./NotificationCenter";
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
+import Logo from './Logo';
+import { ThemeToggle } from './ThemeToggle';
+import { LanguageSelector } from './LanguageSelector';
+import { useI18n } from '@/hooks/useI18n';
 
 const AuthenticatedNavbar = () => {
   const { user, signOut, isAdmin } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t } = useI18n();
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
+    <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm sticky top-0 z-50 border-b">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="relative">
-              <svg width="40" height="40" viewBox="0 0 48 48" className="text-needyfy-blue">
-                <defs>
-                  <linearGradient id="navGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#06b6d4" />
-                    <stop offset="100%" stopColor="#3b82f6" />
-                  </linearGradient>
-                </defs>
-                
-                <rect x="12" y="20" width="20" height="12" rx="2" fill="url(#navGradient)" stroke="currentColor" strokeWidth="1.5"/>
-                <rect x="8" y="12" width="8" height="8" rx="1" fill="none" stroke="url(#navGradient)" strokeWidth="1.5"/>
-                <circle cx="18" cy="35" r="5" fill="none" stroke="url(#navGradient)" strokeWidth="1.5"/>
-                <circle cx="30" cy="35" r="3" fill="none" stroke="url(#navGradient)" strokeWidth="1.5"/>
-                <path d="M32 8 L40 8 L42 12 L40 16 L32 16 Z" fill="url(#navGradient)" opacity="0.8"/>
-                <text x="36" y="13" fill="white" fontSize="6" textAnchor="middle">%</text>
-                <line x1="32" y1="12" x2="28" y2="16" stroke="url(#navGradient)" strokeWidth="1"/>
-              </svg>
-            </div>
-            <div className="hidden sm:block">
-              <span className="font-bold text-xl bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
-                Needyfy
-              </span>
-              <div className="text-xs text-gray-500 font-medium -mt-1">Equipment Rental</div>
-            </div>
-          </Link>
+          <Logo />
 
           <div className="hidden md:flex flex-1 max-w-md mx-4">
             <div className="relative w-full">
               <Input 
                 type="text" 
-                placeholder="Search for equipment..." 
+                placeholder={t('hero.searchPlaceholder')}
                 className="pr-10 w-full" 
               />
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             </div>
           </div>
 
           {user ? (
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-2">
               <Button variant="ghost" asChild>
-                <Link to="/list-equipment">List Equipment</Link>
+                <Link to="/list-equipment">{t('nav.listEquipment')}</Link>
               </Button>
               <NotificationCenter />
+              <ThemeToggle />
+              <LanguageSelector />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="relative">
@@ -76,13 +59,13 @@ const AuthenticatedNavbar = () => {
                   <DropdownMenuItem asChild>
                     <Link to="/bookings" className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
-                      My Bookings
+                      {t('nav.myBookings')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/provider-bookings" className="flex items-center">
                       <Settings className="mr-2 h-4 w-4" />
-                      Provider Dashboard
+                      {t('nav.providerDashboard')}
                     </Link>
                   </DropdownMenuItem>
                   {isAdmin && (
@@ -91,7 +74,7 @@ const AuthenticatedNavbar = () => {
                       <DropdownMenuItem asChild>
                         <Link to="/admin" className="flex items-center">
                           <Shield className="mr-2 h-4 w-4" />
-                          Admin Dashboard
+                          {t('nav.adminDashboard')}
                         </Link>
                       </DropdownMenuItem>
                     </>
@@ -99,34 +82,38 @@ const AuthenticatedNavbar = () => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOut} className="flex items-center">
                     <LogOut className="mr-2 h-4 w-4" />
-                    Sign Out
+                    {t('common.signOut')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           ) : (
-            <div className="hidden md:flex items-center space-x-6">
-              <Link to="/categories" className="text-gray-600 hover:text-needyfy-blue font-medium">
-                Categories
+            <div className="hidden md:flex items-center space-x-4">
+              <Link to="/categories" className="text-muted-foreground hover:text-primary font-medium">
+                {t('common.categories')}
               </Link>
-              <Link to="/how-it-works" className="text-gray-600 hover:text-needyfy-blue font-medium">
-                How It Works
+              <Link to="/how-it-works" className="text-muted-foreground hover:text-primary font-medium">
+                {t('nav.howItWorks')}
               </Link>
-              <Link to="/list-equipment" className="text-gray-600 hover:text-needyfy-blue font-medium">
-                List Equipment
+              <Link to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium">
+                {t('nav.listEquipment')}
               </Link>
+              <ThemeToggle />
+              <LanguageSelector />
               <Link to="/login">
                 <Button variant="outline" size="sm" className="mr-2">
-                  Log In
+                  {t('common.login')}
                 </Button>
               </Link>
               <Link to="/register">
-                <Button size="sm">Sign Up</Button>
+                <Button size="sm">{t('common.register')}</Button>
               </Link>
             </div>
           )}
 
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center space-x-2">
+            <ThemeToggle />
+            <LanguageSelector />
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -148,40 +135,40 @@ const AuthenticatedNavbar = () => {
                         </div>
                       </div>
                       <Button variant="ghost" asChild className="justify-start">
-                        <Link to="/bookings">My Bookings</Link>
+                        <Link to="/bookings">{t('nav.myBookings')}</Link>
                       </Button>
                       <Button variant="ghost" asChild className="justify-start">
-                        <Link to="/list-equipment">List Equipment</Link>
+                        <Link to="/list-equipment">{t('nav.listEquipment')}</Link>
                       </Button>
                       <Button variant="ghost" asChild className="justify-start">
-                        <Link to="/provider-bookings">Provider Dashboard</Link>
+                        <Link to="/provider-bookings">{t('nav.providerDashboard')}</Link>
                       </Button>
                       {isAdmin && (
                         <Button variant="ghost" asChild className="justify-start">
-                          <Link to="/admin">Admin Dashboard</Link>
+                          <Link to="/admin">{t('nav.adminDashboard')}</Link>
                         </Button>
                       )}
-                      <Button variant="ghost" onClick={signOut} className="justify-start text-red-600">
+                      <Button variant="ghost" onClick={signOut} className="justify-start text-destructive">
                         <LogOut className="mr-2 h-4 w-4" />
-                        Sign Out
+                        {t('common.signOut')}
                       </Button>
                     </>
                   ) : (
                     <>
                       <Button variant="ghost" asChild className="justify-start">
-                        <Link to="/categories">Categories</Link>
+                        <Link to="/categories">{t('common.categories')}</Link>
                       </Button>
                       <Button variant="ghost" asChild className="justify-start">
-                        <Link to="/how-it-works">How It Works</Link>
+                        <Link to="/how-it-works">{t('nav.howItWorks')}</Link>
                       </Button>
                       <Button variant="ghost" asChild className="justify-start">
-                        <Link to="/list-equipment">List Equipment</Link>
+                        <Link to="/list-equipment">{t('nav.listEquipment')}</Link>
                       </Button>
                       <Button variant="outline" asChild className="w-full">
-                        <Link to="/login">Log In</Link>
+                        <Link to="/login">{t('common.login')}</Link>
                       </Button>
                       <Button asChild className="w-full">
-                        <Link to="/register">Sign Up</Link>
+                        <Link to="/register">{t('common.register')}</Link>
                       </Button>
                     </>
                   )}
@@ -195,10 +182,10 @@ const AuthenticatedNavbar = () => {
           <div className="relative">
             <Input 
               type="text" 
-              placeholder="Search for equipment..." 
+              placeholder={t('hero.searchPlaceholder')}
               className="pr-10 w-full" 
             />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           </div>
         </div>
       </div>

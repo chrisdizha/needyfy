@@ -14,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 195 100% 42%; /* Sky Blue (#00A1D6) */
+    --primary: 195 100% 42%; /* Needyfy Blue (#00A1D6) */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 152 61% 39%; /* Green */
@@ -23,7 +23,7 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 33 91% 55%; /* Warm Orange (#F5A623) */
+    --accent: 33 91% 55%; /* Needyfy Orange (#F5A623) */
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -31,7 +31,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 195 100% 42%;
 
     --radius: 0.5rem;
   }
@@ -46,16 +46,16 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 195 100% 42%;
+    --primary: 195 100% 50%; /* Brighter in dark mode */
     --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 152 61% 39%;
+    --secondary: 152 61% 45%; /* Brighter in dark mode */
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 33 91% 55%;
+    --accent: 33 91% 65%; /* Brighter in dark mode */
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -63,7 +63,7 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 195 100% 50%;
   }
 }
 
@@ -73,7 +73,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-poppins;
+    @apply bg-background text-foreground font-poppins transition-colors;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -109,26 +109,49 @@
 
 /* Updated styling for pages */
 .page-title {
-  @apply text-3xl font-bold mb-6 text-needyfy-darkgray;
+  @apply text-3xl font-bold mb-6 text-foreground;
 }
 
 .page-subtitle {
-  @apply text-xl font-medium mb-4 text-needyfy-blue;
+  @apply text-xl font-medium mb-4 text-primary;
 }
 
 .tagline-primary {
-  @apply text-2xl md:text-3xl font-bold text-needyfy-blue;
+  @apply text-2xl md:text-3xl font-bold text-primary;
 }
 
 .tagline-secondary {
-  @apply text-lg md:text-xl font-medium text-needyfy-orange;
+  @apply text-lg md:text-xl font-medium text-accent;
 }
 
 /* Button variants */
 .btn-primary {
-  @apply bg-needyfy-blue text-white hover:bg-opacity-90 transition-colors;
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-colors;
 }
 
 .btn-secondary {
-  @apply bg-needyfy-orange text-white hover:bg-opacity-90 transition-colors;
+  @apply bg-accent text-accent-foreground hover:bg-accent/90 transition-colors;
+}
+
+/* RTL support */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .space-x-3 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+/* Improved accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus styles for better accessibility */
+*:focus-visible {
+  @apply ring-2 ring-ring ring-offset-2 ring-offset-background outline-none;
 }

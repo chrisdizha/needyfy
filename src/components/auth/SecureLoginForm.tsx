@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useFormRateLimit, validateInput } from '@/components/security/SecurityEnhancements';
 import { useSecureAuth } from '@/hooks/useSecureAuth';
+import { useI18n } from '@/hooks/useI18n';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -27,11 +28,16 @@ const loginSchema = z.object({
 
 type FormData = z.infer<typeof loginSchema>;
 
-export const SecureLoginForm = () => {
+interface SecureLoginFormProps {
+  onForgotPassword?: () => void;
+}
+
+export const SecureLoginForm = ({ onForgotPassword }: SecureLoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { checkRateLimit } = useFormRateLimit(5, 900000); // 5 attempts per 15 minutes
   const { logSecurityEvent } = useSecureAuth();
+  const { t } = useI18n();
   
   const form = useForm<FormData>({
     resolver: zodResolver(loginSchema),
@@ -115,13 +121,13 @@ export const SecureLoginForm = () => {
           name="email"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('auth.email')}</FormLabel>
               <div className="relative">
                 <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder={t('auth.email')}
                     className="pl-10"
                     {...field}
                     onChange={(e) => {
@@ -143,13 +149,13 @@ export const SecureLoginForm = () => {
           name="password"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('auth.password')}</FormLabel>
               <div className="relative">
                 <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                 <FormControl>
                   <Input
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
+                    placeholder={t('auth.password')}
                     className="pl-10 pr-10"
                     {...field}
                     autoComplete="current-password"
@@ -173,13 +179,18 @@ export const SecureLoginForm = () => {
         />
 
         <div className="flex justify-end">
-          <Button variant="link" className="p-0 h-auto text-sm text-needyfy-blue" onClick={() => toast.info("Password reset feature coming soon!")}>
-            Forgot password?
+          <Button 
+            variant="link" 
+            type="button"
+            className="p-0 h-auto text-sm text-primary" 
+            onClick={onForgotPassword}
+          >
+            {t('auth.forgotPassword')}
           </Button>
         </div>
 
         <Button type="submit" className="w-full">
-          Sign In
+          {t('auth.signInBtn')}
         </Button>
       </form>
     </Form>

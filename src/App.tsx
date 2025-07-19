@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SecurityProvider } from "@/components/security/SecurityProvider";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
@@ -10,6 +11,8 @@ import { CookieConsent } from "@/components/security/CookieConsent";
 import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
 import { analytics } from "@/lib/analytics";
 import { useEffect } from "react";
+import "./lib/i18n";
+
 import Index from "./pages/Index";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -85,18 +88,25 @@ const AppContent = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <SecurityProvider>
-          <AnalyticsProvider>
-            <Toaster />
-            <Sonner />
-            <CookieConsent />
-            <AppContent />
-          </AnalyticsProvider>
-        </SecurityProvider>
-      </AuthProvider>
-    </TooltipProvider>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="light"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <TooltipProvider>
+        <AuthProvider>
+          <SecurityProvider>
+            <AnalyticsProvider>
+              <Toaster />
+              <Sonner />
+              <CookieConsent />
+              <AppContent />
+            </AnalyticsProvider>
+          </SecurityProvider>
+        </AuthProvider>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

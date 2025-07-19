@@ -3,11 +3,13 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { SecureRegisterForm } from '@/components/auth/SecureRegisterForm';
-import SocialAuth from '@/components/auth/SocialAuth';
+import EnhancedSocialAuth from '@/components/auth/EnhancedSocialAuth';
+import { useI18n } from '@/hooks/useI18n';
 
 const Register = () => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
+  const { t } = useI18n();
   
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
@@ -20,12 +22,12 @@ const Register = () => {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogTitle className="text-2xl font-semibold tracking-tight mb-1 text-center">
-          Create an account
+          {t('auth.createAccount')}
         </DialogTitle>
         
         <div className="flex flex-col gap-6">
           <p className="text-sm text-muted-foreground text-center">
-            Enter your details below to create your secure account
+            {t('auth.signUpMessage')}
           </p>
 
           <SecureRegisterForm />
@@ -36,17 +38,17 @@ const Register = () => {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
+                {t('auth.continueWith')}
               </span>
             </div>
           </div>
 
-          <SocialAuth />
+          <EnhancedSocialAuth />
 
           <p className="text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
+            {t('auth.alreadyHaveAccount')}{' '}
             <Link to="/login" className="text-primary hover:underline">
-              Login
+              {t('common.login')}
             </Link>
           </p>
         </div>
