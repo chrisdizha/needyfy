@@ -2,6 +2,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
@@ -31,10 +32,10 @@ const NotFound = () => {
           </p>
           <div className="space-x-4">
             <Button asChild>
-              <a href="/">Go Back Home</a>
+              <Link to="/">Go Back Home</Link>
             </Button>
             <Button variant="outline" asChild>
-              <a href="/categories">Browse Equipment</a>
+              <Link to="/categories">Browse Equipment</Link>
             </Button>
           </div>
         </div>
