@@ -9,7 +9,6 @@ interface SecurityEvent {
   timestamp: number;
   details: string;
   deviceFingerprint: string;
-  [key: string]: string | number; // Add index signature for Json compatibility
 }
 
 export const useSecureAuth = () => {
@@ -35,9 +34,9 @@ export const useSecureAuth = () => {
     if (user) {
       try {
         // Convert to a plain object that matches Json type requirements
-        const auditData = {
+        const auditData: Record<string, string | number> = {
           type: securityEvent.type,
-          timestamp: securityEvent.timestamp.toString(),
+          timestamp: securityEvent.timestamp,
           details: securityEvent.details,
           deviceFingerprint: securityEvent.deviceFingerprint
         };
