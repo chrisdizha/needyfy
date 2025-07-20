@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Github, Mail, Linkedin, Facebook, Twitter, Link as LinkIcon, Unlink } from 'lucide-react';
+import { Github, Mail, Linkedin, Facebook, Twitter, Link as LinkIcon, Unlink, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -61,36 +61,27 @@ const MultiProviderAuth = () => {
     
     try {
       if (isConnecting) {
-        // Link additional provider
-        const { error } = await supabase.auth.linkIdentity({
+        // For now, redirect to OAuth flow since linkIdentity is not available
+        const { error } = await supabase.auth.signInWithOAuth({
           provider: provider as any,
           options: {
-            redirectTo: `${window.location.origin}/dashboard`,
+            redirectTo: `${window.location.origin}/profile`,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent',
+            },
           },
         });
 
         if (error) {
-          console.error(`Failed to link ${provider}:`, error);
+          console.error(`Failed to connect ${provider}:`, error);
           toast.error(`Failed to connect ${providerConfig[provider as keyof typeof providerConfig].name}: ${error.message}`);
         } else {
-          toast.success(`${providerConfig[provider as keyof typeof providerConfig].name} connected successfully!`);
+          toast.success(`Redirecting to ${providerConfig[provider as keyof typeof providerConfig].name}...`);
         }
       } else {
-        // Unlink provider
-        const { error } = await supabase.auth.unlinkIdentity({
-          provider: provider as any,
-        });
-
-        if (error) {
-          console.error(`Failed to unlink ${provider}:`, error);
-          toast.error(`Failed to disconnect ${providerConfig[provider as keyof typeof providerConfig].name}: ${error.message}`);
-        } else {
-          toast.success(`${providerConfig[provider as keyof typeof providerConfig].name} disconnected successfully!`);
-          // Update local state
-          setConnectedProviders(prev => 
-            prev.map(p => p.provider === provider ? { ...p, connected: false } : p)
-          );
-        }
+        // Unlinking is not currently supported in this Supabase version
+        toast.error(`Disconnecting ${providerConfig[provider as keyof typeof providerConfig].name} is not currently supported. Please contact support.`);
       }
     } catch (error) {
       console.error(`Provider ${isConnecting ? 'connection' : 'disconnection'} error:`, error);
@@ -112,6 +103,13 @@ const MultiProviderAuth = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+          <AlertCircle className="h-4 w-4 text-amber-600" />
+          <p className="text-sm text-amber-800">
+            Account linking is currently in development. You can sign in with different providers, but linking multiple accounts to one profile is not yet available.
+          </p>
+        </div>
+
         {connectedProviders.map((provider) => {
           const config = providerConfig[provider.provider as keyof typeof providerConfig];
           const IconComponent = config.icon;
@@ -143,7 +141,7 @@ const MultiProviderAuth = () => {
                   variant={isConnected ? "outline" : "default"}
                   size="sm"
                   onClick={() => handleProviderConnection(provider.provider, !isConnected)}
-                  disabled={isLoading}
+                  disabled={isLoading || isConnected}
                   className={isConnected ? "text-red-600 hover:text-red-700" : ""}
                 >
                   {isLoading ? (

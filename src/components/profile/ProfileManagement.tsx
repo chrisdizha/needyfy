@@ -10,7 +10,7 @@ import { Camera, Upload, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/hooks/useI18n';
-import { ImageUpload } from '@/components/ui/image-upload';
+import ImageUpload from '@/components/ui/image-upload';
 import MultiProviderAuth from '@/components/auth/MultiProviderAuth';
 
 interface ProfileData {
@@ -107,9 +107,17 @@ const ProfileManagement = () => {
       const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
+      // Create avatars bucket if it doesn't exist
+      const { data: buckets } = await supabase.storage.listBuckets();
+      const avatarsBucket = buckets?.find(bucket => bucket.name === 'avatars');
+      
+      if (!avatarsBucket) {
+        await supabase.storage.createBucket('avatars', { public: true });
+      }
+
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
@@ -169,10 +177,11 @@ const ProfileManagement = () => {
               
               <div className="flex flex-col items-center space-y-2">
                 <ImageUpload
-                  onUpload={handleImageUpload}
-                  loading={uploading}
-                  accept="image/*"
-                  maxFiles={1}
+                  images={[]}
+                  onChange={handleImageUpload}
+                  maxImages={1}
+                  maxFileSize={5}
+                  acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
                 >
                   <Button variant="outline" disabled={uploading}>
                     <Camera className="h-4 w-4 mr-2" />

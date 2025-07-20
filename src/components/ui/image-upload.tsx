@@ -6,21 +6,31 @@ import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ImageUploadProps {
-  images: File[];
-  onChange: (images: File[]) => void;
+  images?: File[];
+  onChange?: (images: File[]) => void;
+  onUpload?: (files: File[]) => void;
   maxImages?: number;
   maxFileSize?: number; // in MB
   acceptedTypes?: string[];
   className?: string;
+  loading?: boolean;
+  accept?: string;
+  maxFiles?: number;
+  children?: React.ReactNode;
 }
 
 const ImageUpload = ({
-  images,
+  images = [],
   onChange,
+  onUpload,
   maxImages = 10,
+  maxFiles = 10,
   maxFileSize = 5,
   acceptedTypes = ['image/jpeg', 'image/png', 'image/webp'],
-  className = ''
+  className = '',
+  loading = false,
+  accept = 'image/*',
+  children
 }: ImageUploadProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -50,8 +60,9 @@ const ImageUpload = ({
       }
     }
 
-    if (images.length + validFiles.length > maxImages) {
-      toast.error(`You can only upload up to ${maxImages} images`);
+    const maxFilesToProcess = Math.min(maxFiles || 10, maxImages);
+    if (images.length + validFiles.length > maxFilesToProcess) {
+      toast.error(`You can only upload up to ${maxFilesToProcess} images`);
       return;
     }
 
@@ -59,7 +70,15 @@ const ImageUpload = ({
       setUploading(true);
       // Simulate compression/processing delay
       await new Promise(resolve => setTimeout(resolve, 500));
-      onChange([...images, ...validFiles]);
+      
+      if (onUpload) {
+        onUpload(validFiles);
+      }
+      
+      if (onChange) {
+        onChange([...images, ...validFiles]);
+      }
+      
       setUploading(false);
       toast.success(`${validFiles.length} image(s) uploaded successfully`);
     }
@@ -97,13 +116,34 @@ const ImageUpload = ({
 
   const removeImage = (index: number) => {
     const newImages = images.filter((_, i) => i !== index);
-    onChange(newImages);
+    if (onChange) {
+      onChange(newImages);
+    }
     toast.success('Image removed');
   };
 
   const openFileDialog = () => {
     fileInputRef.current?.click();
   };
+
+  // If children are provided, render them as a button
+  if (children) {
+    return (
+      <div className={className}>
+        <div onClick={openFileDialog} className="cursor-pointer">
+          {children}
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple={maxFiles > 1}
+          accept={accept}
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -120,14 +160,14 @@ const ImageUpload = ({
         onDrop={handleDrop}
       >
         <CardContent className="flex flex-col items-center justify-center p-8 text-center">
-          {uploading ? (
+          {uploading || loading ? (
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
           ) : (
             <Upload className="h-12 w-12 text-muted-foreground mb-4" />
           )}
           
           <h3 className="font-semibold mb-2">
-            {uploading ? 'Processing images...' : 'Upload Images'}
+            {uploading || loading ? 'Processing images...' : 'Upload Images'}
           </h3>
           
           <p className="text-sm text-muted-foreground mb-4">
@@ -140,7 +180,7 @@ const ImageUpload = ({
             <p>Max images: {maxImages}</p>
           </div>
           
-          <Button type="button" variant="outline" className="mt-4" disabled={uploading}>
+          <Button type="button" variant="outline" className="mt-4" disabled={uploading || loading}>
             <ImageIcon className="w-4 h-4 mr-2" />
             Choose Files
           </Button>
@@ -151,8 +191,8 @@ const ImageUpload = ({
       <input
         ref={fileInputRef}
         type="file"
-        multiple
-        accept={acceptedTypes.join(',')}
+        multiple={maxFiles > 1}
+        accept={accept}
         onChange={handleFileSelect}
         className="hidden"
       />
