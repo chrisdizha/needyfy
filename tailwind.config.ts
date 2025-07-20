@@ -48,12 +48,10 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         needyfy: {
-          blue: "#00A1D6", // Updated to match brand guideline
-          green: "#10B981",
-          darkgray: "#333333", // Updated to match brand guideline
-          lightgray: "#F9F9F9", // Updated to match brand guideline
-          orange: "#F5A623", // Updated to match brand guideline
-          yellow: "#FBBF24"
+          blue: "hsl(204 100% 50%)", /* #0EA5E9 */
+          orange: "hsl(25 95% 53%)", /* #FF8500 */
+          darkgray: "hsl(220 13% 18%)", /* #2D3748 */
+          lightgray: "hsl(210 40% 96%)", /* #F7FAFC */
         }
       },
       fontFamily: {
