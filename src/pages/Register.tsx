@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { SecureRegisterForm } from '@/components/auth/SecureRegisterForm';
+import { EnhancedRegisterForm } from '@/components/auth/EnhancedRegisterForm';
 import EnhancedSocialAuth from '@/components/auth/EnhancedSocialAuth';
 import { useI18n } from '@/hooks/useI18n';
 
@@ -20,7 +20,7 @@ const Register = () => {
   
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogTitle className="text-2xl font-semibold tracking-tight mb-1 text-center">
           {t('auth.createAccount')}
         </DialogTitle>
@@ -30,7 +30,7 @@ const Register = () => {
             {t('auth.signUpMessage')}
           </p>
 
-          <SecureRegisterForm />
+          <EnhancedRegisterForm />
           
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
