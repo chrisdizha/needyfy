@@ -36,6 +36,8 @@ import PromotionsAndDiscounts from "./pages/PromotionsAndDiscounts";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CookiePolicy from "./pages/CookiePolicy";
+import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +63,8 @@ const AppContent = () => {
         <Route path="/" element={<Index />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/bookings" element={<BookingDashboard />} />
         <Route path="/list-equipment" element={<ListEquipment />} />
