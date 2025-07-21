@@ -232,6 +232,45 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          admin_response: string | null
+          category: string
+          context: string | null
+          created_at: string
+          feedback: string
+          id: string
+          rating: number
+          resolved: boolean | null
+          resolved_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          admin_response?: string | null
+          category: string
+          context?: string | null
+          created_at?: string
+          feedback: string
+          id?: string
+          rating: number
+          resolved?: boolean | null
+          resolved_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          admin_response?: string | null
+          category?: string
+          context?: string | null
+          created_at?: string
+          feedback?: string
+          id?: string
+          rating?: number
+          resolved?: boolean | null
+          resolved_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           booking_id: string
@@ -302,6 +341,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           full_name: string | null
           id: string
           phone: string | null
@@ -311,6 +351,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          avatar_url?: string | null
           full_name?: string | null
           id: string
           phone?: string | null
@@ -320,6 +361,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          avatar_url?: string | null
           full_name?: string | null
           id?: string
           phone?: string | null
@@ -433,6 +475,10 @@ export type Database = {
       }
     }
     Functions: {
+      get_feedback_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       get_unread_count: {
         Args: { p_user_id?: string }
         Returns: number

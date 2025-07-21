@@ -105,15 +105,7 @@ const ProfileManagement = () => {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
-
-      // Create avatars bucket if it doesn't exist
-      const { data: buckets } = await supabase.storage.listBuckets();
-      const avatarsBucket = buckets?.find(bucket => bucket.name === 'avatars');
-      
-      if (!avatarsBucket) {
-        await supabase.storage.createBucket('avatars', { public: true });
-      }
+      const filePath = `${user?.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
@@ -177,7 +169,6 @@ const ProfileManagement = () => {
               
               <div className="flex flex-col items-center space-y-2">
                 <ImageUpload
-                  images={[]}
                   onChange={handleImageUpload}
                   maxImages={1}
                   maxFileSize={5}

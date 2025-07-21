@@ -1,94 +1,82 @@
 
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Github, Mail, Linkedin, Facebook, Twitter, Link as LinkIcon, Unlink, AlertCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Link as LinkIcon, Unlink, AlertCircle, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/hooks/useI18n';
-
-interface ConnectedProvider {
-  provider: string;
-  email?: string;
-  connected: boolean;
-}
 
 const MultiProviderAuth = () => {
   const { user } = useAuth();
   const { t } = useI18n();
   const [loading, setLoading] = useState<string | null>(null);
-  const [connectedProviders, setConnectedProviders] = useState<ConnectedProvider[]>([
-    { provider: 'google', connected: false },
-    { provider: 'github', connected: false },
-    { provider: 'facebook', connected: false },
-    { provider: 'twitter', connected: false },
-    { provider: 'linkedin_oidc', connected: false },
-  ]);
 
-  const providerConfig = {
-    google: { 
+  const providers = [
+    { 
       name: 'Google', 
-      icon: Mail, 
-      color: 'text-red-600 border-red-200 hover:bg-red-50' 
+      id: 'google',
+      color: 'bg-red-500',
+      textColor: 'text-red-700',
+      bgColor: 'bg-red-50'
     },
-    github: { 
-      name: 'GitHub', 
-      icon: Github, 
-      color: 'text-gray-800 border-gray-200 hover:bg-gray-50' 
-    },
-    facebook: { 
+    { 
       name: 'Facebook', 
-      icon: Facebook, 
-      color: 'text-blue-600 border-blue-200 hover:bg-blue-50' 
+      id: 'facebook',
+      color: 'bg-blue-600',
+      textColor: 'text-blue-700',
+      bgColor: 'bg-blue-50'
     },
-    twitter: { 
-      name: 'Twitter', 
-      icon: Twitter, 
-      color: 'text-sky-600 border-sky-200 hover:bg-sky-50' 
-    },
-    linkedin_oidc: { 
-      name: 'LinkedIn', 
-      icon: Linkedin, 
-      color: 'text-blue-700 border-blue-200 hover:bg-blue-50' 
-    },
+    { 
+      name: 'GitHub', 
+      id: 'github',
+      color: 'bg-gray-800',
+      textColor: 'text-gray-700',
+      bgColor: 'bg-gray-50'
+    }
+  ];
+
+  const isProviderConnected = (providerId: string) => {
+    return user?.app_metadata?.providers?.includes(providerId) || false;
   };
 
-  const handleProviderConnection = async (provider: string, isConnecting: boolean) => {
-    setLoading(provider);
+  const handleProviderAuth = async (providerId: string) => {
+    setLoading(providerId);
     
     try {
-      if (isConnecting) {
-        // For now, redirect to OAuth flow since linkIdentity is not available
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: provider as any,
-          options: {
-            redirectTo: `${window.location.origin}/profile`,
-            queryParams: {
-              access_type: 'offline',
-              prompt: 'consent',
-            },
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: providerId as any,
+        options: {
+          redirectTo: `${window.location.origin}/profile`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
           },
-        });
-
-        if (error) {
-          console.error(`Failed to connect ${provider}:`, error);
-          toast.error(`Failed to connect ${providerConfig[provider as keyof typeof providerConfig].name}: ${error.message}`);
-        } else {
-          toast.success(`Redirecting to ${providerConfig[provider as keyof typeof providerConfig].name}...`);
         }
-      } else {
-        // Unlinking is not currently supported in this Supabase version
-        toast.error(`Disconnecting ${providerConfig[provider as keyof typeof providerConfig].name} is not currently supported. Please contact support.`);
-      }
+      });
+
+      if (error) throw error;
+      
+      toast.success(`${providerId} authentication initiated`);
     } catch (error) {
-      console.error(`Provider ${isConnecting ? 'connection' : 'disconnection'} error:`, error);
-      toast.error(`An unexpected error occurred`);
+      console.error(`Error with ${providerId} auth:`, error);
+      toast.error(`Failed to authenticate with ${providerId}`);
     } finally {
       setLoading(null);
     }
+  };
+
+  const getProviderStatus = (providerId: string) => {
+    const isConnected = isProviderConnected(providerId);
+    return {
+      connected: isConnected,
+      icon: isConnected ? CheckCircle : AlertCircle,
+      variant: isConnected ? 'default' : 'secondary' as const,
+      text: isConnected ? 'Connected' : 'Not Connected'
+    };
   };
 
   return (
@@ -96,82 +84,70 @@ const MultiProviderAuth = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <LinkIcon className="h-5 w-5" />
-          {t('profile.connectedAccounts')}
+          {t('auth.socialAccounts', 'Social Account Connections')}
         </CardTitle>
         <CardDescription>
-          {t('profile.connectedAccountsDesc')}
+          {t('auth.socialAccountsDescription', 'Connect your social media accounts for easier sign-in and enhanced security')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-          <AlertCircle className="h-4 w-4 text-amber-600" />
-          <p className="text-sm text-amber-800">
-            Account linking is currently in development. You can sign in with different providers, but linking multiple accounts to one profile is not yet available.
-          </p>
-        </div>
-
-        {connectedProviders.map((provider) => {
-          const config = providerConfig[provider.provider as keyof typeof providerConfig];
-          const IconComponent = config.icon;
-          const isConnected = provider.connected;
-          const isLoading = loading === provider.provider;
-
+        {providers.map((provider) => {
+          const status = getProviderStatus(provider.id);
+          const Icon = status.icon;
+          
           return (
-            <div key={provider.provider} className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className={`p-2 border rounded-lg ${config.color}`}>
-                  <IconComponent className="h-5 w-5" />
-                </div>
+            <div key={provider.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className={`w-3 h-3 rounded-full ${provider.color}`} />
                 <div>
-                  <p className="font-medium">{config.name}</p>
-                  {provider.email && (
-                    <p className="text-sm text-muted-foreground">{provider.email}</p>
-                  )}
+                  <p className="font-medium">{provider.name}</p>
+                  <div className="flex items-center space-x-2">
+                    <Icon className={`h-4 w-4 ${status.connected ? 'text-green-600' : 'text-gray-400'}`} />
+                    <Badge variant={status.variant} className={status.connected ? provider.bgColor : ''}>
+                      <span className={status.connected ? provider.textColor : ''}>
+                        {status.text}
+                      </span>
+                    </Badge>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                {isConnected && (
-                  <Badge variant="secondary" className="text-green-700 bg-green-100">
-                    {t('common.connected')}
-                  </Badge>
+              <div className="flex items-center space-x-2">
+                {status.connected ? (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    disabled
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Connected
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleProviderAuth(provider.id)}
+                    disabled={loading === provider.id}
+                  >
+                    <LinkIcon className="h-4 w-4 mr-2" />
+                    {loading === provider.id ? 'Connecting...' : 'Connect'}
+                  </Button>
                 )}
-                
-                <Button
-                  variant={isConnected ? "outline" : "default"}
-                  size="sm"
-                  onClick={() => handleProviderConnection(provider.provider, !isConnected)}
-                  disabled={isLoading || isConnected}
-                  className={isConnected ? "text-red-600 hover:text-red-700" : ""}
-                >
-                  {isLoading ? (
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  ) : isConnected ? (
-                    <>
-                      <Unlink className="h-4 w-4 mr-1" />
-                      {t('common.disconnect')}
-                    </>
-                  ) : (
-                    <>
-                      <LinkIcon className="h-4 w-4 mr-1" />
-                      {t('common.connect')}
-                    </>
-                  )}
-                </Button>
               </div>
             </div>
           );
         })}
-
+        
         <Separator className="my-4" />
         
-        <div className="text-sm text-muted-foreground">
-          <p className="mb-2">{t('profile.accountLinkingNote')}</p>
-          <ul className="list-disc list-inside space-y-1 text-xs">
-            <li>{t('profile.linkingBenefit1')}</li>
-            <li>{t('profile.linkingBenefit2')}</li>
-            <li>{t('profile.linkingBenefit3')}</li>
-          </ul>
+        <div className="text-sm text-muted-foreground space-y-2">
+          <p className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4" />
+            {t('auth.socialSecurityNote', 'Connected accounts provide additional security and convenience')}
+          </p>
+          <p>
+            {t('auth.socialDataNote', 'We only access basic profile information to enhance your experience')}
+          </p>
         </div>
       </CardContent>
     </Card>
