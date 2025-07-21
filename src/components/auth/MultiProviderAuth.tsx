@@ -74,7 +74,7 @@ const MultiProviderAuth = () => {
     return {
       connected: isConnected,
       icon: isConnected ? CheckCircle : AlertCircle,
-      variant: isConnected ? 'default' : 'secondary' as const,
+      variant: isConnected ? 'default' as const : 'secondary' as const,
       text: isConnected ? 'Connected' : 'Not Connected'
     };
   };
@@ -103,10 +103,8 @@ const MultiProviderAuth = () => {
                   <p className="font-medium">{provider.name}</p>
                   <div className="flex items-center space-x-2">
                     <Icon className={`h-4 w-4 ${status.connected ? 'text-green-600' : 'text-gray-400'}`} />
-                    <Badge variant={status.variant} className={status.connected ? provider.bgColor : ''}>
-                      <span className={status.connected ? provider.textColor : ''}>
-                        {status.text}
-                      </span>
+                    <Badge variant={status.variant}>
+                      {status.text}
                     </Badge>
                   </div>
                 </div>
