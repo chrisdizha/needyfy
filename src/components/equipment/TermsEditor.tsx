@@ -1,33 +1,10 @@
+
 import { useState } from "react";
+import { useQuery } from '@tanstack/react-query';
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-
-const TEMPLATES = [
-  {
-    name: "Standard Rental Agreement",
-    content: `• Full payment and security deposit required before rental.
-• Cancel up to 48h before start for a full refund.
-• Equipment must be returned in same condition to avoid fees.
-• Late returns incur $25/hour penalty.
-• Damage or theft is renter’s responsibility.`
-  },
-  {
-    name: "Strict Policy",
-    content: `• Payment and deposit required before collection.
-• No refund for cancellations within 24h of start.
-• Equipment inspected before and after rental.
-• Late returns incur double rate for each hour.
-• Damages are fully deductible from deposit.`
-  },
-  {
-    name: "Flexible Terms",
-    content: `• Cancel for free up to 2h before rental starts.
-• Deposit not required for short-term rentals.
-• Late returns incur $10/hour penalty.
-• Light wear expected; damage charged at parts & labor.`
-  }
-];
+import { supabase } from '@/integrations/supabase/client';
 
 const LEGAL_TIPS = [
   "Be specific about return times, deposit amounts, and what is considered acceptable use.",
@@ -51,6 +28,19 @@ const TermsEditor = ({
   const [showPreview, setShowPreview] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+
+  const { data: templates, isLoading: templatesLoading } = useQuery({
+    queryKey: ['terms-templates'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('terms_templates')
+        .select('*')
+        .order('is_default', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
   return (
     <div className="space-y-2">
@@ -90,24 +80,40 @@ const TermsEditor = ({
           <DialogHeader>
             <DialogTitle>Templates Library</DialogTitle>
           </DialogHeader>
-          <div className="space-y-2">
-            {TEMPLATES.map((tpl) => (
-              <div key={tpl.name} className="border rounded p-2 bg-gray-50 flex flex-col gap-1">
-                <div className="font-semibold">{tpl.name}</div>
-                <div className="whitespace-pre-wrap text-xs text-gray-700">{tpl.content}</div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="mt-1 self-end"
-                  onClick={() => {
-                    onChange(tpl.content);
-                    setShowTemplates(false);
-                  }}
-                >
-                  Use this template
-                </Button>
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {templatesLoading ? (
+              <div className="text-center py-4">Loading templates...</div>
+            ) : templates && templates.length > 0 ? (
+              templates.map((template) => (
+                <div key={template.id} className="border rounded p-2 bg-gray-50 flex flex-col gap-1">
+                  <div className="font-semibold flex items-center gap-2">
+                    {template.name}
+                    {template.is_default && (
+                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Default</span>
+                    )}
+                  </div>
+                  <div className="text-xs text-gray-600 mb-1">Category: {template.category}</div>
+                  <div className="whitespace-pre-wrap text-xs text-gray-700 max-h-20 overflow-y-auto">
+                    {template.template_content}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="mt-1 self-end"
+                    onClick={() => {
+                      onChange(template.template_content);
+                      setShowTemplates(false);
+                    }}
+                  >
+                    Use this template
+                  </Button>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-4 text-gray-500">
+                No templates available. Contact support to add templates.
               </div>
-            ))}
+            )}
           </div>
         </DialogContent>
       </Dialog>

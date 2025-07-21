@@ -1,6 +1,8 @@
 
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface TestimonialProps {
   quote: string;
@@ -42,31 +44,25 @@ const Testimonial = ({ quote, author, role, rating, image }: TestimonialProps) =
   </Card>
 );
 
-const testimonials = [
-  {
-    quote: "Needyfy made it incredibly easy to rent a truck for our move. We saved so much money compared to traditional rental companies.",
-    author: "Sarah Johnson",
-    role: "Homeowner",
-    rating: 5,
-    image: "https://randomuser.me/api/portraits/women/68.jpg"
-  },
-  {
-    quote: "As a small construction business, we can now access equipment that was previously too expensive to purchase. Game-changer!",
-    author: "Michael Thompson",
-    role: "Construction Manager",
-    rating: 5,
-    image: "https://randomuser.me/api/portraits/men/32.jpg"
-  },
-  {
-    quote: "My excavator was sitting idle most of the time. Now it earns money when I'm not using it. The extra income is substantial.",
-    author: "David Rodriguez",
-    role: "Equipment Owner",
-    rating: 4,
-    image: "https://randomuser.me/api/portraits/men/75.jpg"
-  }
-];
-
 const Testimonials = () => {
+  const { data: reviews, isLoading } = useQuery({
+    queryKey: ['featured-reviews'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('reviews')
+        .select(`
+          *,
+          profiles!inner(full_name, avatar_url)
+        `)
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -77,11 +73,56 @@ const Testimonials = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <Testimonial key={index} {...testimonial} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="h-full animate-pulse">
+                <CardContent className="p-6">
+                  <div className="flex mb-4 space-x-1">
+                    {[1, 2, 3, 4, 5].map((j) => (
+                      <div key={j} className="h-5 w-5 bg-gray-300 rounded"></div>
+                    ))}
+                  </div>
+                  <div className="space-y-2 mb-6">
+                    <div className="h-4 bg-gray-300 rounded"></div>
+                    <div className="h-4 bg-gray-300 rounded"></div>
+                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 bg-gray-300 rounded-full mr-4"></div>
+                    <div>
+                      <div className="h-4 bg-gray-300 rounded w-24 mb-1"></div>
+                      <div className="h-3 bg-gray-300 rounded w-16"></div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : reviews && reviews.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {reviews.map((review) => (
+              <Testimonial 
+                key={review.id} 
+                quote={review.content}
+                author={review.profiles?.full_name || 'Anonymous User'}
+                role="Verified Renter"
+                rating={review.rating}
+                image={review.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${review.profiles?.full_name || 'anonymous'}`}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-gray-500 mb-4">
+              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.003 8.003 0 01-7.93-6.84c-.042-.311-.07-.623-.07-.94a8 8 0 118 8z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Reviews Yet</h3>
+            <p className="text-gray-500">Be among the first to experience great equipment rentals!</p>
+          </div>
+        )}
       </div>
     </section>
   );

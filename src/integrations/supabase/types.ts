@@ -232,6 +232,66 @@ export type Database = {
         }
         Relationships: []
       }
+      equipment_listings: {
+        Row: {
+          availability_calendar: Json | null
+          category: string
+          created_at: string
+          description: string
+          id: string
+          is_verified: boolean | null
+          location: string
+          owner_id: string
+          photos: string[] | null
+          price: number
+          price_unit: string
+          rating: number | null
+          status: string
+          terms_and_conditions: string | null
+          title: string
+          total_ratings: number | null
+          updated_at: string
+        }
+        Insert: {
+          availability_calendar?: Json | null
+          category: string
+          created_at?: string
+          description: string
+          id?: string
+          is_verified?: boolean | null
+          location: string
+          owner_id: string
+          photos?: string[] | null
+          price: number
+          price_unit?: string
+          rating?: number | null
+          status?: string
+          terms_and_conditions?: string | null
+          title: string
+          total_ratings?: number | null
+          updated_at?: string
+        }
+        Update: {
+          availability_calendar?: Json | null
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_verified?: boolean | null
+          location?: string
+          owner_id?: string
+          photos?: string[] | null
+          price?: number
+          price_unit?: string
+          rating?: number | null
+          status?: string
+          terms_and_conditions?: string | null
+          title?: string
+          total_ratings?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       feedback: {
         Row: {
           admin_response: string | null
@@ -423,6 +483,90 @@ export type Database = {
           resolved_at?: string | null
           status?: string
           type?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          booking_id: string | null
+          content: string
+          context: string | null
+          created_at: string
+          equipment_id: string | null
+          id: string
+          is_featured: boolean | null
+          rating: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_id?: string | null
+          content: string
+          context?: string | null
+          created_at?: string
+          equipment_id?: string | null
+          id?: string
+          is_featured?: boolean | null
+          rating: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_id?: string | null
+          content?: string
+          context?: string | null
+          created_at?: string
+          equipment_id?: string | null
+          id?: string
+          is_featured?: boolean | null
+          rating?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      terms_templates: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          is_default: boolean | null
+          name: string
+          template_content: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name: string
+          template_content: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          template_content?: string
         }
         Relationships: []
       }
