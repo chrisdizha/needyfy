@@ -21,6 +21,11 @@ export type Review = {
   } | null;
 };
 
+// Type guard to check if profiles data is valid
+const isValidProfileData = (profiles: any): profiles is { full_name: string | null; avatar_url: string | null } => {
+  return profiles && typeof profiles === 'object' && !profiles.error && 'full_name' in profiles && 'avatar_url' in profiles;
+};
+
 export const useReviews = (equipmentId?: string) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -75,7 +80,7 @@ export const useReviews = (equipmentId?: string) => {
         // Successfully got reviews with profiles - ensure proper typing
         return (data || []).map(item => ({
           ...item,
-          profiles: item.profiles ? {
+          profiles: isValidProfileData(item.profiles) ? {
             full_name: item.profiles.full_name,
             avatar_url: item.profiles.avatar_url
           } : null
@@ -166,7 +171,7 @@ export const useFeaturedReviews = () => {
         // Successfully got reviews with profiles - ensure proper typing
         return (data || []).map(item => ({
           ...item,
-          profiles: item.profiles ? {
+          profiles: isValidProfileData(item.profiles) ? {
             full_name: item.profiles.full_name,
             avatar_url: item.profiles.avatar_url
           } : null
