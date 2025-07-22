@@ -32,30 +32,51 @@ export const useReviews = (equipmentId?: string) => {
   } = useQuery({
     queryKey: ['reviews', equipmentId],
     queryFn: async () => {
-      let query = supabase
-        .from('reviews')
-        .select(`
-          *,
-          profiles(full_name, avatar_url)
-        `)
-        .order('created_at', { ascending: false });
+      try {
+        let query = supabase
+          .from('reviews')
+          .select(`
+            *,
+            profiles(full_name, avatar_url)
+          `)
+          .order('created_at', { ascending: false });
 
-      if (equipmentId) {
-        query = query.eq('equipment_id', equipmentId);
+        if (equipmentId) {
+          query = query.eq('equipment_id', equipmentId);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          console.error('Error fetching reviews:', error);
+          // If profiles relation fails, fallback to reviews without profiles
+          const fallbackQuery = supabase
+            .from('reviews')
+            .select('*')
+            .order('created_at', { ascending: false });
+          
+          if (equipmentId) {
+            fallbackQuery.eq('equipment_id', equipmentId);
+          }
+          
+          const { data: fallbackData, error: fallbackError } = await fallbackQuery;
+          
+          if (fallbackError) throw fallbackError;
+          
+          return (fallbackData || []).map(item => ({
+            ...item,
+            profiles: null
+          })) as Review[];
+        }
+        
+        return (data || []).map(item => ({
+          ...item,
+          profiles: item.profiles || null
+        })) as Review[];
+      } catch (err) {
+        console.error('Error in useReviews:', err);
+        throw err;
       }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error('Error fetching reviews:', error);
-        throw error;
-      }
-      
-      // Transform the data to match our Review type
-      return (data || []).map(item => ({
-        ...item,
-        profiles: item.profiles || null
-      })) as Review[];
     },
   });
 
@@ -102,26 +123,43 @@ export const useFeaturedReviews = () => {
   return useQuery({
     queryKey: ['featured-reviews'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('reviews')
-        .select(`
-          *,
-          profiles(full_name, avatar_url)
-        `)
-        .eq('is_featured', true)
-        .order('created_at', { ascending: false })
-        .limit(3);
+      try {
+        const { data, error } = await supabase
+          .from('reviews')
+          .select(`
+            *,
+            profiles(full_name, avatar_url)
+          `)
+          .eq('is_featured', true)
+          .order('created_at', { ascending: false })
+          .limit(3);
 
-      if (error) {
-        console.error('Error fetching featured reviews:', error);
-        throw error;
+        if (error) {
+          console.error('Error fetching featured reviews:', error);
+          // Fallback without profiles
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from('reviews')
+            .select('*')
+            .eq('is_featured', true)
+            .order('created_at', { ascending: false })
+            .limit(3);
+          
+          if (fallbackError) throw fallbackError;
+          
+          return (fallbackData || []).map(item => ({
+            ...item,
+            profiles: null
+          })) as Review[];
+        }
+        
+        return (data || []).map(item => ({
+          ...item,
+          profiles: item.profiles || null
+        })) as Review[];
+      } catch (err) {
+        console.error('Error in useFeaturedReviews:', err);
+        throw err;
       }
-      
-      // Transform the data to match our Review type
-      return (data || []).map(item => ({
-        ...item,
-        profiles: item.profiles || null
-      })) as Review[];
     },
   });
 };

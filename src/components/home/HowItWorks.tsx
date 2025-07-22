@@ -12,31 +12,31 @@ interface StepProps {
 
 const Step = ({ number, title, description, icon, isLast = false }: StepProps) => (
   <div className="flex flex-col items-center text-center md:text-left md:flex-row">
-    <div className="flex-shrink-0 flex items-center justify-center w-16 h-16 bg-primary rounded-full text-white mb-4 md:mb-0">
+    <div className="flex-shrink-0 flex items-center justify-center w-16 h-16 bg-primary rounded-full text-primary-foreground mb-4 md:mb-0">
       {icon}
     </div>
     <div className={cn(
       "md:ml-6 md:flex-1",
-      !isLast && "pb-12 md:pb-0 md:pr-12 relative after:hidden md:after:block after:absolute after:top-24 md:after:top-0 after:bottom-0 md:after:bottom-auto after:left-1/2 md:after:left-auto after:-translate-x-1/2 md:after:translate-x-0 md:after:right-0 after:w-px after:h-full md:after:h-full after:bg-gray-200"
+      !isLast && "pb-12 md:pb-0 md:pr-12 relative after:hidden md:after:block after:absolute after:top-24 md:after:top-0 after:bottom-0 md:after:bottom-auto after:left-1/2 md:after:left-auto after:-translate-x-1/2 md:after:translate-x-0 md:after:right-0 after:w-px after:h-full md:after:h-full after:bg-border"
     )}>
       <div className="flex items-center mb-2 justify-center md:justify-start">
         <span className="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-full text-primary font-semibold mr-2">
           {number}
         </span>
-        <h3 className="font-semibold text-xl">{title}</h3>
+        <h3 className="font-semibold text-xl text-foreground">{title}</h3>
       </div>
-      <p className="text-gray-600">{description}</p>
+      <p className="text-muted-foreground">{description}</p>
     </div>
   </div>
 );
 
 const HowItWorks = () => {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-3">How Needyfy Works</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold text-foreground mb-3">How Needyfy Works</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
             Renting equipment has never been easier. Our simple 4-step process gets you what you need, when you need it.
           </p>
         </div>

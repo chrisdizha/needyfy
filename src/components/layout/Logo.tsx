@@ -28,7 +28,7 @@ const Logo = ({ className = "", showText = true, size = 'md' }: LogoProps) => {
           <span className={`font-bold ${size === 'lg' ? 'text-2xl' : 'text-xl'} text-primary`}>
             Needyfy
           </span>
-          <div className="text-xs text-muted-foreground font-medium -mt-1">Hire Anything, Anywhere!</div>
+          <div className="text-xs text-muted-foreground font-medium -mt-1">Equipment Rental</div>
         </div>
       )}
     </Link>

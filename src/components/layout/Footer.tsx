@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -43,35 +42,15 @@ const Footer = () => {
     <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand info */}
+          {/* Brand info with updated logo */}
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
               <div className="relative">
-                <svg width="48" height="48" viewBox="0 0 48 48" className="text-needyfy-blue">
-                  <defs>
-                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#06b6d4" />
-                      <stop offset="100%" stopColor="#3b82f6" />
-                    </linearGradient>
-                  </defs>
-                  
-                  {/* Tractor base */}
-                  <rect x="12" y="20" width="20" height="12" rx="2" fill="url(#logoGradient)" stroke="currentColor" strokeWidth="1.5"/>
-                  
-                  {/* Cabin */}
-                  <rect x="8" y="12" width="8" height="8" rx="1" fill="none" stroke="url(#logoGradient)" strokeWidth="1.5"/>
-                  
-                  {/* Wheels */}
-                  <circle cx="18" cy="35" r="5" fill="none" stroke="url(#logoGradient)" strokeWidth="1.5"/>
-                  <circle cx="30" cy="35" r="3" fill="none" stroke="url(#logoGradient)" strokeWidth="1.5"/>
-                  
-                  {/* Price tag */}
-                  <path d="M32 8 L40 8 L42 12 L40 16 L32 16 Z" fill="url(#logoGradient)" opacity="0.8"/>
-                  <text x="36" y="13" fill="white" fontSize="6" textAnchor="middle">%</text>
-                  
-                  {/* Connection line */}
-                  <line x1="32" y1="12" x2="28" y2="16" stroke="url(#logoGradient)" strokeWidth="1"/>
-                </svg>
+                <img 
+                  src="/lovable-uploads/f8c35258-6e1f-4caf-8eda-778b9f232b46.png"
+                  alt="Needyfy Logo"
+                  className="h-12 w-auto object-contain"
+                />
               </div>
               <div>
                 <span className="font-bold text-xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
@@ -171,7 +150,7 @@ const Footer = () => {
                 disabled={isSubmitting}
                 className="bg-needyfy-blue hover:bg-blue-600 whitespace-nowrap"
               >
-                {isSubmitting ? 'Joining...' : 'Join the Waiting List'}
+                {isSubmitting ? 'Joining...' : 'Join List'}
               </Button>
             </form>
           </div>
