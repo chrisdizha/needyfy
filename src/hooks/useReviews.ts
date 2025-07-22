@@ -18,7 +18,7 @@ export type Review = {
   profiles?: {
     full_name: string | null;
     avatar_url: string | null;
-  };
+  } | null;
 };
 
 export const useReviews = (equipmentId?: string) => {
@@ -36,7 +36,7 @@ export const useReviews = (equipmentId?: string) => {
         .from('reviews')
         .select(`
           *,
-          profiles!inner(full_name, avatar_url)
+          profiles(full_name, avatar_url)
         `)
         .order('created_at', { ascending: false });
 
@@ -46,8 +46,16 @@ export const useReviews = (equipmentId?: string) => {
 
       const { data, error } = await query;
 
-      if (error) throw error;
-      return data as Review[];
+      if (error) {
+        console.error('Error fetching reviews:', error);
+        throw error;
+      }
+      
+      // Transform the data to match our Review type
+      return (data || []).map(item => ({
+        ...item,
+        profiles: item.profiles || null
+      })) as Review[];
     },
   });
 
@@ -98,14 +106,22 @@ export const useFeaturedReviews = () => {
         .from('reviews')
         .select(`
           *,
-          profiles!inner(full_name, avatar_url)
+          profiles(full_name, avatar_url)
         `)
         .eq('is_featured', true)
         .order('created_at', { ascending: false })
         .limit(3);
 
-      if (error) throw error;
-      return data as Review[];
+      if (error) {
+        console.error('Error fetching featured reviews:', error);
+        throw error;
+      }
+      
+      // Transform the data to match our Review type
+      return (data || []).map(item => ({
+        ...item,
+        profiles: item.profiles || null
+      })) as Review[];
     },
   });
 };

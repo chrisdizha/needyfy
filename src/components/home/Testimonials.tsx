@@ -1,8 +1,7 @@
 
-import { useQuery } from '@tanstack/react-query';
+import { useFeaturedReviews } from '@/hooks/useReviews';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 
 interface TestimonialProps {
   quote: string;
@@ -45,23 +44,7 @@ const Testimonial = ({ quote, author, role, rating, image }: TestimonialProps) =
 );
 
 const Testimonials = () => {
-  const { data: reviews, isLoading } = useQuery({
-    queryKey: ['featured-reviews'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('reviews')
-        .select(`
-          *,
-          profiles!inner(full_name, avatar_url)
-        `)
-        .eq('is_featured', true)
-        .order('created_at', { ascending: false })
-        .limit(3);
-
-      if (error) throw error;
-      return data || [];
-    },
-  });
+  const { data: reviews, isLoading } = useFeaturedReviews();
 
   return (
     <section className="py-16 bg-gray-50">
