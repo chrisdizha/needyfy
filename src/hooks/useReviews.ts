@@ -33,6 +33,7 @@ export const useReviews = (equipmentId?: string) => {
     queryKey: ['reviews', equipmentId],
     queryFn: async () => {
       try {
+        // First, try to get reviews with profiles
         let query = supabase
           .from('reviews')
           .select(`
@@ -48,31 +49,38 @@ export const useReviews = (equipmentId?: string) => {
         const { data, error } = await query;
 
         if (error) {
-          console.error('Error fetching reviews:', error);
-          // If profiles relation fails, fallback to reviews without profiles
-          const fallbackQuery = supabase
+          console.error('Error fetching reviews with profiles:', error);
+          
+          // Fallback: get reviews without profiles
+          let fallbackQuery = supabase
             .from('reviews')
             .select('*')
             .order('created_at', { ascending: false });
           
           if (equipmentId) {
-            fallbackQuery.eq('equipment_id', equipmentId);
+            fallbackQuery = fallbackQuery.eq('equipment_id', equipmentId);
           }
           
           const { data: fallbackData, error: fallbackError } = await fallbackQuery;
           
           if (fallbackError) throw fallbackError;
           
+          // Return reviews without profiles data
           return (fallbackData || []).map(item => ({
             ...item,
             profiles: null
           })) as Review[];
         }
         
+        // Successfully got reviews with profiles - ensure proper typing
         return (data || []).map(item => ({
           ...item,
-          profiles: item.profiles || null
+          profiles: item.profiles ? {
+            full_name: item.profiles.full_name,
+            avatar_url: item.profiles.avatar_url
+          } : null
         })) as Review[];
+        
       } catch (err) {
         console.error('Error in useReviews:', err);
         throw err;
@@ -124,6 +132,7 @@ export const useFeaturedReviews = () => {
     queryKey: ['featured-reviews'],
     queryFn: async () => {
       try {
+        // First, try to get featured reviews with profiles
         const { data, error } = await supabase
           .from('reviews')
           .select(`
@@ -135,8 +144,9 @@ export const useFeaturedReviews = () => {
           .limit(3);
 
         if (error) {
-          console.error('Error fetching featured reviews:', error);
-          // Fallback without profiles
+          console.error('Error fetching featured reviews with profiles:', error);
+          
+          // Fallback: get featured reviews without profiles
           const { data: fallbackData, error: fallbackError } = await supabase
             .from('reviews')
             .select('*')
@@ -146,16 +156,22 @@ export const useFeaturedReviews = () => {
           
           if (fallbackError) throw fallbackError;
           
+          // Return reviews without profiles data
           return (fallbackData || []).map(item => ({
             ...item,
             profiles: null
           })) as Review[];
         }
         
+        // Successfully got reviews with profiles - ensure proper typing
         return (data || []).map(item => ({
           ...item,
-          profiles: item.profiles || null
+          profiles: item.profiles ? {
+            full_name: item.profiles.full_name,
+            avatar_url: item.profiles.avatar_url
+          } : null
         })) as Review[];
+        
       } catch (err) {
         console.error('Error in useFeaturedReviews:', err);
         throw err;
