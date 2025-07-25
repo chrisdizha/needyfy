@@ -1,3 +1,4 @@
+
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -5,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 
 import { AuthProvider } from "./contexts/AuthContext";
-import { SecurityProvider } from "./contexts/SecurityContext";
+import { SecurityProvider } from "./components/security/SecurityProvider";
 
 import Index from "./pages/Index";
 import Register from "./pages/Register";
@@ -32,7 +33,7 @@ import CookiePolicy from "./pages/CookiePolicy";
 import NotFound from "./pages/NotFound";
 import BookingSuccess from "./pages/BookingSuccess";
 import BookingCancelled from "./pages/BookingCancelled";
-import CookieConsent from "./components/layout/CookieConsent";
+import { CookieConsent } from "./components/security/CookieConsent";
 
 import Reviews from "./pages/Reviews";
 
