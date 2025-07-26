@@ -1,97 +1,142 @@
-
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { EnhancedSecurityProvider } from "@/components/security/EnhancedSecurityProvider";
+import { AuthSecurityConfig } from "@/components/security/AuthSecurityConfig";
+import Index from "@/pages/Index";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import Profile from "@/pages/Profile";
+import Admin from "@/pages/Admin";
+import Equipment from "@/pages/Equipment";
+import NewEquipment from "@/pages/NewEquipment";
+import EditEquipment from "@/pages/EditEquipment";
+import EquipmentDetails from "@/pages/EquipmentDetails";
+import NewReport from "@/pages/NewReport";
+import ReportDetails from "@/pages/ReportDetails";
+import EditReport from "@/pages/EditReport";
+import NewDispute from "@/pages/NewDispute";
+import DisputeDetails from "@/pages/DisputeDetails";
+import EditDispute from "@/pages/EditDispute";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
+import Terms from "@/pages/Terms";
+import Privacy from "@/pages/Privacy";
+import Contact from "@/pages/Contact";
+import About from "@/pages/About";
+import NotFound from "@/pages/NotFound";
+import { SecureRoute } from "@/components/auth/SecureRoute";
+import { AdminRoute } from "@/components/auth/AdminRoute";
 
-import { AuthProvider } from "./contexts/AuthContext";
-import { EnhancedSecurityProvider } from "./components/security/EnhancedSecurityProvider";
-import { SecureErrorBoundary } from "./components/security/SecureErrorBoundary";
-
-import Index from "./pages/Index";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-import ListEquipment from "./pages/ListEquipment";
-import BookingDashboard from "./pages/BookingDashboard";
-import ProviderBookingDashboard from "./pages/ProviderBookingDashboard";
-import Onboarding from "./pages/Onboarding";
-import Categories from "./pages/Categories";
-import HowItWorks from "./pages/HowItWorks";
-import Pricing from "./pages/Pricing";
-import Contact from "./pages/Contact";
-import TermsOfService from "./pages/TermsOfService";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import CookiePolicy from "./pages/CookiePolicy";
-import SuccessStories from "./pages/SuccessStories";
-import PromotionsAndDiscounts from "./pages/PromotionsAndDiscounts";
-import ProviderGuidelines from "./pages/ProviderGuidelines";
-import ProviderFAQ from "./pages/ProviderFAQ";
-import ProviderResources from "./pages/ProviderResources";
-import AdminDashboard from "./pages/AdminDashboard";
-import NotFound from "./pages/NotFound";
-import BookingSuccess from "./pages/BookingSuccess";
-import BookingCancelled from "./pages/BookingCancelled";
-import { CookieConsent } from "./components/security/CookieConsent";
-
-import Reviews from "./pages/Reviews";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <SecureErrorBoundary>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <EnhancedSecurityProvider>
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/list-equipment" element={<ListEquipment />} />
-                  <Route path="/booking-dashboard" element={<BookingDashboard />} />
-                  <Route path="/provider-booking-dashboard" element={<ProviderBookingDashboard />} />
-                  <Route path="/onboarding" element={<Onboarding />} />
-                  <Route path="/categories" element={<Categories />} />
-                  <Route path="/how-it-works" element={<HowItWorks />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/terms-of-service" element={<TermsOfService />} />
-                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                  <Route path="/cookie-policy" element={<CookiePolicy />} />
-                  <Route path="/success-stories" element={<SuccessStories />} />
-                  <Route path="/promotions-and-discounts" element={<PromotionsAndDiscounts />} />
-                  <Route path="/provider-guidelines" element={<ProviderGuidelines />} />
-                  <Route path="/provider-faq" element={<ProviderFAQ />} />
-                  <Route path="/provider-resources" element={<ProviderResources />} />
-                  <Route path="/admin-dashboard" element={<AdminDashboard />} />
-                  <Route path="/booking-success" element={<BookingSuccess />} />
-                  <Route path="/booking-cancelled" element={<BookingCancelled />} />
-                  <Route path="/reviews" element={<Reviews />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <CookieConsent />
-                <Toaster />
-              </BrowserRouter>
-            </EnhancedSecurityProvider>
-          </AuthProvider>
-        </QueryClientProvider>
-      </ThemeProvider>
-    </SecureErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <EnhancedSecurityProvider>
+          <AuthSecurityConfig />
+          <Router>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/about" element={<About />} />
+              <Route
+                path="/profile"
+                element={
+                  <SecureRoute>
+                    <Profile />
+                  </SecureRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <Admin />
+                  </AdminRoute>
+                }
+              />
+              <Route path="/equipment" element={<Equipment />} />
+              <Route
+                path="/equipment/new"
+                element={
+                  <SecureRoute>
+                    <NewEquipment />
+                  </SecureRoute>
+                }
+              />
+              <Route
+                path="/equipment/:id/edit"
+                element={
+                  <SecureRoute>
+                    <EditEquipment />
+                  </SecureRoute>
+                }
+              />
+              <Route path="/equipment/:id" element={<EquipmentDetails />} />
+              <Route
+                path="/reports/new"
+                element={
+                  <SecureRoute>
+                    <NewReport />
+                  </SecureRoute>
+                }
+              />
+              <Route
+                path="/reports/:id"
+                element={
+                  <SecureRoute>
+                    <ReportDetails />
+                  </SecureRoute>
+                }
+              />
+              <Route
+                path="/reports/:id/edit"
+                element={
+                  <SecureRoute>
+                    <EditReport />
+                  </SecureRoute>
+                }
+              />
+              <Route
+                path="/disputes/new"
+                element={
+                  <SecureRoute>
+                    <NewDispute />
+                  </SecureRoute>
+                }
+              />
+              <Route
+                path="/disputes/:id"
+                element={
+                  <SecureRoute>
+                    <DisputeDetails />
+                  </SecureRoute>
+                }
+              />
+              <Route
+                path="/disputes/:id/edit"
+                element={
+                  <SecureRoute>
+                    <EditDispute />
+                  </SecureRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Router>
+          <Toaster />
+        </EnhancedSecurityProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
