@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,6 +18,7 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { LanguageSelector } from "@/components/layout/LanguageSelector";
 import { NotificationCenter } from "@/components/layout/NotificationCenter";
 import { useEnhancedAuth } from '@/hooks/useEnhancedAuth';
+import Logo from './Logo';
 
 const AuthenticatedNavbar = () => {
   const { user } = useAuth();
@@ -31,9 +33,8 @@ const AuthenticatedNavbar = () => {
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container max-w-7xl h-16 flex items-center py-4">
-        <Link to="/" className="font-bold text-xl">
-          Needyfy
-        </Link>
+        <Logo size="md" showText={true} />
+        
         <div className="ml-auto flex items-center space-x-4">
           <NotificationCenter />
           <ThemeToggle />
