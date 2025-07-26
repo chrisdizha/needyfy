@@ -15,6 +15,8 @@ interface SecurityEvent {
   event_details: any;
   risk_level: 'low' | 'medium' | 'high' | 'critical';
   created_at: string;
+  ip_address?: string | null;
+  user_agent?: string | null;
 }
 
 export const SecurityAuditDashboard = () => {
@@ -47,16 +49,30 @@ export const SecurityAuditDashboard = () => {
 
       if (error) throw error;
 
-      setEvents(eventsData || []);
+      // Type-safe transformation of the data
+      const typedEvents: SecurityEvent[] = (eventsData || []).map(event => ({
+        id: event.id,
+        user_id: event.user_id || '',
+        event_type: event.event_type || '',
+        event_details: event.event_details,
+        risk_level: ['low', 'medium', 'high', 'critical'].includes(event.risk_level) 
+          ? event.risk_level as 'low' | 'medium' | 'high' | 'critical'
+          : 'low', // fallback to 'low' if invalid value
+        created_at: event.created_at || '',
+        ip_address: event.ip_address,
+        user_agent: event.user_agent
+      }));
+
+      setEvents(typedEvents);
       
       // Calculate statistics
-      const totalEvents = eventsData?.length || 0;
-      const highRiskEvents = eventsData?.filter(e => ['high', 'critical'].includes(e.risk_level)).length || 0;
-      const suspiciousUsers = new Set(eventsData?.filter(e => e.risk_level === 'high').map(e => e.user_id)).size;
-      const activeThreats = eventsData?.filter(e => 
+      const totalEvents = typedEvents.length;
+      const highRiskEvents = typedEvents.filter(e => ['high', 'critical'].includes(e.risk_level)).length;
+      const suspiciousUsers = new Set(typedEvents.filter(e => e.risk_level === 'high').map(e => e.user_id)).size;
+      const activeThreats = typedEvents.filter(e => 
         e.risk_level === 'critical' && 
         new Date(e.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
-      ).length || 0;
+      ).length;
 
       setStats({
         totalEvents,
