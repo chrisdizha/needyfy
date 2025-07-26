@@ -59,8 +59,8 @@ export const SecurityAuditDashboard = () => {
           ? event.risk_level as 'low' | 'medium' | 'high' | 'critical'
           : 'low', // fallback to 'low' if invalid value
         created_at: event.created_at || '',
-        ip_address: event.ip_address,
-        user_agent: event.user_agent
+        ip_address: event.ip_address ? String(event.ip_address) : null,
+        user_agent: event.user_agent ? String(event.user_agent) : null
       }));
 
       setEvents(typedEvents);
