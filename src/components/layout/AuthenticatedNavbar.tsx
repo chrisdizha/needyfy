@@ -35,7 +35,7 @@ const AuthenticatedNavbar = () => {
       <div className="container max-w-7xl h-16 flex items-center py-4">
         <Logo size="md" showText={true} />
         
-        <div className="ml-auto flex items-center space-x-4">
+        <div className="ml-auto flex items-center space-x-2 sm:space-x-4">
           <NotificationCenter />
           <ThemeToggle />
           <LanguageSelector />
@@ -64,7 +64,7 @@ const AuthenticatedNavbar = () => {
                 <Link to="/profile">{t('nav.profile')}</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/bookings">{t('nav.myBookings')}</Link>
+                <Link to="/equipment">{t('nav.myBookings')}</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleSignOut} disabled={isSigningOut}>

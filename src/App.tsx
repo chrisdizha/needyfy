@@ -1,9 +1,11 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { EnhancedSecurityProvider } from "@/components/security/EnhancedSecurityProvider";
 import { AuthSecurityConfig } from "@/components/security/AuthSecurityConfig";
+import { ThemeProvider } from "next-themes";
 import Index from "@/pages/Index";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
@@ -26,116 +28,137 @@ import Privacy from "@/pages/Privacy";
 import Contact from "@/pages/Contact";
 import About from "@/pages/About";
 import NotFound from "@/pages/NotFound";
+import Dashboard from "@/pages/Dashboard";
+import Categories from "@/pages/Categories";
 import { SecureRoute } from "@/components/auth/SecureRoute";
 import { AdminRoute } from "@/components/auth/AdminRoute";
+import "@/lib/i18n";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <EnhancedSecurityProvider>
-          <AuthSecurityConfig />
-          <Router>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/about" element={<About />} />
-              <Route
-                path="/profile"
-                element={
-                  <SecureRoute>
-                    <Profile />
-                  </SecureRoute>
-                }
-              />
-              <Route
-                path="/admin"
-                element={
-                  <AdminRoute>
-                    <Admin />
-                  </AdminRoute>
-                }
-              />
-              <Route path="/equipment" element={<Equipment />} />
-              <Route
-                path="/equipment/new"
-                element={
-                  <SecureRoute>
-                    <NewEquipment />
-                  </SecureRoute>
-                }
-              />
-              <Route
-                path="/equipment/:id/edit"
-                element={
-                  <SecureRoute>
-                    <EditEquipment />
-                  </SecureRoute>
-                }
-              />
-              <Route path="/equipment/:id" element={<EquipmentDetails />} />
-              <Route
-                path="/reports/new"
-                element={
-                  <SecureRoute>
-                    <NewReport />
-                  </SecureRoute>
-                }
-              />
-              <Route
-                path="/reports/:id"
-                element={
-                  <SecureRoute>
-                    <ReportDetails />
-                  </SecureRoute>
-                }
-              />
-              <Route
-                path="/reports/:id/edit"
-                element={
-                  <SecureRoute>
-                    <EditReport />
-                  </SecureRoute>
-                }
-              />
-              <Route
-                path="/disputes/new"
-                element={
-                  <SecureRoute>
-                    <NewDispute />
-                  </SecureRoute>
-                }
-              />
-              <Route
-                path="/disputes/:id"
-                element={
-                  <SecureRoute>
-                    <DisputeDetails />
-                  </SecureRoute>
-                }
-              />
-              <Route
-                path="/disputes/:id/edit"
-                element={
-                  <SecureRoute>
-                    <EditDispute />
-                  </SecureRoute>
-                }
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Router>
-          <Toaster />
-        </EnhancedSecurityProvider>
-      </AuthProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <AuthProvider>
+          <EnhancedSecurityProvider>
+            <AuthSecurityConfig />
+            <Router>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/categories" element={<Categories />} />
+                <Route path="/equipment" element={<Equipment />} />
+                <Route path="/equipment/:id" element={<EquipmentDetails />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <SecureRoute>
+                      <Dashboard />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <SecureRoute>
+                      <Profile />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/admin"
+                  element={
+                    <AdminRoute>
+                      <Admin />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/equipment/new"
+                  element={
+                    <SecureRoute>
+                      <NewEquipment />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/equipment/:id/edit"
+                  element={
+                    <SecureRoute>
+                      <EditEquipment />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/reports/new"
+                  element={
+                    <SecureRoute>
+                      <NewReport />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/reports/:id"
+                  element={
+                    <SecureRoute>
+                      <ReportDetails />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/reports/:id/edit"
+                  element={
+                    <SecureRoute>
+                      <EditReport />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/disputes/new"
+                  element={
+                    <SecureRoute>
+                      <NewDispute />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/disputes/:id"
+                  element={
+                    <SecureRoute>
+                      <DisputeDetails />
+                    </SecureRoute>
+                  }
+                />
+                <Route
+                  path="/disputes/:id/edit"
+                  element={
+                    <SecureRoute>
+                      <EditDispute />
+                    </SecureRoute>
+                  }
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Router>
+            <Toaster />
+          </EnhancedSecurityProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

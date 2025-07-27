@@ -5,34 +5,25 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
-  const { theme, setTheme, systemTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    
-    // Auto-detect system theme preference on first load
-    if (!theme || theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const prefersDark = mediaQuery.matches;
-      
-      // Set theme based on system preference without user prompt
-      setTheme(prefersDark ? 'dark' : 'light');
-      
-      // Listen for system theme changes
-      const handleChange = (e: MediaQueryListEvent) => {
-        if (theme === 'system') {
-          setTheme(e.matches ? 'dark' : 'light');
-        }
-      };
-      
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    }
-  }, [theme, setTheme]);
+  }, []);
 
   if (!mounted) {
-    return null;
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-9 w-9 transition-all duration-200"
+        disabled
+      >
+        <Sun className="h-4 w-4" />
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+    );
   }
 
   const toggleTheme = () => {

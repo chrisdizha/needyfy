@@ -142,6 +142,33 @@
   --tw-space-x-reverse: 1;
 }
 
+/* Mobile-first responsive design improvements */
+@media (max-width: 640px) {
+  .container {
+    @apply px-4;
+  }
+  
+  /* Ensure dropdowns work properly on mobile */
+  .dropdown-menu {
+    @apply fixed z-50;
+  }
+  
+  /* Prevent horizontal scrolling on mobile */
+  body {
+    @apply overflow-x-hidden;
+  }
+  
+  /* Improve touch targets on mobile */
+  button, a {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  /* Better spacing for mobile */
+  .mobile-spacing {
+    @apply space-y-2 space-x-2;
+  }
+}
+
 /* Improved accessibility */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -154,4 +181,36 @@
 /* Focus styles for better accessibility */
 *:focus-visible {
   @apply ring-2 ring-ring ring-offset-2 ring-offset-background outline-none;
+}
+
+/* Ensure proper z-index for dropdowns */
+.dropdown-content {
+  @apply z-50 bg-popover border shadow-lg;
+}
+
+/* Mobile navigation improvements */
+@media (max-width: 768px) {
+  .nav-mobile {
+    @apply text-sm;
+  }
+  
+  .nav-mobile .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 0;
+    margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
+    margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+  }
+}
+
+/* Ensure proper theme transitions */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Fix for notification center mobile layout */
+.notification-mobile {
+  @apply text-sm;
+}
+
+.notification-mobile .truncate {
+  @apply max-w-[200px] sm:max-w-none;
 }
