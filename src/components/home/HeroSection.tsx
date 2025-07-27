@@ -21,7 +21,7 @@ const HeroSection = () => {
     e.preventDefault();
     
     if (!searchQuery.trim()) {
-      toast.error("Please enter what you're looking for");
+      toast.error(t('errors.searchRequired'));
       return;
     }
 
@@ -41,27 +41,43 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-accent/5 py-16 md:py-24">
-      <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-2">
+    <div className="relative bg-gradient-to-br from-primary/5 via-primary/10 to-accent/5 py-16 md:py-24 overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-accent rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-700"></div>
+      </div>
+
+      {/* Hero Image - People-focused */}
+      <div className="absolute inset-0 opacity-10">
+        <div 
+          className="w-full h-full bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80')`
+          }}
+        />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-2 leading-tight">
             {t('hero.title')}
           </h1>
-          <h2 className="text-2xl md:text-3xl text-primary font-semibold mb-4">
-            Everything you need—just when you need it.
+          <h2 className="text-2xl md:text-3xl lg:text-4xl text-primary font-semibold mb-4 tracking-wide">
+            {t('hero.tagline')}
           </h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
             {t('hero.subtitle')}
           </p>
           
-          <form onSubmit={handleSearch} className="bg-card p-5 rounded-lg shadow-lg max-w-2xl mx-auto border">
+          <form onSubmit={handleSearch} className="bg-card/95 backdrop-blur-sm p-6 rounded-2xl shadow-xl max-w-3xl mx-auto border border-border/20">
             <div className="flex flex-col space-y-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
                 <Input 
                   type="text" 
                   placeholder={t('hero.searchPlaceholder')}
-                  className="pl-10 w-full" 
+                  className="pl-10 w-full h-12 text-base border-2 border-border/20 focus:border-primary/50 rounded-lg" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -72,20 +88,21 @@ const HeroSection = () => {
                   <LocationPicker
                     value={location}
                     onChange={setLocation}
-                    placeholder="Your location"
+                    placeholder={t('hero.locationPlaceholder')}
+                    className="h-12 border-2 border-border/20 focus:border-primary/50 rounded-lg"
                   />
                 </div>
                 <div className="flex-1">
                   <DateRangePicker
                     value={dateRange}
                     onChange={setDateRange}
-                    placeholder="Select rental dates"
-                    className="w-full"
+                    placeholder={t('hero.datesPlaceholder')}
+                    className="w-full h-12 border-2 border-border/20 focus:border-primary/50 rounded-lg"
                   />
                 </div>
                 <Button 
                   type="submit" 
-                  className="whitespace-nowrap px-6"
+                  className="whitespace-nowrap px-8 h-12 text-base font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
                 >
                   {t('common.search')}
                 </Button>
@@ -93,17 +110,24 @@ const HeroSection = () => {
             </div>
           </form>
           
-          <div className="mt-8">
-            <p className="text-muted-foreground mb-3">Top categories:</p>
+          <div className="mt-10">
+            <p className="text-muted-foreground mb-4 text-sm font-medium">{t('hero.topCategories')}</p>
             <div className="flex flex-wrap justify-center gap-3">
-              {["Construction", "Vehicles", "Electronics", "Event Equipment", "Home & Garden", "Photography"].map((category) => (
+              {[
+                { key: 'construction', label: t('categories.construction') },
+                { key: 'vehicles', label: t('categories.vehicles') },
+                { key: 'electronics', label: t('categories.electronics') },
+                { key: 'eventEquipment', label: t('categories.eventEquipment') },
+                { key: 'homeGarden', label: t('categories.homeGarden') },
+                { key: 'photography', label: t('categories.photography') }
+              ].map((category) => (
                 <Button 
-                  key={category}
+                  key={category.key}
                   variant="outline" 
-                  className="rounded-full hover:bg-primary hover:text-primary-foreground"
-                  onClick={() => handleCategoryClick(category)}
+                  className="rounded-full hover:bg-primary hover:text-primary-foreground transition-all duration-200 border-2 border-border/30 hover:border-primary/50 font-medium"
+                  onClick={() => handleCategoryClick(category.key)}
                 >
-                  {category}
+                  {category.label}
                 </Button>
               ))}
             </div>

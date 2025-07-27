@@ -1,68 +1,110 @@
 
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Truck, Car, Package, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/hooks/useI18n';
+import { useNavigate } from 'react-router-dom';
 
 interface CategoryCardProps {
   title: string;
   description: string;
   icon: React.ReactNode;
+  backgroundImage?: string;
   className?: string;
+  onClick?: () => void;
 }
 
-const CategoryCard = ({ title, description, icon, className }: CategoryCardProps) => (
-  <Card className={cn("equipment-card needyfy-shadow cursor-pointer overflow-hidden", className)}>
-    <CardContent className="p-6 flex flex-col items-center text-center">
-      <div className="mb-4 p-3 rounded-full bg-primary/10">
-        {icon}
+const CategoryCard = ({ title, description, icon, backgroundImage, className, onClick }: CategoryCardProps) => (
+  <Card 
+    className={cn(
+      "equipment-card needyfy-shadow cursor-pointer overflow-hidden group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-2 border-border/20 hover:border-primary/20", 
+      className
+    )}
+    onClick={onClick}
+  >
+    <div className="relative h-48 overflow-hidden">
+      {backgroundImage && (
+        <div 
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+          style={{ backgroundImage: `url(${backgroundImage})` }}
+        />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+      <div className="absolute bottom-4 left-4 right-4 text-white">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="p-2 rounded-full bg-white/20 backdrop-blur-sm">
+            {icon}
+          </div>
+          <h3 className="text-lg font-semibold">{title}</h3>
+        </div>
+        <p className="text-sm text-white/90 line-clamp-2">{description}</p>
       </div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-gray-500">{description}</p>
-    </CardContent>
+    </div>
   </Card>
 );
 
 const CategorySection = () => {
+  const { t } = useI18n();
+  const navigate = useNavigate();
+
+  const handleCategoryClick = (category: string) => {
+    navigate(`/equipment?category=${encodeURIComponent(category.toLowerCase())}`);
+  };
+
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-3">Popular Equipment Categories</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Browse through the most popular categories or search for specific equipment
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t('categories.popularCategories')}</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+            {t('categories.browseCategoriesDesc')}
           </p>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <CategoryCard 
-            title="Trucks & Trailers" 
-            description="Moving trucks, flatbeds, and specialized trailers"
-            icon={<Truck className="h-8 w-8 text-needyfy-blue" />}
+            title={t('categories.trucksTrailers')} 
+            description={t('categories.trucksTrailersDesc')}
+            icon={<Truck className="h-6 w-6 text-white" />}
+            backgroundImage="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=400&q=80"
+            onClick={() => handleCategoryClick('trucks-trailers')}
           />
           <CategoryCard 
-            title="Cars & Vehicles" 
-            description="Cars, vans, and specialty vehicles for every need"
-            icon={<Car className="h-8 w-8 text-needyfy-blue" />}
+            title={t('categories.carsVehicles')} 
+            description={t('categories.carsVehiclesDesc')}
+            icon={<Car className="h-6 w-6 text-white" />}
+            backgroundImage="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80"
+            onClick={() => handleCategoryClick('cars-vehicles')}
           />
           <CategoryCard 
-            title="Construction Equipment" 
-            description="Excavators, loaders, and construction tools"
-            icon={<Package className="h-8 w-8 text-needyfy-blue" />}
+            title={t('categories.constructionEquipment')} 
+            description={t('categories.constructionEquipmentDesc')}
+            icon={<Package className="h-6 w-6 text-white" />}
+            backgroundImage="https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=400&q=80"
+            onClick={() => handleCategoryClick('construction')}
           />
           <CategoryCard 
-            title="Event & Party" 
-            description="Everything for your next party or special event"
-            icon={<Calendar className="h-8 w-8 text-needyfy-blue" />}
+            title={t('categories.eventParty')} 
+            description={t('categories.eventPartyDesc')}
+            icon={<Calendar className="h-6 w-6 text-white" />}
+            backgroundImage="https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?auto=format&fit=crop&w=400&q=80"
+            onClick={() => handleCategoryClick('event-party')}
           />
         </div>
         
-        <div className="text-center mt-10">
-          <a href="/categories" className="text-primary hover:underline font-medium inline-flex items-center">
-            Browse All Categories
-            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center mt-12">
+          <Button 
+            variant="outline" 
+            size="lg"
+            className="font-medium hover:bg-primary hover:text-primary-foreground transition-all duration-200 border-2 border-border/30 hover:border-primary/50"
+            onClick={() => navigate('/categories')}
+          >
+            {t('nav.browseAll')}
+            <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </a>
+          </Button>
         </div>
       </div>
     </section>
