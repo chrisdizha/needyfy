@@ -89,7 +89,6 @@ const HeroSection = () => {
                     value={location}
                     onChange={setLocation}
                     placeholder={t('hero.locationPlaceholder')}
-                    className="h-12 border-2 border-border/20 focus:border-primary/50 rounded-lg"
                   />
                 </div>
                 <div className="flex-1">
