@@ -2,179 +2,192 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { EnhancedSecurityProvider } from "@/components/security/EnhancedSecurityProvider";
+import { OptimizedAuthProvider, useAuth } from "@/contexts/OptimizedAuthContext";
+import { OptimizedSecurityProvider } from "@/components/security/OptimizedSecurityProvider";
 import { AuthSecurityConfig } from "@/components/security/AuthSecurityConfig";
 import { ThemeProvider } from "next-themes";
-import { useAuth } from "@/contexts/AuthContext";
-import PublicHome from "@/pages/PublicHome";
-import AuthenticatedHome from "@/pages/AuthenticatedHome";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
-import Profile from "@/pages/Profile";
-import Admin from "@/pages/Admin";
-import Equipment from "@/pages/Equipment";
-import NewEquipment from "@/pages/NewEquipment";
-import EditEquipment from "@/pages/EditEquipment";
-import EquipmentDetails from "@/pages/EquipmentDetails";
-import NewReport from "@/pages/NewReport";
-import ReportDetails from "@/pages/ReportDetails";
-import EditReport from "@/pages/EditReport";
-import NewDispute from "@/pages/NewDispute";
-import DisputeDetails from "@/pages/DisputeDetails";
-import EditDispute from "@/pages/EditDispute";
-import ForgotPassword from "@/pages/ForgotPassword";
-import ResetPassword from "@/pages/ResetPassword";
-import Terms from "@/pages/Terms";
-import Privacy from "@/pages/Privacy";
-import Contact from "@/pages/Contact";
-import About from "@/pages/About";
-import NotFound from "@/pages/NotFound";
-import Dashboard from "@/pages/Dashboard";
-import Categories from "@/pages/Categories";
+import { Suspense } from "react";
 import { SecureRoute } from "@/components/auth/SecureRoute";
 import { AdminRoute } from "@/components/auth/AdminRoute";
+import {
+  LazyPublicHome,
+  LazyAuthenticatedHome,
+  LazyLogin,
+  LazyRegister,
+  LazyProfile,
+  LazyAdmin,
+  LazyEquipment,
+  LazyNewEquipment,
+  LazyEditEquipment,
+  LazyEquipmentDetails,
+  LazyNewReport,
+  LazyReportDetails,
+  LazyEditReport,
+  LazyNewDispute,
+  LazyDisputeDetails,
+  LazyEditDispute,
+  LazyForgotPassword,
+  LazyResetPassword,
+  LazyTerms,
+  LazyPrivacy,
+  LazyContact,
+  LazyAbout,
+  LazyNotFound,
+  LazyDashboard,
+  LazyCategories
+} from "@/components/routing/LazyRoutes";
 import "@/lib/i18n";
 
+// Optimized QueryClient with better cache configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
       staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+      refetchOnWindowFocus: false, // Reduce unnecessary refetches
+    },
+    mutations: {
+      retry: 1,
     },
   },
 });
 
-// Home component that conditionally renders based on auth status
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+  </div>
+);
+
+// Optimized Home component
 const Home = () => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <LoadingFallback />;
   }
 
-  return user ? <AuthenticatedHome /> : <PublicHome />;
+  return user ? <LazyAuthenticatedHome /> : <LazyPublicHome />;
 };
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-        <AuthProvider>
-          <EnhancedSecurityProvider>
+        <OptimizedAuthProvider>
+          <OptimizedSecurityProvider>
             <AuthSecurityConfig />
             <Router>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/categories" element={<Categories />} />
-                <Route path="/equipment" element={<Equipment />} />
-                <Route path="/equipment/:id" element={<EquipmentDetails />} />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <SecureRoute>
-                      <Dashboard />
-                    </SecureRoute>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <SecureRoute>
-                      <Profile />
-                    </SecureRoute>
-                  }
-                />
-                <Route
-                  path="/admin"
-                  element={
-                    <AdminRoute>
-                      <Admin />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="/equipment/new"
-                  element={
-                    <SecureRoute>
-                      <NewEquipment />
-                    </SecureRoute>
-                  }
-                />
-                <Route
-                  path="/equipment/:id/edit"
-                  element={
-                    <SecureRoute>
-                      <EditEquipment />
-                    </SecureRoute>
-                  }
-                />
-                <Route
-                  path="/reports/new"
-                  element={
-                    <SecureRoute>
-                      <NewReport />
-                    </SecureRoute>
-                  }
-                />
-                <Route
-                  path="/reports/:id"
-                  element={
-                    <SecureRoute>
-                      <ReportDetails />
-                    </SecureRoute>
-                  }
-                />
-                <Route
-                  path="/reports/:id/edit"
-                  element={
-                    <SecureRoute>
-                      <EditReport />
-                    </SecureRoute>
-                  }
-                />
-                <Route
-                  path="/disputes/new"
-                  element={
-                    <SecureRoute>
-                      <NewDispute />
-                    </SecureRoute>
-                  }
-                />
-                <Route
-                  path="/disputes/:id"
-                  element={
-                    <SecureRoute>
-                      <DisputeDetails />
-                    </SecureRoute>
-                  }
-                />
-                <Route
-                  path="/disputes/:id/edit"
-                  element={
-                    <SecureRoute>
-                      <EditDispute />
-                    </SecureRoute>
-                  }
-                />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<LazyLogin />} />
+                  <Route path="/register" element={<LazyRegister />} />
+                  <Route path="/forgot-password" element={<LazyForgotPassword />} />
+                  <Route path="/reset-password" element={<LazyResetPassword />} />
+                  <Route path="/terms" element={<LazyTerms />} />
+                  <Route path="/privacy" element={<LazyPrivacy />} />
+                  <Route path="/contact" element={<LazyContact />} />
+                  <Route path="/about" element={<LazyAbout />} />
+                  <Route path="/categories" element={<LazyCategories />} />
+                  <Route path="/equipment" element={<LazyEquipment />} />
+                  <Route path="/equipment/:id" element={<LazyEquipmentDetails />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <SecureRoute>
+                        <LazyDashboard />
+                      </SecureRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <SecureRoute>
+                        <LazyProfile />
+                      </SecureRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin"
+                    element={
+                      <AdminRoute>
+                        <LazyAdmin />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/equipment/new"
+                    element={
+                      <SecureRoute>
+                        <LazyNewEquipment />
+                      </SecureRoute>
+                    }
+                  />
+                  <Route
+                    path="/equipment/:id/edit"
+                    element={
+                      <SecureRoute>
+                        <LazyEditEquipment />
+                      </SecureRoute>
+                    }
+                  />
+                  <Route
+                    path="/reports/new"
+                    element={
+                      <SecureRoute>
+                        <LazyNewReport />
+                      </SecureRoute>
+                    }
+                  />
+                  <Route
+                    path="/reports/:id"
+                    element={
+                      <SecureRoute>
+                        <LazyReportDetails />
+                      </SecureRoute>
+                    }
+                  />
+                  <Route
+                    path="/reports/:id/edit"
+                    element={
+                      <SecureRoute>
+                        <LazyEditReport />
+                      </SecureRoute>
+                    }
+                  />
+                  <Route
+                    path="/disputes/new"
+                    element={
+                      <SecureRoute>
+                        <LazyNewDispute />
+                      </SecureRoute>
+                    }
+                  />
+                  <Route
+                    path="/disputes/:id"
+                    element={
+                      <SecureRoute>
+                        <LazyDisputeDetails />
+                      </SecureRoute>
+                    }
+                  />
+                  <Route
+                    path="/disputes/:id/edit"
+                    element={
+                      <SecureRoute>
+                        <LazyEditDispute />
+                      </SecureRoute>
+                    }
+                  />
+                  <Route path="*" element={<LazyNotFound />} />
+                </Routes>
+              </Suspense>
             </Router>
             <Toaster />
-          </EnhancedSecurityProvider>
-        </AuthProvider>
+          </OptimizedSecurityProvider>
+        </OptimizedAuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
