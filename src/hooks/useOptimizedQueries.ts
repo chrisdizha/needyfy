@@ -27,13 +27,12 @@ interface EquipmentFilters {
   location?: string;
   price_min?: number;
   price_max?: number;
-  [key: string]: string | number | undefined;
 }
 
 // Optimized equipment queries
 export const useOptimizedEquipmentQuery = (limit: number = 10, filters: EquipmentFilters = {}) => {
   return useQuery({
-    queryKey: ['equipment', JSON.stringify(filters), limit] as const,
+    queryKey: ['equipment', filters, limit] as const,
     queryFn: async () => {
       let query = supabase
         .from('equipment_listings')
@@ -41,11 +40,18 @@ export const useOptimizedEquipmentQuery = (limit: number = 10, filters: Equipmen
         .eq('status', 'active');
 
       // Apply filters efficiently
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          query = query.eq(key, value);
-        }
-      });
+      if (filters.category) {
+        query = query.eq('category', filters.category);
+      }
+      if (filters.location) {
+        query = query.eq('location', filters.location);
+      }
+      if (filters.price_min !== undefined) {
+        query = query.gte('price', filters.price_min);
+      }
+      if (filters.price_max !== undefined) {
+        query = query.lte('price', filters.price_max);
+      }
 
       const { data, error } = await query
         .order('created_at', { ascending: false })
