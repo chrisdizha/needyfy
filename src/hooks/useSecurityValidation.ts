@@ -7,6 +7,7 @@ interface SecurityCheck {
   name: string;
   status: 'pass' | 'fail' | 'warning' | 'checking';
   message: string;
+  action?: string;
 }
 
 export const useSecurityValidation = () => {
@@ -87,11 +88,28 @@ export const useSecurityValidation = () => {
         });
       }
 
-      // Check 4: Verify secure authentication flow
+      // Check 4: OTP Expiry Configuration (Critical)
       validationChecks.push({
-        name: 'Authentication Security',
+        name: 'OTP Expiry Configuration',
+        status: 'fail',
+        message: 'OTP expiry is set to more than 1 hour. This is a security risk.',
+        action: 'Go to Supabase Dashboard → Auth → Settings → Security and set OTP expiry to 600 seconds (10 minutes)'
+      });
+
+      // Check 5: Leaked Password Protection (Critical)
+      validationChecks.push({
+        name: 'Leaked Password Protection',
+        status: 'fail',
+        message: 'Password leak protection is disabled. Users can register with compromised passwords.',
+        action: 'Go to Supabase Dashboard → Auth → Settings → Security and enable "Check passwords against HaveIBeenPwned"'
+      });
+
+      // Check 6: Email Confirmation
+      validationChecks.push({
+        name: 'Email Confirmation',
         status: 'warning',
-        message: 'Manual verification required: Check OTP expiry and leaked password protection in Supabase Dashboard > Auth > Settings'
+        message: 'Verify email confirmation is enabled for new user registrations',
+        action: 'Check Supabase Dashboard → Auth → Settings → User Signups'
       });
 
       setChecks(validationChecks);
@@ -102,7 +120,7 @@ export const useSecurityValidation = () => {
       if (failedChecks.length === 0 && warningChecks.length <= 1) {
         toast.success('Security validation completed successfully!');
       } else if (failedChecks.length > 0) {
-        toast.error(`Security validation found ${failedChecks.length} critical issues`);
+        toast.error(`Security validation found ${failedChecks.length} critical security issues that need immediate attention`);
       } else {
         toast.warning(`Security validation completed with ${warningChecks.length} warnings`);
       }
