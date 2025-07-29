@@ -6,7 +6,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { EnhancedSecurityProvider } from "@/components/security/EnhancedSecurityProvider";
 import { AuthSecurityConfig } from "@/components/security/AuthSecurityConfig";
 import { ThemeProvider } from "next-themes";
-import Index from "@/pages/Index";
+import { useAuth } from "@/contexts/AuthContext";
+import PublicHome from "@/pages/PublicHome";
+import AuthenticatedHome from "@/pages/AuthenticatedHome";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Profile from "@/pages/Profile";
@@ -43,16 +45,31 @@ const queryClient = new QueryClient({
   },
 });
 
+// Home component that conditionally renders based on auth status
+const Home = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return user ? <AuthenticatedHome /> : <PublicHome />;
+};
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
         <AuthProvider>
           <EnhancedSecurityProvider>
             <AuthSecurityConfig />
             <Router>
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

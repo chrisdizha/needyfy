@@ -1,4 +1,3 @@
-
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -52,8 +51,8 @@ const resources = {
       },
       hero: {
         title: 'Rent Equipment. Share Resources. Build Community.',
-        tagline: 'Rent. List. Earn.',
-        subtitle: 'Connect with local equipment owners and renters in your area',
+        tagline: 'List. Rent. Earn.',
+        subtitle: 'Everything you need, just when you need it!',
         searchPlaceholder: 'What equipment do you need?',
         getStarted: 'Get Started',
         learnMore: 'Learn More',
@@ -265,8 +264,8 @@ const resources = {
       },
       hero: {
         title: 'Alquila Equipos. Comparte Recursos. Construye Comunidad.',
-        tagline: 'Alquila. Lista. Gana.',
-        subtitle: 'Conecta con propietarios y arrendatarios de equipos locales en tu área',
+        tagline: 'Lista. Alquila. Gana.',
+        subtitle: '¡Todo lo que necesitas, justo cuando lo necesitas!',
         searchPlaceholder: '¿Qué equipo necesitas?',
         getStarted: 'Comenzar',
         learnMore: 'Saber Más',
@@ -422,8 +421,8 @@ const resources = {
       },
       hero: {
         title: 'Louez des Équipements. Partagez des Ressources. Construisez une Communauté.',
-        tagline: 'Louez. Listez. Gagnez.',
-        subtitle: 'Connectez-vous avec des propriétaires et locataires d\'équipements locaux dans votre région',
+        tagline: 'Listez. Louez. Gagnez.',
+        subtitle: 'Tout ce dont vous avez besoin, juste quand vous en avez besoin!',
         searchPlaceholder: 'De quel équipement avez-vous besoin?',
         getStarted: 'Commencer',
         learnMore: 'En Savoir Plus',
@@ -470,7 +469,7 @@ const resources = {
       },
       cta: {
         needEquipment: 'Besoin d\'Équipement?',
-        needEquipmentDesc: 'Parcourez des milliers d\'articles disponibles à la location auprès de fournisseurs locaux. Trouvez exactement ce dont vous avez besoin sans le coût élevé de l\'achat.',
+        needEquipmentDesc: 'Découvrez des milliers d\'articles disponibles à la location auprès de fournisseurs locaux. Trouvez exactement ce dont vous avez besoin sans le coût élevé de l\'achat.',
         rentEquipment: 'Louer Équipement',
         ownEquipment: 'Vous Possédez de l\'Équipement?',
         ownEquipmentDesc: 'Transformez votre équipement inactif en revenus. Listez vos articles sur Needyfy et commencez à gagner de l\'argent avec les locations.',
@@ -579,8 +578,8 @@ const resources = {
       },
       hero: {
         title: 'Mieten Sie Ausrüstung. Teilen Sie Ressourcen. Bauen Sie Gemeinschaft.',
-        tagline: 'Mieten. Listen. Verdienen.',
-        subtitle: 'Verbinden Sie sich mit lokalen Ausrüstungsbesitzern und Mietern in Ihrer Gegend',
+        tagline: 'Listen. Mieten. Verdienen.',
+        subtitle: 'Alles was Sie brauchen, genau dann wenn Sie es brauchen!',
         searchPlaceholder: 'Welche Ausrüstung benötigen Sie?',
         getStarted: 'Loslegen',
         learnMore: 'Mehr Erfahren',

@@ -66,7 +66,7 @@ const HeroSection = () => {
           <h2 className="text-2xl md:text-3xl lg:text-4xl text-primary font-semibold mb-4 tracking-wide">
             {t('hero.tagline')}
           </h2>
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-primary mb-8 max-w-2xl mx-auto leading-relaxed font-medium">
             {t('hero.subtitle')}
           </p>
           
