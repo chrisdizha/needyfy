@@ -21,10 +21,19 @@ export const queryConfig = {
   }
 };
 
+// Define filter types explicitly
+interface EquipmentFilters {
+  category?: string;
+  location?: string;
+  price_min?: number;
+  price_max?: number;
+  [key: string]: string | number | undefined;
+}
+
 // Optimized equipment queries
-export const useOptimizedEquipmentQuery = (limit = 10, filters = {}) => {
+export const useOptimizedEquipmentQuery = (limit: number = 10, filters: EquipmentFilters = {}) => {
   return useQuery({
-    queryKey: ['equipment', filters, limit],
+    queryKey: ['equipment', JSON.stringify(filters), limit] as const,
     queryFn: async () => {
       let query = supabase
         .from('equipment_listings')
@@ -33,7 +42,7 @@ export const useOptimizedEquipmentQuery = (limit = 10, filters = {}) => {
 
       // Apply filters efficiently
       Object.entries(filters).forEach(([key, value]) => {
-        if (value) {
+        if (value !== undefined && value !== null && value !== '') {
           query = query.eq(key, value);
         }
       });
@@ -52,7 +61,7 @@ export const useOptimizedEquipmentQuery = (limit = 10, filters = {}) => {
 // Optimized user data queries
 export const useOptimizedUserQuery = (userId: string | undefined) => {
   return useQuery({
-    queryKey: ['user-profile', userId],
+    queryKey: ['user-profile', userId] as const,
     queryFn: async () => {
       if (!userId) return null;
       
@@ -71,9 +80,9 @@ export const useOptimizedUserQuery = (userId: string | undefined) => {
 };
 
 // Prefetch critical data
-export const usePrefetchCriticalData = (user: any) => {
+export const usePrefetchCriticalData = (user: { id?: string } | null) => {
   useQuery({
-    queryKey: ['user-equipment', user?.id],
+    queryKey: ['user-equipment', user?.id] as const,
     queryFn: async () => {
       if (!user?.id) return [];
       
