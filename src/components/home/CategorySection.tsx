@@ -67,7 +67,7 @@ const CategorySection = () => {
             title={t('categories.trucksTrailers')} 
             description={t('categories.trucksTrailersDesc')}
             icon={<Truck className="h-6 w-6 text-white" />}
-            backgroundImage="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=400&q=80"
+            backgroundImage="/lovable-uploads/e541a522-5621-43ff-b544-3e118a24a424.png"
             onClick={() => handleCategoryClick('trucks-trailers')}
           />
           <CategoryCard 
