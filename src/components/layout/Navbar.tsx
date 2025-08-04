@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Search, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Logo from './Logo';
+import { ThemeToggle } from './ThemeToggle';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,6 +41,7 @@ const Navbar = () => {
             <Link to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium">
               List Equipment
             </Link>
+            <ThemeToggle />
             <Link to="/login">
               <Button variant="outline" size="sm" className="mr-2">
                 Log In

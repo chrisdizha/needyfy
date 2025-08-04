@@ -63,7 +63,7 @@ const HowItWorks = () => {
             title={t('howItWorks.step1Title')} 
             description={t('howItWorks.step1Desc')}
             icon={<User className="w-5 h-5" />}
-            image="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=200&q=80"
+            image="https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=200&q=80"
           />
           
           <Step 
@@ -71,7 +71,7 @@ const HowItWorks = () => {
             title={t('howItWorks.step2Title')} 
             description={t('howItWorks.step2Desc')}
             icon={<Car className="w-5 h-5" />}
-            image="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=200&q=80"
+            image="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=200&q=80"
           />
           
           <Step 
@@ -79,7 +79,7 @@ const HowItWorks = () => {
             title={t('howItWorks.step3Title')} 
             description={t('howItWorks.step3Desc')}
             icon={<CreditCard className="w-5 h-5" />}
-            image="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=200&q=80"
+            image="https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=200&q=80"
           />
           
           <Step 
@@ -87,7 +87,7 @@ const HowItWorks = () => {
             title={t('howItWorks.step4Title')} 
             description={t('howItWorks.step4Desc')}
             icon={<Package className="w-5 h-5" />}
-            image="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=200&q=80"
+            image="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=200&q=80"
             isLast={true}
           />
         </div>
