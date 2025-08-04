@@ -63,9 +63,12 @@ const HeroSection = () => {
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-primary mb-6 leading-tight font-poppins">
             {t('hero.tagline')}
           </h1>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl text-foreground font-semibold mb-8 tracking-wide font-poppins">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl text-foreground font-semibold mb-4 tracking-wide font-poppins">
             {t('hero.subtitle')}
           </h2>
+          <p className="text-base md:text-lg lg:text-xl text-muted-foreground font-normal mb-8 max-w-3xl mx-auto leading-relaxed font-poppins">
+            Rent what you need, from tools and vehicles to party supplies. Earn extra income from what you own. It's a smarter, more sustainable way to live and work! Become a micro entrepreneur using stuff you already own!
+          </p>
           
           <form onSubmit={handleSearch} className="bg-card/95 backdrop-blur-sm p-6 rounded-2xl shadow-xl max-w-3xl mx-auto border border-border/20">
             <div className="flex flex-col space-y-4">
