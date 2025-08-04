@@ -441,36 +441,105 @@ export type Database = {
         }
         Relationships: []
       }
+      payout_requests: {
+        Row: {
+          amount: number
+          booking_ids: string[] | null
+          created_at: string
+          currency: string
+          failure_reason: string | null
+          id: string
+          metadata: Json | null
+          payout_method: string
+          processed_at: string | null
+          provider_id: string
+          status: string
+          visa_card_last_four: string | null
+          visa_transaction_id: string | null
+        }
+        Insert: {
+          amount: number
+          booking_ids?: string[] | null
+          created_at?: string
+          currency?: string
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          payout_method?: string
+          processed_at?: string | null
+          provider_id: string
+          status?: string
+          visa_card_last_four?: string | null
+          visa_transaction_id?: string | null
+        }
+        Update: {
+          amount?: number
+          booking_ids?: string[] | null
+          created_at?: string
+          currency?: string
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          payout_method?: string
+          processed_at?: string | null
+          provider_id?: string
+          status?: string
+          visa_card_last_four?: string | null
+          visa_transaction_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           full_name: string | null
           id: string
+          minimum_payout_amount: number | null
+          payout_method: string | null
+          payout_schedule: string | null
           phone: string | null
           suspended: boolean
           suspended_at: string | null
           suspension_reason: string | null
           updated_at: string | null
+          visa_card_holder_name: string | null
+          visa_card_last_four: string | null
+          visa_card_number_encrypted: string | null
+          visa_card_verified: boolean | null
         }
         Insert: {
           avatar_url?: string | null
           full_name?: string | null
           id: string
+          minimum_payout_amount?: number | null
+          payout_method?: string | null
+          payout_schedule?: string | null
           phone?: string | null
           suspended?: boolean
           suspended_at?: string | null
           suspension_reason?: string | null
           updated_at?: string | null
+          visa_card_holder_name?: string | null
+          visa_card_last_four?: string | null
+          visa_card_number_encrypted?: string | null
+          visa_card_verified?: boolean | null
         }
         Update: {
           avatar_url?: string | null
           full_name?: string | null
           id?: string
+          minimum_payout_amount?: number | null
+          payout_method?: string | null
+          payout_schedule?: string | null
           phone?: string | null
           suspended?: boolean
           suspended_at?: string | null
           suspension_reason?: string | null
           updated_at?: string | null
+          visa_card_holder_name?: string | null
+          visa_card_last_four?: string | null
+          visa_card_number_encrypted?: string | null
+          visa_card_verified?: boolean | null
         }
         Relationships: []
       }
@@ -694,9 +763,17 @@ export type Database = {
       }
     }
     Functions: {
+      create_automatic_payout: {
+        Args: { provider_user_id: string }
+        Returns: string
+      }
       get_feedback_stats: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      get_provider_pending_earnings: {
+        Args: { provider_user_id: string }
+        Returns: number
       }
       get_unread_count: {
         Args: { p_user_id?: string }
