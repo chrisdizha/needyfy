@@ -74,7 +74,7 @@ const CategorySection = () => {
             title={t('categories.carsVehicles')} 
             description={t('categories.carsVehiclesDesc')}
             icon={<Car className="h-6 w-6 text-white" />}
-            backgroundImage="/lovable-uploads/93662c3c-5282-4dac-bd16-53c3159803c1.png"
+            backgroundImage="/lovable-uploads/4bda1892-294b-4f88-b51a-cc6d5cad44c6.png"
             onClick={() => handleCategoryClick('cars-vehicles')}
           />
           <CategoryCard 
