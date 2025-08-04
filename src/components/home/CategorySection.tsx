@@ -88,7 +88,7 @@ const CategorySection = () => {
             title={t('categories.eventParty')} 
             description={t('categories.eventPartyDesc')}
             icon={<Calendar className="h-6 w-6 text-white" />}
-            backgroundImage="https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?auto=format&fit=crop&w=400&q=80"
+            backgroundImage="/lovable-uploads/2e78ef83-a8b0-44af-a9b3-f691e46d14a1.png"
             onClick={() => handleCategoryClick('event-party')}
           />
         </div>
