@@ -3,8 +3,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { OptimizedAuthProvider, useAuth } from "@/contexts/OptimizedAuthContext";
-import { OptimizedSecurityProvider } from "@/components/security/OptimizedSecurityProvider";
-import { AuthSecurityConfig } from "@/components/security/AuthSecurityConfig";
+import { ConsolidatedSecurityProvider } from "@/components/security/ConsolidatedSecurityProvider";
+import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
+import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
+import OptimizedErrorBoundary from "@/components/performance/OptimizedErrorBoundary";
 import { ThemeProvider } from "next-themes";
 import { Suspense } from "react";
 import { SecureRoute } from "@/components/auth/SecureRoute";
@@ -71,14 +73,22 @@ const Home = () => {
   return user ? <LazyAuthenticatedHome /> : <LazyPublicHome />;
 };
 
+// Security headers hook component
+const SecurityHeadersProvider = ({ children }: { children: React.ReactNode }) => {
+  useSecurityHeaders();
+  return <>{children}</>;
+};
+
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-        <OptimizedAuthProvider>
-          <OptimizedSecurityProvider>
-            <AuthSecurityConfig />
-            <Router>
+    <OptimizedErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <OptimizedAuthProvider>
+            <AnalyticsProvider>
+              <ConsolidatedSecurityProvider>
+                <SecurityHeadersProvider>
+                  <Router>
               <Suspense fallback={<LoadingFallback />}>
                 <Routes>
                   <Route path="/" element={<Home />} />
@@ -182,14 +192,17 @@ function App() {
                     }
                   />
                   <Route path="*" element={<LazyNotFound />} />
-                </Routes>
-              </Suspense>
-            </Router>
-            <Toaster />
-          </OptimizedSecurityProvider>
-        </OptimizedAuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+                  </Routes>
+                </Suspense>
+                  </Router>
+                  <Toaster />
+                </SecurityHeadersProvider>
+              </ConsolidatedSecurityProvider>
+            </AnalyticsProvider>
+          </OptimizedAuthProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </OptimizedErrorBoundary>
   );
 }
 

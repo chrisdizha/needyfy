@@ -1,7 +1,7 @@
 
-import OptimizedFeaturedEquipment from './OptimizedFeaturedEquipment';
+import OptimizedEquipmentList from '../performance/OptimizedEquipmentList';
 
 // Re-export the optimized component for backward compatibility
-const FeaturedEquipment = OptimizedFeaturedEquipment;
+const FeaturedEquipment = () => <OptimizedEquipmentList limit={8} />;
 
 export default FeaturedEquipment;
