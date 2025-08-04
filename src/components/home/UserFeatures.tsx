@@ -6,51 +6,51 @@ const UserFeatures = () => {
     {
       title: "Advanced Search",
       description: "Find exactly what you need with powerful filters by category, price, and location.",
-      icon: <Search className="h-10 w-10 text-needyfy-blue p-2 bg-blue-100 rounded-full" />
+      icon: <Search className="h-10 w-10 text-needyfy-blue p-2 bg-primary/10 rounded-full" />
     },
     {
       title: "Easy Booking",
       description: "Book equipment with real-time availability and flexible rental options.",
-      icon: <Calendar className="h-10 w-10 text-needyfy-blue p-2 bg-blue-100 rounded-full" />
+      icon: <Calendar className="h-10 w-10 text-needyfy-blue p-2 bg-primary/10 rounded-full" />
     },
     {
       title: "Secure Payments",
       description: "Your money’s safe until your item is delivered—peace of mind, built in.",
-      icon: <CreditCard className="h-10 w-10 text-needyfy-blue p-2 bg-blue-100 rounded-full" />
+      icon: <CreditCard className="h-10 w-10 text-needyfy-blue p-2 bg-primary/10 rounded-full" />
     },
     {
       title: "In-App Messaging",
       description: "Chat directly with equipment owners to ask questions before booking.",
-      icon: <MessageSquare className="h-10 w-10 text-needyfy-blue p-2 bg-blue-100 rounded-full" />
+      icon: <MessageSquare className="h-10 w-10 text-needyfy-blue p-2 bg-primary/10 rounded-full" />
     },
     {
       title: "Smart Notifications",
       description: "Get real-time updates on bookings, pickups, and special promotions.",
-      icon: <Bell className="h-10 w-10 text-needyfy-blue p-2 bg-blue-100 rounded-full" />
+      icon: <Bell className="h-10 w-10 text-needyfy-blue p-2 bg-primary/10 rounded-full" />
     },
     {
       title: "Local Discovery",
       description: "Discover equipment available near you with our interactive map view.",
-      icon: <MapPin className="h-10 w-10 text-needyfy-blue p-2 bg-blue-100 rounded-full" />
+      icon: <MapPin className="h-10 w-10 text-needyfy-blue p-2 bg-primary/10 rounded-full" />
     },
     {
       title: "Ratings & Reviews",
       description: "Make informed decisions based on reviews from other renters.",
-      icon: <Star className="h-10 w-10 text-needyfy-blue p-2 bg-blue-100 rounded-full" />
+      icon: <Star className="h-10 w-10 text-needyfy-blue p-2 bg-primary/10 rounded-full" />
     },
     {
       title: "Trust & Safety",
       description: "ID verification and secure transactions for peace of mind.",
-      icon: <Shield className="h-10 w-10 text-needyfy-blue p-2 bg-blue-100 rounded-full" />
+      icon: <Shield className="h-10 w-10 text-needyfy-blue p-2 bg-primary/10 rounded-full" />
     },
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Why Renters Choose Needyfy</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold mb-4 text-foreground">Why Renters Choose Needyfy</h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Unlock access to thousands of items without the hassle of ownership. Rent only what you need, when you need it.
           </p>
         </div>
@@ -62,7 +62,7 @@ const UserFeatures = () => {
                 {feature.icon}
                 <CardTitle className="mt-4 text-xl">{feature.title}</CardTitle>
               </CardHeader>
-              <CardContent className="text-center text-gray-600">
+              <CardContent className="text-center text-muted-foreground">
                 <p>{feature.description}</p>
               </CardContent>
             </Card>
