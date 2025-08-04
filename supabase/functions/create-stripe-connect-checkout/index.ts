@@ -24,7 +24,7 @@ serve(async (req) => {
     const user = data.user
     if (!user) throw new Error("User not authenticated")
 
-    const { equipmentId, startDate, endDate, totalPrice } = await req.json()
+    const { equipmentId, startDate, endDate, totalPrice, basePrice, renterFee, providerFee } = await req.json()
 
     // Get equipment details and owner info
     const { data: equipment, error: equipmentError } = await supabaseClient
@@ -67,6 +67,9 @@ serve(async (req) => {
         start_date: startDate,
         end_date: endDate,
         total_price: totalPrice,
+        base_price: basePrice || (totalPrice * 100) / 110, // fallback calculation
+        renter_fee: renterFee || Math.round((basePrice || (totalPrice * 100) / 110) * 0.10),
+        provider_fee: providerFee || Math.round((basePrice || (totalPrice * 100) / 110) * 0.15),
         status: "pending",
         stripe_connect_account_id: providerProfile.stripe_connect_account_id,
         escrow_status: "pending"
@@ -76,9 +79,12 @@ serve(async (req) => {
 
     if (bookingError) throw new Error("Failed to create booking")
 
-    // Calculate platform fee (5%)
-    const platformFee = Math.round(totalPrice * 0.05)
-    const providerAmount = totalPrice - platformFee
+    // Calculate platform fee (15% from provider + 10% from renter = 25% total)
+    const calculatedBasePrice = basePrice || (totalPrice * 100) / 110
+    const calculatedProviderFee = providerFee || Math.round(calculatedBasePrice * 0.15)
+    const calculatedRenterFee = renterFee || Math.round(calculatedBasePrice * 0.10)
+    const platformFee = calculatedProviderFee + calculatedRenterFee // Total platform revenue
+    const providerAmount = calculatedBasePrice - calculatedProviderFee // Amount provider receives
 
     // Create Stripe Connect checkout session
     const session = await stripe.checkout.sessions.create({

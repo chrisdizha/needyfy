@@ -4,6 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CreditCard, DollarSign } from 'lucide-react';
+import PriceBreakdown from './PriceBreakdown';
 
 
 interface PaymentFormProps {
@@ -16,6 +17,7 @@ interface PaymentFormProps {
   onAgreeToTermsChange: (agreed: boolean) => void;
   onPayment: (paymentMethod: 'stripe' | 'paypal') => void;
   onBack: () => void;
+  pricePerDay?: number; // Optional for price breakdown
 }
 
 const PaymentForm = ({
@@ -27,27 +29,36 @@ const PaymentForm = ({
   agreedToTerms,
   onAgreeToTermsChange,
   onPayment,
-  onBack
+  onBack,
+  pricePerDay
 }: PaymentFormProps) => {
+  // Calculate price breakdown
+  const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  const basePrice = Math.round(totalPrice / 1.1); // Remove 10% renter fee to get base
+  const renterFee = totalPrice - basePrice;
   return (
     <div className="py-4">
       <div className="space-y-4">
-        <div className="p-4 border rounded-md">
-          <h3 className="font-medium">Booking Summary</h3>
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            <p className="text-sm text-muted-foreground">Equipment:</p>
-            <p className="text-sm">{equipmentTitle}</p>
-            <p className="text-sm text-muted-foreground">Start Date:</p>
-            <p className="text-sm">{format(startDate, 'PPP')}</p>
-            <p className="text-sm text-muted-foreground">End Date:</p>
-            <p className="text-sm">{format(endDate, 'PPP')}</p>
-            <p className="text-sm text-muted-foreground">Rental Amount:</p>
-            <p className="text-sm">${Math.round(totalPrice / 1.1).toFixed(2)}</p>
-            <p className="text-sm text-muted-foreground">Service Fee (10%):</p>
-            <p className="text-sm">${(totalPrice - Math.round(totalPrice / 1.1)).toFixed(2)}</p>
-            <p className="text-sm text-muted-foreground font-medium">Total Price:</p>
-            <p className="text-sm font-bold">${totalPrice.toFixed(2)}</p>
+        <div className="space-y-4">
+          <div className="p-4 border rounded-md">
+            <h3 className="font-medium mb-3">Booking Summary</h3>
+            <div className="grid grid-cols-2 gap-2">
+              <p className="text-sm text-muted-foreground">Equipment:</p>
+              <p className="text-sm">{equipmentTitle}</p>
+              <p className="text-sm text-muted-foreground">Start Date:</p>
+              <p className="text-sm">{format(startDate, 'PPP')}</p>
+              <p className="text-sm text-muted-foreground">End Date:</p>
+              <p className="text-sm">{format(endDate, 'PPP')}</p>
+            </div>
           </div>
+          
+          <PriceBreakdown
+            basePrice={basePrice * 100} // Convert to cents
+            renterFee={renterFee * 100} // Convert to cents  
+            totalPrice={totalPrice * 100} // Convert to cents
+            days={days}
+            pricePerDay={pricePerDay || basePrice / days}
+          />
         </div>
       </div>
 

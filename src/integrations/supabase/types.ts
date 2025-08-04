@@ -88,6 +88,7 @@ export type Database = {
       }
       bookings: {
         Row: {
+          base_price: number | null
           created_at: string
           end_date: string
           equipment_id: string
@@ -98,8 +99,10 @@ export type Database = {
           owner_id: string
           payment_method: string | null
           platform_fee: number | null
+          provider_fee: number | null
           release_schedule: string | null
           released_amount: number | null
+          renter_fee: number | null
           scheduled_releases: Json | null
           start_date: string
           status: string
@@ -109,6 +112,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          base_price?: number | null
           created_at?: string
           end_date: string
           equipment_id: string
@@ -119,8 +123,10 @@ export type Database = {
           owner_id: string
           payment_method?: string | null
           platform_fee?: number | null
+          provider_fee?: number | null
           release_schedule?: string | null
           released_amount?: number | null
+          renter_fee?: number | null
           scheduled_releases?: Json | null
           start_date: string
           status?: string
@@ -130,6 +136,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          base_price?: number | null
           created_at?: string
           end_date?: string
           equipment_id?: string
@@ -140,8 +147,10 @@ export type Database = {
           owner_id?: string
           payment_method?: string | null
           platform_fee?: number | null
+          provider_fee?: number | null
           release_schedule?: string | null
           released_amount?: number | null
+          renter_fee?: number | null
           scheduled_releases?: Json | null
           start_date?: string
           status?: string

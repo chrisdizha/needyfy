@@ -63,11 +63,11 @@ const BookingModal = ({
       setEndDate(undefined);
     } else if (!endDate && date && date > startDate) {
       setEndDate(date);
-      // Calculate total days and price
+      // Calculate total days and price with new fee structure
       const days = Math.ceil((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
       const basePrice = days * pricePerDay;
-      const serviceFee = Math.round(basePrice * 0.1); // 10% renter service fee
-      setTotalPrice(basePrice + serviceFee);
+      const renterFee = Math.round(basePrice * 0.1); // 10% renter fee
+      setTotalPrice(basePrice + renterFee); // Total amount renter pays
     } else {
       setStartDate(date);
       setEndDate(undefined);
@@ -92,6 +92,12 @@ const BookingModal = ({
       // Use new Stripe Connect escrow checkout for Stripe payments
       const functionName = paymentMethod === 'paypal' ? 'create-paypal-payment' : 'create-stripe-connect-checkout';
       
+      // Calculate price breakdown for backend
+      const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+      const basePrice = days * pricePerDay;
+      const renterFee = Math.round(basePrice * 0.1);
+      const providerFee = Math.round(basePrice * 0.15);
+      
       const { data, error } = await supabase.functions.invoke(functionName, {
         body: {
           equipmentId,
@@ -99,6 +105,9 @@ const BookingModal = ({
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
           totalPrice: totalPrice * 100, // Convert to cents for Stripe
+          basePrice: basePrice * 100, // Base price in cents
+          renterFee: renterFee * 100, // Renter fee in cents
+          providerFee: providerFee * 100, // Provider fee in cents
         },
       });
 
@@ -184,6 +193,7 @@ const BookingModal = ({
             onAgreeToTermsChange={setAgreedToTerms}
             onPayment={handlePayment}
             onBack={() => setStep('dates')}
+            pricePerDay={pricePerDay}
           />
         )}
 
