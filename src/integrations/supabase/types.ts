@@ -92,11 +92,18 @@ export type Database = {
           end_date: string
           equipment_id: string
           equipment_title: string | null
+          escrow_status: string | null
+          hold_amount: number | null
           id: string
           owner_id: string
           payment_method: string | null
+          platform_fee: number | null
+          release_schedule: string | null
+          released_amount: number | null
+          scheduled_releases: Json | null
           start_date: string
           status: string
+          stripe_connect_account_id: string | null
           stripe_session_id: string | null
           total_price: number
           user_id: string
@@ -106,11 +113,18 @@ export type Database = {
           end_date: string
           equipment_id: string
           equipment_title?: string | null
+          escrow_status?: string | null
+          hold_amount?: number | null
           id?: string
           owner_id: string
           payment_method?: string | null
+          platform_fee?: number | null
+          release_schedule?: string | null
+          released_amount?: number | null
+          scheduled_releases?: Json | null
           start_date: string
           status?: string
+          stripe_connect_account_id?: string | null
           stripe_session_id?: string | null
           total_price: number
           user_id: string
@@ -120,11 +134,18 @@ export type Database = {
           end_date?: string
           equipment_id?: string
           equipment_title?: string | null
+          escrow_status?: string | null
+          hold_amount?: number | null
           id?: string
           owner_id?: string
           payment_method?: string | null
+          platform_fee?: number | null
+          release_schedule?: string | null
+          released_amount?: number | null
+          scheduled_releases?: Json | null
           start_date?: string
           status?: string
+          stripe_connect_account_id?: string | null
           stripe_session_id?: string | null
           total_price?: number
           user_id?: string
@@ -333,6 +354,56 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      escrow_releases: {
+        Row: {
+          amount: number
+          booking_id: string
+          created_at: string
+          failure_reason: string | null
+          id: string
+          metadata: Json | null
+          release_type: string
+          released_at: string | null
+          scheduled_for: string | null
+          status: string
+          stripe_transfer_id: string | null
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          release_type: string
+          released_at?: string | null
+          scheduled_for?: string | null
+          status?: string
+          stripe_transfer_id?: string | null
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          release_type?: string
+          released_at?: string | null
+          scheduled_for?: string | null
+          status?: string
+          stripe_transfer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_releases_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       feedback: {
         Row: {
@@ -763,6 +834,15 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_escrow_schedule: {
+        Args: {
+          p_booking_id: string
+          p_total_amount: number
+          p_start_date: string
+          p_end_date: string
+        }
+        Returns: Json
+      }
       create_automatic_payout: {
         Args: { provider_user_id: string }
         Returns: string
@@ -770,6 +850,14 @@ export type Database = {
       get_feedback_stats: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      get_provider_escrow_balance: {
+        Args: { provider_user_id: string }
+        Returns: {
+          total_held: number
+          pending_releases: number
+          available_for_payout: number
+        }[]
       }
       get_provider_pending_earnings: {
         Args: { provider_user_id: string }
@@ -829,6 +917,10 @@ export type Database = {
           p_expires_at?: string
         }
         Returns: string
+      }
+      setup_escrow_releases: {
+        Args: { p_booking_id: string }
+        Returns: undefined
       }
       validate_admin_action: {
         Args: { action_type: string; target_user_id?: string }
