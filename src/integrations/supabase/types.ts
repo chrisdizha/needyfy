@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_interactions: {
+        Row: {
+          cost_usd: number | null
+          created_at: string
+          feature_type: string
+          id: string
+          input_data: Json | null
+          output_data: Json | null
+          tokens_used: number | null
+          user_id: string | null
+        }
+        Insert: {
+          cost_usd?: number | null
+          created_at?: string
+          feature_type: string
+          id?: string
+          input_data?: Json | null
+          output_data?: Json | null
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          cost_usd?: number | null
+          created_at?: string
+          feature_type?: string
+          id?: string
+          input_data?: Json | null
+          output_data?: Json | null
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string
@@ -61,6 +94,7 @@ export type Database = {
           equipment_title: string | null
           id: string
           owner_id: string
+          payment_method: string | null
           start_date: string
           status: string
           stripe_session_id: string | null
@@ -74,6 +108,7 @@ export type Database = {
           equipment_title?: string | null
           id?: string
           owner_id: string
+          payment_method?: string | null
           start_date: string
           status?: string
           stripe_session_id?: string | null
@@ -87,6 +122,7 @@ export type Database = {
           equipment_title?: string | null
           id?: string
           owner_id?: string
+          payment_method?: string | null
           start_date?: string
           status?: string
           stripe_session_id?: string | null
@@ -234,6 +270,8 @@ export type Database = {
       }
       equipment_listings: {
         Row: {
+          ai_generated_description: boolean | null
+          ai_suggested_price: boolean | null
           availability_calendar: Json | null
           category: string
           created_at: string
@@ -253,6 +291,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ai_generated_description?: boolean | null
+          ai_suggested_price?: boolean | null
           availability_calendar?: Json | null
           category: string
           created_at?: string
@@ -272,6 +312,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ai_generated_description?: boolean | null
+          ai_suggested_price?: boolean | null
           availability_calendar?: Json | null
           category?: string
           created_at?: string

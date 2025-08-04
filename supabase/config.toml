@@ -3,3 +3,7 @@ project_id = "figxavvmvnjldkzcscaf"
 
 [functions.create-checkout-session]
 [functions.confirm-booking]
+[functions.ai-generate-description]
+[functions.ai-suggest-price]
+[functions.ai-smart-search]
+[functions.create-paypal-payment]

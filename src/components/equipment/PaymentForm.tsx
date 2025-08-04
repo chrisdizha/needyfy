@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CreditCard, DollarSign } from 'lucide-react';
 
 
 interface PaymentFormProps {
@@ -12,7 +14,7 @@ interface PaymentFormProps {
   isProcessing: boolean;
   agreedToTerms: boolean;
   onAgreeToTermsChange: (agreed: boolean) => void;
-  onPayment: () => void;
+  onPayment: (paymentMethod: 'stripe' | 'paypal') => void;
   onBack: () => void;
 }
 
@@ -61,16 +63,67 @@ const PaymentForm = ({
         </Label>
       </div>
 
-      <div className="flex justify-end gap-4 mt-6">
-        <Button variant="outline" onClick={onBack} disabled={isProcessing}>
-          Back
-        </Button>
-        <Button 
-          onClick={onPayment}
-          disabled={isProcessing || !agreedToTerms}
-        >
-          {isProcessing ? 'Processing...' : 'Proceed to Payment'}
-        </Button>
+      <div className="mt-6">
+        <Tabs defaultValue="stripe" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="stripe" className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4" />
+              Card Payment
+            </TabsTrigger>
+            <TabsTrigger value="paypal" className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              PayPal
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="stripe" className="mt-4">
+            <div className="p-4 border rounded-md bg-muted/20">
+              <div className="flex items-center gap-2 mb-2">
+                <CreditCard className="h-5 w-5 text-primary" />
+                <h4 className="font-medium">Secure Card Payment</h4>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Pay securely with your credit or debit card through Stripe.
+              </p>
+              <div className="flex justify-between items-center">
+                <Button variant="outline" onClick={onBack} disabled={isProcessing}>
+                  Back
+                </Button>
+                <Button 
+                  onClick={() => onPayment('stripe')}
+                  disabled={isProcessing || !agreedToTerms}
+                  className="min-w-[140px]"
+                >
+                  {isProcessing ? 'Processing...' : 'Pay with Card'}
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="paypal" className="mt-4">
+            <div className="p-4 border rounded-md bg-muted/20">
+              <div className="flex items-center gap-2 mb-2">
+                <DollarSign className="h-5 w-5 text-primary" />
+                <h4 className="font-medium">PayPal Payment</h4>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Pay securely using your PayPal account or PayPal guest checkout.
+              </p>
+              <div className="flex justify-between items-center">
+                <Button variant="outline" onClick={onBack} disabled={isProcessing}>
+                  Back
+                </Button>
+                <Button 
+                  onClick={() => onPayment('paypal')}
+                  disabled={isProcessing || !agreedToTerms}
+                  className="min-w-[140px] bg-[#0070ba] hover:bg-[#005ea6] text-white"
+                >
+                  {isProcessing ? 'Processing...' : 'Pay with PayPal'}
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

@@ -83,13 +83,15 @@ const BookingModal = ({
     setStep('payment');
   };
 
-  const handlePayment = async () => {
+  const handlePayment = async (paymentMethod: 'stripe' | 'paypal') => {
     if (!startDate || !endDate) return;
     
     setIsProcessing(true);
     
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+      const functionName = paymentMethod === 'paypal' ? 'create-paypal-payment' : 'create-checkout-session';
+      
+      const { data, error } = await supabase.functions.invoke(functionName, {
         body: {
           equipmentId,
           equipmentTitle,
@@ -101,8 +103,13 @@ const BookingModal = ({
 
       if (error) throw error;
 
-      if (data.url) {
-        window.location.href = data.url;
+      const redirectUrl = paymentMethod === 'paypal' ? data.approvalUrl : data.url;
+      
+      if (redirectUrl) {
+        // Open payment in new tab for better UX
+        window.open(redirectUrl, '_blank');
+        setStep('confirmation');
+        setIsProcessing(false);
       } else {
         toast.error('Could not initiate payment. Please try again.');
         setIsProcessing(false);
