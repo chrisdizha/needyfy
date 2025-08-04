@@ -1,10 +1,16 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Truck, Car, Package, Calendar } from 'lucide-react';
+import { Truck, Car, Package, Calendar, Smartphone, Hammer, Camera, Bike } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useI18n } from '@/hooks/useI18n';
 import { useNavigate } from 'react-router-dom';
+
+// Import category images
+import electronicsImage from '@/assets/electronics-category.jpg';
+import homeGardenImage from '@/assets/home-garden-category.jpg';
+import photographyImage from '@/assets/photography-category.jpg';
+import sportsOutdoorImage from '@/assets/sports-outdoor-category.jpg';
 
 interface CategoryCardProps {
   title: string;
@@ -90,6 +96,37 @@ const CategorySection = () => {
             icon={<Calendar className="h-6 w-6 text-white" />}
             backgroundImage="/lovable-uploads/2e78ef83-a8b0-44af-a9b3-f691e46d14a1.png"
             onClick={() => handleCategoryClick('event-party')}
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+          <CategoryCard 
+            title={t('categories.electronics')} 
+            description="Smartphones, laptops, cameras, and tech gadgets"
+            icon={<Smartphone className="h-6 w-6 text-white" />}
+            backgroundImage={electronicsImage}
+            onClick={() => handleCategoryClick('electronics')}
+          />
+          <CategoryCard 
+            title={t('categories.homeGarden')} 
+            description="Garden tools, power drills, and home equipment"
+            icon={<Hammer className="h-6 w-6 text-white" />}
+            backgroundImage={homeGardenImage}
+            onClick={() => handleCategoryClick('home-garden')}
+          />
+          <CategoryCard 
+            title={t('categories.photography')} 
+            description="Professional cameras, lenses, and lighting equipment"
+            icon={<Camera className="h-6 w-6 text-white" />}
+            backgroundImage={photographyImage}
+            onClick={() => handleCategoryClick('photography')}
+          />
+          <CategoryCard 
+            title="Sports & Outdoor" 
+            description="Bicycles, camping gear, kayaks, and sports equipment"
+            icon={<Bike className="h-6 w-6 text-white" />}
+            backgroundImage={sportsOutdoorImage}
+            onClick={() => handleCategoryClick('sports-outdoor')}
           />
         </div>
         

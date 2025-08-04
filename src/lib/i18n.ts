@@ -50,7 +50,7 @@ const resources = {
         browseAll: 'Browse All Categories',
       },
       hero: {
-        title: 'Rent Equipment. Share Resources. Build Community.',
+        title: '',
         tagline: 'List. Rent. Earn.',
         subtitle: 'Everything you need, just when you need it!',
         searchPlaceholder: 'What equipment do you need?',

@@ -60,15 +60,12 @@ const HeroSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-2 leading-tight">
-            {t('hero.title')}
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-primary mb-6 leading-tight font-poppins">
+            {t('hero.subtitle')}
           </h1>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl text-primary font-semibold mb-4 tracking-wide">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl text-foreground font-semibold mb-8 tracking-wide font-poppins">
             {t('hero.tagline')}
           </h2>
-          <p className="text-lg md:text-xl text-primary mb-8 max-w-2xl mx-auto leading-relaxed font-medium">
-            {t('hero.subtitle')}
-          </p>
           
           <form onSubmit={handleSearch} className="bg-card/95 backdrop-blur-sm p-6 rounded-2xl shadow-xl max-w-3xl mx-auto border border-border/20">
             <div className="flex flex-col space-y-4">
