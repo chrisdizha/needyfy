@@ -89,7 +89,8 @@ const BookingModal = ({
     setIsProcessing(true);
     
     try {
-      const functionName = paymentMethod === 'paypal' ? 'create-paypal-payment' : 'create-checkout-session';
+      // Use new Stripe Connect escrow checkout for Stripe payments
+      const functionName = paymentMethod === 'paypal' ? 'create-paypal-payment' : 'create-stripe-connect-checkout';
       
       const { data, error } = await supabase.functions.invoke(functionName, {
         body: {
@@ -97,7 +98,7 @@ const BookingModal = ({
           equipmentTitle,
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
-          totalPrice: totalPrice,
+          totalPrice: totalPrice * 100, // Convert to cents for Stripe
         },
       });
 
