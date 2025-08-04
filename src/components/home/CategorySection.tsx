@@ -81,7 +81,7 @@ const CategorySection = () => {
             title={t('categories.constructionEquipment')} 
             description={t('categories.constructionEquipmentDesc')}
             icon={<Package className="h-6 w-6 text-white" />}
-            backgroundImage="https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=400&q=80"
+            backgroundImage="/lovable-uploads/fa6c0da4-be4d-4f57-9de8-cb1b0214f84f.png"
             onClick={() => handleCategoryClick('construction')}
           />
           <CategoryCard 
