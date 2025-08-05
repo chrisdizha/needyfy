@@ -7,3 +7,4 @@ project_id = "figxavvmvnjldkzcscaf"
 [functions.ai-suggest-price]
 [functions.ai-smart-search]
 [functions.create-paypal-payment]
+[functions.geocoding]

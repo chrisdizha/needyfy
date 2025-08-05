@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { MapPin, Loader2, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LocationPickerProps {
   value: string;
@@ -46,23 +47,30 @@ const LocationPicker = ({ value, onChange, placeholder = "Enter your location", 
     }
 
     try {
-      const countryFilter = countryCode ? `&countrycodes=${countryCode}` : '';
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1${countryFilter}`,
-        {
-          headers: {
-            'User-Agent': 'Needyfy App'
-          }
+      const { data, error } = await supabase.functions.invoke('geocoding', {
+        body: {
+          type: 'search',
+          query,
+          countryCode
         }
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        setSuggestions(data);
+      });
+
+      if (error) {
+        console.error('Location search error:', error);
+        toast.error('Unable to search locations. Please try again.');
+        return;
+      }
+
+      if (data.success) {
+        setSuggestions(data.data);
         setShowSuggestions(true);
+      } else {
+        console.error('Geocoding error:', data.error);
+        toast.error('Location search failed. Please try again.');
       }
     } catch (error) {
       console.error('Location search error:', error);
+      toast.error('Unable to search locations. Please try again.');
     }
   };
 
@@ -100,38 +108,41 @@ const LocationPicker = ({ value, onChange, placeholder = "Enter your location", 
         try {
           const { latitude, longitude } = position.coords;
           
-          const countryFilter = countryCode ? `&countrycodes=${countryCode}` : '';
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1${countryFilter}`,
-            {
-              headers: {
-                'User-Agent': 'Needyfy App'
-              }
+          const { data, error } = await supabase.functions.invoke('geocoding', {
+            body: {
+              type: 'reverse',
+              latitude,
+              longitude,
+              countryCode
             }
-          );
-          
-          if (response.ok) {
-            const data = await response.json();
-            if (data && data.address) {
-              const { address } = data;
-              const city = address.city || address.town || address.village || address.suburb;
-              const state = address.state || address.region;
-              const country = address.country;
-              
-              const formattedAddress = [city, state, country].filter(Boolean).join(', ');
-              onChange(formattedAddress);
-              toast.success("Location detected successfully");
+          });
+
+          if (error) {
+            console.error("Geocoding service error:", error);
+            // Fallback to coordinates if service fails
+            const coordinatesAddress = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+            onChange(coordinatesAddress);
+            toast.success("GPS coordinates detected (address lookup unavailable)");
+            return;
+          }
+
+          if (data.success) {
+            onChange(data.address);
+            if (data.fallback) {
+              toast.success("GPS coordinates detected (address not found)");
             } else {
-              const coordinatesAddress = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-              onChange(coordinatesAddress);
-              toast.success("GPS coordinates detected");
+              toast.success("Location detected successfully");
             }
           } else {
-            throw new Error('Geocoding service unavailable');
+            throw new Error(data.error || 'Unknown geocoding error');
           }
         } catch (error) {
           console.error("Error getting location:", error);
-          toast.error("Could not get location details");
+          // Final fallback: use coordinates
+          const { latitude, longitude } = position.coords;
+          const coordinatesAddress = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+          onChange(coordinatesAddress);
+          toast.success("GPS coordinates detected (address lookup failed)");
         } finally {
           setIsGettingLocation(false);
         }
