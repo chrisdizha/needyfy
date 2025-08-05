@@ -521,6 +521,48 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_audit_log: {
+        Row: {
+          action: string
+          amount: number | null
+          booking_id: string | null
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          payment_method: string | null
+          stripe_session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          amount?: number | null
+          booking_id?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          payment_method?: string | null
+          stripe_session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          amount?: number | null
+          booking_id?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          payment_method?: string | null
+          stripe_session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       payout_requests: {
         Row: {
           amount: number
@@ -900,6 +942,20 @@ export type Database = {
           p_new_values?: Json
         }
         Returns: undefined
+      }
+      log_payment_action: {
+        Args: {
+          p_user_id: string
+          p_booking_id: string
+          p_action: string
+          p_amount?: number
+          p_payment_method?: string
+          p_stripe_session_id?: string
+          p_metadata?: Json
+          p_ip_address?: unknown
+          p_user_agent?: string
+        }
+        Returns: string
       }
       log_security_event: {
         Args: {

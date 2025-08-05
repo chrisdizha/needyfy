@@ -53,6 +53,16 @@ serve(async (req) => {
 
         if (updateError) {
           console.error('Error updating booking:', updateError)
+        } else {
+          // Log payment success for security audit
+          await supabase.rpc('log_payment_action', {
+            p_user_id: null,
+            p_booking_id: null, // Will be resolved by payment intent metadata if needed
+            p_action: 'payment_processed',
+            p_payment_method: 'stripe',
+            p_stripe_session_id: paymentIntent.id,
+            p_metadata: { event_type: event.type, amount: paymentIntent.amount }
+          });
         }
         break
 
@@ -68,6 +78,20 @@ serve(async (req) => {
 
         if (sessionUpdateError) {
           console.error('Error updating booking from session:', sessionUpdateError)
+        } else {
+          // Log payment success for security audit
+          await supabase.rpc('log_payment_action', {
+            p_user_id: null,
+            p_booking_id: null,
+            p_action: 'payment_processed',
+            p_payment_method: 'stripe',
+            p_stripe_session_id: session.id,
+            p_metadata: { 
+              event_type: event.type, 
+              session_mode: session.mode,
+              amount_total: session.amount_total 
+            }
+          });
         }
         break
 

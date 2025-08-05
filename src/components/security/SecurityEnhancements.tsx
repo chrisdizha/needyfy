@@ -142,5 +142,33 @@ export const getDeviceFingerprint = (): string => {
 };
 
 export const SecurityEnhancements = () => {
+  // Monitor for suspicious activity patterns
+  useEffect(() => {
+    const monitorSuspiciousActivity = () => {
+      // Check for rapid-fire requests (potential bot behavior)
+      const requestTimes = JSON.parse(localStorage.getItem('request_times') || '[]');
+      const now = Date.now();
+      const recentRequests = requestTimes.filter((time: number) => now - time < 60000); // Last minute
+      
+      if (recentRequests.length > 30) { // More than 30 requests per minute
+        console.warn('Suspicious activity detected: High request frequency');
+        toast.error('Suspicious activity detected. Please slow down your requests.');
+      }
+      
+      // Store current request time
+      requestTimes.push(now);
+      if (requestTimes.length > 50) requestTimes.shift(); // Keep last 50 requests
+      localStorage.setItem('request_times', JSON.stringify(requestTimes));
+    };
+
+    // Monitor on every navigation
+    monitorSuspiciousActivity();
+    
+    // Set up periodic monitoring
+    const interval = setInterval(monitorSuspiciousActivity, 30000); // Every 30 seconds
+    
+    return () => clearInterval(interval);
+  }, []);
+
   return null; // This is a utility component
 };

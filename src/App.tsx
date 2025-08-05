@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { OptimizedAuthProvider, useAuth } from "@/contexts/OptimizedAuthContext";
 import { ConsolidatedSecurityProvider } from "@/components/security/ConsolidatedSecurityProvider";
+import { EnhancedSecurityProvider } from "@/components/security/EnhancedSecurityProvider";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
 import OptimizedErrorBoundary from "@/components/performance/OptimizedErrorBoundary";
@@ -87,7 +88,8 @@ function App() {
           <OptimizedAuthProvider>
             <AnalyticsProvider>
               <ConsolidatedSecurityProvider>
-                <SecurityHeadersProvider>
+                <EnhancedSecurityProvider>
+                  <SecurityHeadersProvider>
                   <Router>
               <Suspense fallback={<LoadingFallback />}>
                 <Routes>
@@ -212,7 +214,8 @@ function App() {
                 </Suspense>
                   </Router>
                   <Toaster />
-                </SecurityHeadersProvider>
+                  </SecurityHeadersProvider>
+                </EnhancedSecurityProvider>
               </ConsolidatedSecurityProvider>
             </AnalyticsProvider>
           </OptimizedAuthProvider>
