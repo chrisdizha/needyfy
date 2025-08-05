@@ -41,6 +41,7 @@ import {
   LazyListEquipment
 } from "@/components/routing/LazyRoutes";
 import "@/lib/i18n";
+import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 
 // Optimized QueryClient with better cache configuration
 const queryClient = new QueryClient({
@@ -215,6 +216,7 @@ function App() {
                 </Suspense>
                   </Router>
                   <Toaster />
+                  <PWAInstallPrompt />
                   </SecurityHeadersProvider>
                 </EnhancedSecurityProvider>
               </ConsolidatedSecurityProvider>
