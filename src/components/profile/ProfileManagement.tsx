@@ -6,12 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Upload, User } from 'lucide-react';
+import { Camera, Upload, User, Plus, Calendar, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/hooks/useI18n';
 import ImageUpload from '@/components/ui/image-upload';
 import MultiProviderAuth from '@/components/auth/MultiProviderAuth';
+import { Link } from 'react-router-dom';
 
 interface ProfileData {
   full_name: string;
@@ -231,6 +232,49 @@ const ProfileManagement = () => {
               {loading ? t('common.saving') : t('profile.saveChanges')}
             </Button>
           </form>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+          <CardDescription>
+            Manage your equipment and bookings
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Link to="/list-equipment">
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="flex flex-col items-center justify-center p-6 text-center">
+                  <Plus className="h-8 w-8 text-primary mb-2" />
+                  <h3 className="font-semibold mb-1">List Equipment</h3>
+                  <p className="text-sm text-muted-foreground">Add new equipment to rent out</p>
+                </CardContent>
+              </Card>
+            </Link>
+            
+            <Link to="/dashboard">
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="flex flex-col items-center justify-center p-6 text-center">
+                  <Calendar className="h-8 w-8 text-primary mb-2" />
+                  <h3 className="font-semibold mb-1">My Bookings</h3>
+                  <p className="text-sm text-muted-foreground">View and manage bookings</p>
+                </CardContent>
+              </Card>
+            </Link>
+            
+            <Link to="/equipment">
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="flex flex-col items-center justify-center p-6 text-center">
+                  <Search className="h-8 w-8 text-primary mb-2" />
+                  <h3 className="font-semibold mb-1">Browse Equipment</h3>
+                  <p className="text-sm text-muted-foreground">Find equipment to rent</p>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
         </CardContent>
       </Card>
 
