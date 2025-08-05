@@ -1,6 +1,7 @@
 
 import AuthenticatedNavbar from '@/components/layout/AuthenticatedNavbar';
 import Footer from '@/components/layout/Footer';
+import EquipmentForm from '@/components/equipment/EquipmentForm';
 
 const NewEquipment = () => {
   return (
@@ -8,7 +9,7 @@ const NewEquipment = () => {
       <AuthenticatedNavbar />
       <main className="flex-grow container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">List New Equipment</h1>
-        <p>Equipment listing form will be displayed here.</p>
+        <EquipmentForm />
       </main>
       <Footer />
     </div>

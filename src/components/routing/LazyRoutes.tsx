@@ -27,3 +27,4 @@ export const LazyAbout = lazy(() => import('@/pages/About'));
 export const LazyNotFound = lazy(() => import('@/pages/NotFound'));
 export const LazyDashboard = lazy(() => import('@/pages/Dashboard'));
 export const LazyCategories = lazy(() => import('@/pages/Categories'));
+export const LazyListEquipment = lazy(() => import('@/pages/ListEquipment'));

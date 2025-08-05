@@ -37,7 +37,8 @@ import {
   LazyAbout,
   LazyNotFound,
   LazyDashboard,
-  LazyCategories
+  LazyCategories,
+  LazyListEquipment
 } from "@/components/routing/LazyRoutes";
 import "@/lib/i18n";
 
@@ -205,7 +206,7 @@ function App() {
                     path="/list-equipment"
                     element={
                       <SecureRoute>
-                        <LazyNewEquipment />
+                        <LazyListEquipment />
                       </SecureRoute>
                     }
                   />
