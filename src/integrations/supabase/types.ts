@@ -898,6 +898,10 @@ export type Database = {
         Args: { provider_user_id: string }
         Returns: string
       }
+      create_test_notification: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       get_feedback_stats: {
         Args: Record<PropertyKey, never>
         Returns: Json
