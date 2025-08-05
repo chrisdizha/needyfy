@@ -34,6 +34,9 @@ const resources = {
         dates: 'Dates',
         selectDates: 'Select rental dates',
         yourLocation: 'Your location',
+        saving: 'Saving...',
+        uploading: 'Uploading...',
+        getStarted: 'Get Started',
       },
       nav: {
         howItWorks: 'How It Works',

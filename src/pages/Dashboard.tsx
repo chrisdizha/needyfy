@@ -20,6 +20,7 @@ import {
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/hooks/useI18n';
+import { useUserProfile } from '@/hooks/useUserProfile';
 
 interface DashboardStats {
   totalListings: number;
@@ -33,6 +34,7 @@ interface DashboardStats {
 const Dashboard = () => {
   const { user, loading } = useAuth();
   const { t } = useI18n();
+  const { profile } = useUserProfile();
   const [stats, setStats] = useState<DashboardStats>({
     totalListings: 0,
     activeBookings: 0,
@@ -162,7 +164,7 @@ const Dashboard = () => {
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            {t('dashboard.welcome')}, {user.user_metadata?.full_name || user.email}!
+            {t('dashboard.welcome')}, {profile?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email}!
           </h1>
           <p className="text-muted-foreground">
             {t('dashboard.welcomeMessage')}

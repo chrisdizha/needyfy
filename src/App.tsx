@@ -191,6 +191,22 @@ function App() {
                       </SecureRoute>
                     }
                   />
+                  <Route
+                    path="/bookings"
+                    element={
+                      <SecureRoute>
+                        <LazyDashboard />
+                      </SecureRoute>
+                    }
+                  />
+                  <Route
+                    path="/list-equipment"
+                    element={
+                      <SecureRoute>
+                        <LazyNewEquipment />
+                      </SecureRoute>
+                    }
+                  />
                   <Route path="*" element={<LazyNotFound />} />
                   </Routes>
                 </Suspense>
