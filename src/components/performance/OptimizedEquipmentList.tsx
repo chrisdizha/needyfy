@@ -3,7 +3,7 @@ import { FixedSizeGrid as Grid } from 'react-window';
 import { useOptimizedEquipmentQuery } from '@/hooks/useOptimizedQueries';
 import OptimizedEquipmentCard from './OptimizedEquipmentCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
+import { useConsolidatedPerformance } from '@/hooks/useConsolidatedPerformance';
 
 interface OptimizedEquipmentListProps {
   limit?: number;
@@ -138,14 +138,18 @@ const OptimizedEquipmentList = memo(({
   filters = {},
   useVirtualization = false
 }: OptimizedEquipmentListProps) => {
-  usePerformanceMonitor('OptimizedEquipmentList');
+  const { trackError } = useConsolidatedPerformance('OptimizedEquipmentList', {
+    enableRenderTracking: true,
+    enableMemoryTracking: true,
+    logThreshold: 3
+  });
   
   const { data: equipment = [], isLoading } = useOptimizedEquipmentQuery(limit, filters);
 
   // Memoize the equipment data to prevent unnecessary re-renders
-  const memoizedEquipment = useMemo(() => equipment, [equipment]);
+  const memoizedEquipment = useMemo(() => Array.isArray(equipment) ? equipment : [], [equipment]);
 
-  if (useVirtualization && equipment.length > 50) {
+  if (useVirtualization && memoizedEquipment.length > 50) {
     return <VirtualizedGridLayout equipment={memoizedEquipment} />;
   }
 
