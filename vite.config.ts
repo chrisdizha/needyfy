@@ -6,17 +6,19 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Clear all caches
+  cacheDir: '.vite-fresh',
   server: {
     host: "::",
     port: 8080,
-    // Force cache invalidation for dev server
     hmr: {
       overlay: true
     }
   },
-  // Force dependency re-bundling to clear cache
+  // Nuclear cache clearing
   optimizeDeps: {
-    force: true
+    force: true,
+    include: ['react', 'react-dom']
   },
   plugins: [
     react(),

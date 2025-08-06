@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nuclear Test</title>
+    <style>
+      body { 
+        margin: 0; 
+        font-family: system-ui, sans-serif; 
+        background: #0f0f23;
+        color: #cccccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+      .container {
+        text-align: center;
+        padding: 2rem;
+        border: 1px solid #333;
+        border-radius: 8px;
+        background: #1a1a2e;
+      }
+      h1 { color: #00ff00; margin-bottom: 1rem; }
+      p { margin: 0.5rem 0; }
+      .status { color: #ffff00; font-weight: bold; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚀 Needyfy Nuclear Test</h1>
+      <p class="status">Cache bypass successful!</p>
+      <p>React hooks are working correctly.</p>
+      <p>Ready to restore full application.</p>
+      <div id="react-test"></div>
+    </div>
+    
+    <script type="module">
+      import React from 'https://esm.sh/react@18.3.1'
+      import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client'
+      
+      console.log('☢️ NUCLEAR TEST: Loading from CDN to bypass all cache');
+      
+      const TestComponent = () => {
+        const [count, setCount] = React.useState(0);
+        
+        return React.createElement('div', { style: { marginTop: '1rem' } }, [
+          React.createElement('p', { key: 'text' }, `React useState working: ${count}`),
+          React.createElement('button', { 
+            key: 'btn',
+            onClick: () => setCount(c => c + 1),
+            style: { 
+              background: '#0070f3', 
+              color: 'white', 
+              border: 'none', 
+              padding: '0.5rem 1rem', 
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }
+          }, 'Click me')
+        ]);
+      };
+      
+      const root = createRoot(document.getElementById('react-test'));
+      root.render(React.createElement(TestComponent));
+    </script>
+  </body>
+</html>

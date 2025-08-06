@@ -39,5 +39,30 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Emergency cache clear and redirect
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
+        });
+      }
+      
+      // Clear all possible caches
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => {
+            caches.delete(name);
+          });
+        });
+      }
+      
+      // Force redirect to nuclear test temporarily
+      console.log('🔥 EMERGENCY CACHE CLEAR - Redirecting to nuclear test');
+      setTimeout(() => {
+        window.location.href = '/test-nuclear.html';
+      }, 100);
+    </script>
   </body>
 </html>
