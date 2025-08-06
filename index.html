@@ -55,9 +55,9 @@
         });
       }
       
-      // Force redirect to ultra-clean React app
+      // Force redirect to CDN React (bypass ALL caches)
       setTimeout(() => {
-        window.location.href = '/ultra-clean.html?v=' + Date.now();
+        window.location.href = '/cdn-react.html?v=' + Date.now();
       }, 200);
     </script>
   </head>
