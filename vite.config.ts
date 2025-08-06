@@ -16,8 +16,7 @@ export default defineConfig(({ mode }) => ({
   },
   // Force dependency re-bundling to clear cache
   optimizeDeps: {
-    force: true,
-    exclude: ['@contexts/OptimizedAuthContext']
+    force: true
   },
   plugins: [
     react(),
