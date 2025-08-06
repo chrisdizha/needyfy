@@ -1,87 +1,69 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
 
-// NUCLEAR SOLUTION - Completely isolated React app
-console.log('☢️ NUCLEAR MAIN: Starting fresh React at', new Date().toISOString());
-console.log('React version:', React.version);
+// ABSOLUTE MINIMAL REACT - No imports, no CSS, nothing that could cache
+console.log('🔥 MINIMAL REACT: Starting completely isolated React');
 
-// Test React hooks are working
-const NuclearApp = () => {
-  const [status, setStatus] = React.useState('🔄 Initializing...');
-  const [counter, setCounter] = React.useState(0);
-  const [hookTest, setHookTest] = React.useState('❌ Not tested');
-
+// Completely isolated test component
+function MinimalTest() {
+  const [count, setCount] = React.useState(0);
+  
   React.useEffect(() => {
-    console.log('✅ useEffect working!');
-    setStatus('✅ React hooks working perfectly!');
-    setHookTest('✅ useEffect confirmed working');
+    console.log('✅ React hooks confirmed working!');
   }, []);
 
-  const testAllHooks = () => {
-    // Test useState
-    setCounter(prev => prev + 1);
-    
-    // Test callback
-    React.useCallback(() => {
-      console.log('✅ useCallback working');
-    }, []);
-    
-    // Test memo
-    const memoValue = React.useMemo(() => {
-      return 'useMemo working';
-    }, []);
-    
-    setStatus(`✅ All hooks working! Memo: ${memoValue}`);
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-2xl p-8 max-w-lg w-full text-center">
-        <h1 className="text-4xl font-bold text-gray-800 mb-6">
-          ☢️ Nuclear React
-        </h1>
-        
-        <div className="space-y-4">
-          <div className="p-4 bg-green-50 rounded-lg">
-            <p className="text-green-700 font-semibold">{status}</p>
-          </div>
-          
-          <div className="p-4 bg-blue-50 rounded-lg">
-            <p className="text-blue-700">Counter: {counter}</p>
-            <p className="text-blue-700 text-sm">{hookTest}</p>
-          </div>
-          
-          <div className="space-y-2">
-            <button
-              onClick={testAllHooks}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-            >
-              Test All React Hooks
-            </button>
-            
-            <button
-              onClick={() => setStatus('🎉 Manual state update successful!')}
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-            >
-              Test useState
-            </button>
-          </div>
-        </div>
-        
-        <div className="mt-6 text-xs text-gray-500 space-y-1">
-          <p>Nuclear cache clear successful</p>
-          <p>React version: {React.version}</p>
-          <p>Ready for full app rebuild</p>
-        </div>
-      </div>
-    </div>
+  return React.createElement('div', {
+    style: {
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: 'Arial, sans-serif',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      margin: 0,
+      padding: '20px'
+    }
+  }, 
+    React.createElement('div', {
+      style: {
+        background: 'white',
+        borderRadius: '12px',
+        padding: '40px',
+        textAlign: 'center',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+        maxWidth: '400px'
+      }
+    },
+      React.createElement('h1', {
+        style: { color: '#333', marginBottom: '20px' }
+      }, '🔥 Minimal React Test'),
+      React.createElement('p', {
+        style: { color: '#666', marginBottom: '20px' }
+      }, `Clicks: ${count}`),
+      React.createElement('button', {
+        onClick: () => setCount(c => c + 1),
+        style: {
+          background: '#667eea',
+          color: 'white',
+          border: 'none',
+          padding: '12px 24px',
+          borderRadius: '6px',
+          cursor: 'pointer',
+          fontSize: '16px'
+        }
+      }, 'Test React Hooks'),
+      React.createElement('p', {
+        style: { marginTop: '20px', fontSize: '12px', color: '#999' }
+      }, 'If this works, React is functional')
+    )
   );
-};
+}
 
-// Initialize with clean React
-createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <NuclearApp />
-  </React.StrictMode>
-);
+// Mount the minimal app
+const root = document.getElementById('root');
+if (root) {
+  createRoot(root).render(React.createElement(MinimalTest));
+  console.log('✅ Minimal React mounted successfully');
+} else {
+  console.error('❌ Root element not found');
+}
