@@ -36,8 +36,8 @@
     <!-- Required Lovable script tag for new features -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script>
-      // FINAL CACHE CLEAR - redirect to working app
-      console.log('🚨 FINAL CACHE CLEAR: Redirecting to simple.html');
+      // EMERGENCY BYPASS - redirect to CDN React test
+      console.log('🚨 EMERGENCY: Redirecting to CDN React test');
       localStorage.clear();
       sessionStorage.clear();
       
@@ -55,9 +55,8 @@
         });
       }
       
-      // Start fresh with nuclear React
-      console.log('Starting with nuclear React main.tsx');
-      // No redirect needed, will use main.tsx directly
+      // Redirect to CDN version to bypass all Vite caching
+      window.location.href = '/simple.html';
     </script>
   </head>
   <body>
