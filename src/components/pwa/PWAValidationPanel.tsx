@@ -35,8 +35,8 @@ export const PWAValidationPanel: React.FC = () => {
 
   const getStatusIcon = (isValid: boolean, hasWarnings: boolean) => {
     if (!isValid) return <XCircle className="h-4 w-4 text-destructive" />;
-    if (hasWarnings) return <AlertTriangle className="h-4 w-4 text-warning" />;
-    return <CheckCircle className="h-4 w-4 text-success" />;
+    if (hasWarnings) return <AlertTriangle className="h-4 w-4 text-amber-600" />;
+    return <CheckCircle className="h-4 w-4 text-needyfy-green" />;
   };
 
   const getStatusBadge = (isValid: boolean, hasWarnings: boolean) => {
@@ -123,7 +123,7 @@ export const PWAValidationPanel: React.FC = () => {
                 </div>
               ))}
               {results.manifest.warnings.map((warning, idx) => (
-                <div key={idx} className="text-sm text-warning flex items-start gap-1">
+                <div key={idx} className="text-sm text-amber-600 flex items-start gap-1">
                   <AlertTriangle className="h-3 w-3 mt-0.5 flex-shrink-0" />
                   {warning}
                 </div>
@@ -148,7 +148,7 @@ export const PWAValidationPanel: React.FC = () => {
                 </div>
               ))}
               {results.serviceWorker.warnings.map((warning, idx) => (
-                <div key={idx} className="text-sm text-warning flex items-start gap-1">
+                <div key={idx} className="text-sm text-amber-600 flex items-start gap-1">
                   <AlertTriangle className="h-3 w-3 mt-0.5 flex-shrink-0" />
                   {warning}
                 </div>
@@ -173,7 +173,7 @@ export const PWAValidationPanel: React.FC = () => {
                 </div>
               ))}
               {results.installability.warnings.map((warning, idx) => (
-                <div key={idx} className="text-sm text-warning flex items-start gap-1">
+                <div key={idx} className="text-sm text-amber-600 flex items-start gap-1">
                   <AlertTriangle className="h-3 w-3 mt-0.5 flex-shrink-0" />
                   {warning}
                 </div>
@@ -192,7 +192,7 @@ export const PWAValidationPanel: React.FC = () => {
               <ul className="space-y-1">
                 {results.overall.recommendations.map((rec, idx) => (
                   <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
-                    <CheckCircle className="h-3 w-3 mt-0.5 flex-shrink-0 text-success" />
+                    <CheckCircle className="h-3 w-3 mt-0.5 flex-shrink-0 text-needyfy-green" />
                     {rec}
                   </li>
                 ))}
