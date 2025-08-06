@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/OptimizedAuthContext';
+import { useAuth } from '@/contexts/SimpleAuthContext';
 import { useCSRFProtection } from '@/hooks/useCSRFProtection';
 import { useSecureAuth } from '@/hooks/useSecureAuth';
 import { supabase } from '@/integrations/supabase/client';

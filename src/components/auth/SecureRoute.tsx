@@ -1,7 +1,7 @@
 
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/OptimizedAuthContext';
+import { useAuth } from '@/contexts/SimpleAuthContext';
 
 interface SecureRouteProps {
   children: ReactNode;

@@ -1,5 +1,5 @@
 
-import { useAuth } from '@/contexts/OptimizedAuthContext';
+import { useAuth } from '@/contexts/SimpleAuthContext';
 import { Navigate } from 'react-router-dom';
 import AuthenticatedNavbar from '@/components/layout/AuthenticatedNavbar';
 import Footer from '@/components/layout/Footer';
