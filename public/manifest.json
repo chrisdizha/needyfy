@@ -2,6 +2,7 @@
   "name": "Needyfy - Equipment Rental Platform",
   "short_name": "Needyfy",
   "description": "Rent and hire equipment from trusted providers nearby. From cameras to tools, find what you need when you need it.",
+  "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -13,6 +14,13 @@
   "dir": "ltr",
   "categories": ["business", "productivity", "utilities", "lifestyle"],
   "prefer_related_applications": false,
+  "related_applications": [],
+  "iarc_rating_id": "",
+  "scope_extensions": [
+    {
+      "origin": "https://*.needyfy.com"
+    }
+  ],
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -114,7 +122,7 @@
       "icons": [
         {
           "src": "/icons/shortcut-browse.png",
-          "sizes": "96x96"
+          "sizes": "512x512"
         }
       ]
     },
@@ -126,7 +134,7 @@
       "icons": [
         {
           "src": "/icons/shortcut-dashboard.png",
-          "sizes": "96x96"
+          "sizes": "512x512"
         }
       ]
     },
@@ -138,7 +146,7 @@
       "icons": [
         {
           "src": "/icons/shortcut-list.png",
-          "sizes": "96x96"
+          "sizes": "512x512"
         }
       ]
     }
