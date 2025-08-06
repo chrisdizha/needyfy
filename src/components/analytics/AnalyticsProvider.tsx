@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, ReactNode } from 'react';
 import { optimizedAnalytics } from '@/lib/optimizedAnalytics';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/OptimizedAuthContext';
 
 interface AnalyticsContextType {
   trackEvent: typeof optimizedAnalytics.trackEvent;
