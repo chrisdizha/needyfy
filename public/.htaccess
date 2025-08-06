@@ -1,0 +1,26 @@
+# PWA Manifest MIME Type
+<Files "manifest.json">
+    Header set Content-Type "application/manifest+json"
+</Files>
+
+# Service Worker MIME Type
+<Files "sw.js">
+    Header set Content-Type "application/javascript"
+    Header set Service-Worker-Allowed "/"
+</Files>
+
+# Cache Control for PWA assets
+<FilesMatch "\.(png|jpg|jpeg|gif|svg|ico|webp)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
+
+# Security Headers
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set X-XSS-Protection "1; mode=block"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+# HTTPS Redirect (uncomment for production)
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

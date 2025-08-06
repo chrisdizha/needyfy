@@ -171,15 +171,57 @@
     {
       "action": "/upload",
       "accept": {
-        "image/*": [".jpg", ".jpeg", ".png", ".webp"],
-        "application/pdf": [".pdf"]
-      }
+        "image/*": [".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".svg"],
+        "application/pdf": [".pdf"],
+        "text/plain": [".txt"],
+        "application/msword": [".doc"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"]
+      },
+      "icons": [
+        {
+          "src": "/icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ],
+      "launch_type": "single-client"
     }
   ],
   "protocol_handlers": [
     {
       "protocol": "web+needyfy",
       "url": "/equipment/%s"
+    },
+    {
+      "protocol": "mailto",
+      "url": "/contact?email=%s"
+    }
+  ],
+  "handle_links": "preferred",
+  "widgets": [
+    {
+      "name": "Quick Equipment Search",
+      "short_name": "Search",
+      "description": "Search for equipment to rent",
+      "tag": "equipment-search",
+      "template": "equipment-search-template",
+      "ms_ac_template": "adaptive-card-template",
+      "data": "/api/widgets/search",
+      "type": "application/json",
+      "screenshots": [
+        {
+          "src": "/screenshots/widget-search.png",
+          "sizes": "256x256",
+          "label": "Equipment search widget"
+        }
+      ],
+      "icons": [
+        {
+          "src": "/icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ],
+      "auth": false,
+      "update": 86400
     }
   ],
   "edge_side_panel": {

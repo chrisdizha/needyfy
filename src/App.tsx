@@ -42,6 +42,7 @@ import {
 } from "@/components/routing/LazyRoutes";
 import "@/lib/i18n";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
+import { PWAValidationPanel } from "@/components/pwa/PWAValidationPanel";
 
 // Optimized QueryClient with better cache configuration
 const queryClient = new QueryClient({
@@ -217,6 +218,12 @@ function App() {
                   </Router>
                   <Toaster />
                   <PWAInstallPrompt />
+                  {/* PWA Validation Panel - only in development */}
+                  {import.meta.env.DEV && (
+                    <div className="fixed bottom-4 right-4 z-50 max-w-sm">
+                      <PWAValidationPanel />
+                    </div>
+                  )}
                   </SecurityHeadersProvider>
                 </EnhancedSecurityProvider>
               </ConsolidatedSecurityProvider>
