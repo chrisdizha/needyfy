@@ -2,7 +2,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
-import { useAuth } from "./main";
+import { useAuth, AuthProvider } from "./contexts/AuthContext";
 import { ConsolidatedSecurityProvider } from "@/components/security/ConsolidatedSecurityProvider";
 import { EnhancedSecurityProvider } from "@/components/security/EnhancedSecurityProvider";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
@@ -88,6 +88,7 @@ function App() {
     <OptimizedErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <AuthProvider>
             <AnalyticsProvider>
               <ConsolidatedSecurityProvider>
                 <EnhancedSecurityProvider>
@@ -227,9 +228,10 @@ function App() {
                 </EnhancedSecurityProvider>
               </ConsolidatedSecurityProvider>
             </AnalyticsProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </OptimizedErrorBoundary>
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </OptimizedErrorBoundary>
   );
 }
 

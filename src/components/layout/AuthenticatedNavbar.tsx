@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/main";
+import { useAuth } from "@/contexts/AuthContext";
 import { useI18n } from "@/hooks/useI18n";
 import {
   DropdownMenu,
