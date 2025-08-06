@@ -55,18 +55,18 @@
         });
       }
       
-      // NUCLEAR REDIRECT - Fresh start with new config
-      setTimeout(() => {
-        window.location.href = '/nuclear-fresh.html?v=' + Date.now();
-      }, 200);
+      // Start fresh with nuclear React
+      console.log('Starting with nuclear React main.tsx');
+      // No redirect needed, will use main.tsx directly
     </script>
   </head>
   <body>
     <div id="root">
-      <div style="text-align: center; padding: 50px; font-family: sans-serif; color: #333;">
-        <h1>🔄 Clearing all caches...</h1>
-        <p>Redirecting to clean app in a moment...</p>
+      <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h1>☢️ Loading Nuclear React...</h1>
+        <p>Cache cleared, starting fresh</p>
       </div>
     </div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

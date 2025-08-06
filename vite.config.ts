@@ -20,22 +20,18 @@ export default defineConfig(() => ({
   
   server: {
     host: "::",
-    port: 8081, // Different port to avoid conflicts
+    port: 8080, // Required port
     force: true,
     hmr: {
-      overlay: true,
-      port: 24679 // Different HMR port
+      overlay: true
     }
   },
   
   // Nuclear dependency optimization
   optimizeDeps: {
     force: true,
-    entries: ['src/nuclear-main.tsx'],
-    include: ['react', 'react-dom'],
-    esbuildOptions: {
-      target: 'es2020'
-    }
+    entries: ['src/main.tsx'], // Use main.tsx as entry
+    include: ['react', 'react-dom']
   },
   
   plugins: [react()],
