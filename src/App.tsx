@@ -88,11 +88,10 @@ function App() {
     <OptimizedErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <AuthProvider>
-            <AnalyticsProvider>
-              <ConsolidatedSecurityProvider>
-                <EnhancedSecurityProvider>
-                  <SecurityHeadersProvider>
+          <AnalyticsProvider>
+            <ConsolidatedSecurityProvider>
+              <EnhancedSecurityProvider>
+                <SecurityHeadersProvider>
                   <Router>
               <Suspense fallback={<LoadingFallback />}>
                 <Routes>
@@ -228,7 +227,6 @@ function App() {
                 </EnhancedSecurityProvider>
               </ConsolidatedSecurityProvider>
             </AnalyticsProvider>
-          </AuthProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </OptimizedErrorBoundary>

@@ -9,6 +9,15 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // Force cache invalidation for dev server
+    hmr: {
+      overlay: true
+    }
+  },
+  // Force dependency re-bundling to clear cache
+  optimizeDeps: {
+    force: true,
+    exclude: ['@contexts/OptimizedAuthContext']
   },
   plugins: [
     react(),
