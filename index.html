@@ -35,34 +35,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Required Lovable script tag for new features -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="/src/main-ultra.tsx"></script>
-  </head>
-  <body>
-    <div id="root"></div>
     <script>
-      // Emergency cache clear and redirect
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for(let registration of registrations) {
-            registration.unregister();
-          }
-        });
-      }
+      // FINAL CACHE CLEAR - redirect to working app
+      console.log('🚨 FINAL CACHE CLEAR: Redirecting to simple.html');
+      localStorage.clear();
+      sessionStorage.clear();
       
-      // Clear all possible caches
+      // Clear all caches completely
       if ('caches' in window) {
         caches.keys().then(names => {
-          names.forEach(name => {
-            caches.delete(name);
-          });
+          names.forEach(name => caches.delete(name));
         });
       }
       
-      // Force redirect to nuclear test temporarily
-      console.log('🔥 EMERGENCY CACHE CLEAR - Redirecting to nuclear test');
+      // Clear service workers
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          registrations.forEach(registration => registration.unregister());
+        });
+      }
+      
+      // Force reload to clean entry point
       setTimeout(() => {
-        window.location.href = '/test-nuclear.html';
-      }, 100);
+        window.location.href = '/simple.html?v=' + Date.now();
+      }, 200);
     </script>
+  </head>
+  <body>
+    <div id="root">
+      <div style="text-align: center; padding: 50px; font-family: sans-serif; color: #333;">
+        <h1>🔄 Clearing all caches...</h1>
+        <p>Redirecting to clean app in a moment...</p>
+      </div>
+    </div>
   </body>
 </html>

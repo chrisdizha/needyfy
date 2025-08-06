@@ -4,8 +4,14 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Needyfy - Clean Start</title>
-    <script type="module" src="/src/simple-main.tsx"></script>
+    <title>Needyfy - Working App</title>
+    <script>
+      // Clear any remaining cache
+      console.log('🧹 Final cache clear on simple.html');
+      localStorage.clear();
+      sessionStorage.clear();
+    </script>
+    <script type="module" src="/src/simple-main.tsx?v=final"></script>
   </head>
   <body>
     <div id="root"></div>
