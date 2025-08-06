@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Needyfy - Nuclear Fresh Start</title>
+    <script>
+      // NUCLEAR CACHE ELIMINATION
+      console.log('☢️ NUCLEAR: Eliminating ALL caches and starting fresh');
+      
+      // Clear ALL browser storage
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Clear all caches
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          console.log('Clearing caches:', names);
+          names.forEach(name => caches.delete(name));
+        });
+      }
+      
+      // Unregister ALL service workers
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          console.log('Unregistering service workers:', registrations.length);
+          registrations.forEach(registration => registration.unregister());
+        });
+      }
+      
+      // Clear IndexedDB
+      if ('indexedDB' in window) {
+        indexedDB.databases?.().then(databases => {
+          databases.forEach(db => {
+            if (db.name) indexedDB.deleteDatabase(db.name);
+          });
+        });
+      }
+      
+      // Force reload with cache bypass
+      if (performance.navigation.type !== performance.navigation.TYPE_RELOAD) {
+        setTimeout(() => {
+          window.location.reload(true);
+        }, 100);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root">
+      <div style="
+        min-height: 100vh; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+      ">
+        <div>
+          <h1>☢️ Nuclear Cache Clear</h1>
+          <p>Eliminating all caches and starting fresh...</p>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/nuclear-main.tsx?v=nuclear-fresh"></script>
+  </body>
+</html>

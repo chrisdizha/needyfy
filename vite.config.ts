@@ -1,49 +1,55 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
-import { VitePWA } from 'vite-plugin-pwa';
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  // Clear all caches
-  cacheDir: '.vite-fresh',
-  server: {
-    host: "::",
-    port: 8080,
-    hmr: {
-      overlay: true
+// NUCLEAR CACHE CLEARING CONFIG
+export default defineConfig(() => ({
+  // Nuclear cache directory change
+  cacheDir: '.vite-nuclear-' + Date.now(),
+  
+  // Aggressive build settings
+  build: {
+    outDir: 'dist-nuclear',
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
     }
   },
-  // Nuclear cache clearing
+  
+  server: {
+    host: "::",
+    port: 8081, // Different port to avoid conflicts
+    force: true,
+    hmr: {
+      overlay: true,
+      port: 24679 // Different HMR port
+    }
+  },
+  
+  // Nuclear dependency optimization
   optimizeDeps: {
     force: true,
-    include: ['react', 'react-dom']
+    entries: ['src/nuclear-main.tsx'],
+    include: ['react', 'react-dom'],
+    esbuildOptions: {
+      target: 'es2020'
+    }
   },
-  plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}']
-      },
-      manifest: {
-        name: 'Needyfy - Equipment Rental Platform',
-        short_name: 'Needyfy',
-        description: 'Rent and hire equipment from trusted providers nearby. From cameras to tools, find what you need when you need it.',
-        theme_color: '#0EA5E9',
-        background_color: '#FFFFFF',
-        display: 'standalone',
-        start_url: '/',
-        scope: '/'
-      }
-    })
-  ].filter(Boolean),
+  
+  plugins: [react()],
+  
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    // Force single React version
+    dedupe: ['react', 'react-dom']
   },
+  
+  // Clear all module cache
+  define: {
+    __VITE_CACHE_BUST__: JSON.stringify(Date.now())
+  }
 }));
