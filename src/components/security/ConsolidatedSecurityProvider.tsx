@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState, useCallback, useMemo } from 'react';
-import { useAuth } from '@/contexts/SimpleAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { SessionTimeout } from '@/components/admin/SessionTimeout';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
