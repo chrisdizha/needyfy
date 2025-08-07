@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { Github, Mail, Linkedin, Facebook, Twitter } from 'lucide-react';
+import { Chrome, Linkedin, Facebook, Twitter } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,40 +9,49 @@ import { useI18n } from '@/hooks/useI18n';
 interface SocialProvider {
   name: string;
   icon: React.ComponentType<{ className?: string }>;
-  provider: 'google' | 'github' | 'facebook' | 'twitter' | 'linkedin_oidc';
+  provider: 'google' | 'facebook' | 'twitter' | 'linkedin_oidc';
   color: string;
+  bgColor: string;
 }
+
+// Custom Google Icon Component
+const GoogleIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+  </svg>
+);
 
 const socialProviders: SocialProvider[] = [
   {
     name: 'Google',
-    icon: Mail,
+    icon: GoogleIcon,
     provider: 'google',
-    color: 'hover:bg-red-50 hover:border-red-200',
-  },
-  {
-    name: 'GitHub',
-    icon: Github,
-    provider: 'github',
-    color: 'hover:bg-gray-50 hover:border-gray-200',
+    color: 'hover:bg-red-50 hover:border-red-200 dark:hover:bg-red-950/20',
+    bgColor: 'text-red-600 dark:text-red-400',
   },
   {
     name: 'Facebook',
     icon: Facebook,
     provider: 'facebook',
-    color: 'hover:bg-blue-50 hover:border-blue-200',
+    color: 'hover:bg-blue-50 hover:border-blue-200 dark:hover:bg-blue-950/20',
+    bgColor: 'text-blue-600 dark:text-blue-400',
   },
   {
     name: 'LinkedIn',
     icon: Linkedin,
     provider: 'linkedin_oidc',
-    color: 'hover:bg-blue-50 hover:border-blue-200',
+    color: 'hover:bg-blue-50 hover:border-blue-200 dark:hover:bg-blue-950/20',
+    bgColor: 'text-blue-700 dark:text-blue-300',
   },
   {
     name: 'Twitter',
     icon: Twitter,
     provider: 'twitter',
-    color: 'hover:bg-sky-50 hover:border-sky-200',
+    color: 'hover:bg-sky-50 hover:border-sky-200 dark:hover:bg-sky-950/20',
+    bgColor: 'text-sky-600 dark:text-sky-400',
   },
 ];
 
@@ -74,7 +83,7 @@ const EnhancedSocialAuth = () => {
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
-        {socialProviders.slice(0, 4).map((provider) => {
+        {socialProviders.map((provider) => {
           const IconComponent = provider.icon;
           return (
             <Button
@@ -83,22 +92,12 @@ const EnhancedSocialAuth = () => {
               className={`w-full transition-colors ${provider.color}`}
               onClick={() => handleSocialLogin(provider)}
             >
-              <IconComponent className="h-4 w-4 mr-2" />
+              <IconComponent className={`h-4 w-4 mr-2 ${provider.bgColor}`} />
               <span className="hidden sm:inline">{provider.name}</span>
             </Button>
           );
         })}
       </div>
-      
-      {/* Twitter as a single button below */}
-      <Button
-        variant="outline"
-        className={`w-full transition-colors ${socialProviders[4].color}`}
-        onClick={() => handleSocialLogin(socialProviders[4])}
-      >
-        <Twitter className="h-4 w-4 mr-2" />
-        {socialProviders[4].name}
-      </Button>
     </div>
   );
 };
