@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState, useCallback, useMemo } from 'react';
+import React, { ReactNode, useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useAuth } from '@/contexts/OptimizedAuthContext';
 import { SessionTimeout } from '@/components/admin/SessionTimeout';
 import { toast } from 'sonner';
@@ -10,160 +10,150 @@ interface ConsolidatedSecurityProviderProps {
   children: ReactNode;
 }
 
-// Optimized activity tracking with better debouncing
+// Heavily optimized activity tracking with extreme throttling
 const useOptimizedActivityTracking = () => {
   const [lastActivity, setLastActivity] = useState(Date.now());
+  const throttleRef = useRef<boolean>(false);
+  const lastUpdateRef = useRef(Date.now());
 
   const updateActivity = useCallback(() => {
-    setLastActivity(Date.now());
-  }, []);
-
-  // More efficient throttling
-  const throttledUpdateActivity = useMemo(() => {
-    let timeout: NodeJS.Timeout | null = null;
-    let lastCall = 0;
+    const now = Date.now();
+    // Only update if more than 5 seconds have passed
+    if (now - lastUpdateRef.current < 5000 || throttleRef.current) return;
     
-    return () => {
-      const now = Date.now();
-      if (now - lastCall >= 2000) { // Only update every 2 seconds max
-        lastCall = now;
-        setLastActivity(now);
-      } else {
-        if (timeout) clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          setLastActivity(Date.now());
-          lastCall = Date.now();
-        }, 2000);
-      }
-    };
+    throttleRef.current = true;
+    lastUpdateRef.current = now;
+    
+    setTimeout(() => {
+      setLastActivity(now);
+      throttleRef.current = false;
+    }, 100);
   }, []);
 
   useEffect(() => {
-    const events = ['mousedown', 'keypress', 'scroll', 'touchstart'];
+    const events = ['mousedown', 'keypress'];
     
     events.forEach(event => {
-      document.addEventListener(event, throttledUpdateActivity, { passive: true });
+      document.addEventListener(event, updateActivity, { passive: true });
     });
 
     return () => {
       events.forEach(event => {
-        document.removeEventListener(event, throttledUpdateActivity);
+        document.removeEventListener(event, updateActivity);
       });
     };
-  }, [throttledUpdateActivity]);
+  }, [updateActivity]);
 
   return lastActivity;
 };
 
-// Consolidated security monitoring
+// Heavily reduced security monitoring
 const useConsolidatedSecurityMonitoring = (user: any, session: any, lastActivity: number) => {
   const { logSecurityEvent, validateSession } = useSecureAuth();
-  const [checkCount, setCheckCount] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout>();
+  const lastCheckRef = useRef(0);
 
   const performSecurityCheck = useCallback(async () => {
+    const now = Date.now();
+    // Only run if 15 minutes have passed since last check
+    if (now - lastCheckRef.current < 15 * 60 * 1000) return;
+    
     if (!user || !session) return;
 
     try {
-      const now = Date.now();
+      lastCheckRef.current = now;
       const inactiveTime = now - lastActivity;
       
-      // Progressive security checks to reduce overhead
-      if (checkCount % 3 === 0) {
-        // Check inactivity every 3rd check
-        if (inactiveTime > 25 * 60 * 1000) { // 25 minutes
-          await logSecurityEvent({
-            type: 'session_timeout',
-            timestamp: now,
-            details: 'Extended inactivity - auto logout'
-          });
-          
-          toast.error('Session expired due to inactivity');
-          await supabase.auth.signOut();
-          return;
-        }
+      // Only check for extreme inactivity (30+ minutes)
+      if (inactiveTime > 30 * 60 * 1000) {
+        await logSecurityEvent({
+          type: 'session_timeout',
+          timestamp: now,
+          details: 'Extended inactivity - auto logout'
+        });
+        
+        toast.error('Session expired due to inactivity');
+        await supabase.auth.signOut();
+        return;
       }
-
-      if (checkCount % 6 === 0) {
-        // Validate session every 6th check
-        const sessionValid = await validateSession();
-        if (!sessionValid) return;
-      }
-
-      setCheckCount(prev => (prev + 1) % 18);
     } catch (error) {
       console.error('Security check failed:', error);
     }
-  }, [user, session, lastActivity, checkCount, logSecurityEvent, validateSession]);
+  }, [user, session, lastActivity, logSecurityEvent, validateSession]);
 
   useEffect(() => {
-    if (!user || !session) return;
+    if (!user || !session) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      return;
+    }
 
-    // Reduced frequency security checks (every 8 minutes)
-    const securityInterval = setInterval(performSecurityCheck, 8 * 60 * 1000);
-    performSecurityCheck();
+    // Very infrequent security checks (every 20 minutes)
+    intervalRef.current = setInterval(performSecurityCheck, 20 * 60 * 1000);
 
-    return () => clearInterval(securityInterval);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, [user, session, performSecurityCheck]);
 };
 
-// Optimized browser security with minimal overhead
+// Minimal browser security
 const useOptimizedBrowserSecurity = (user: any, logSecurityEvent: any) => {
-  const [logThrottle, setLogThrottle] = useState(0);
+  const lastLogRef = useRef(0);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || process.env.NODE_ENV !== 'production') return;
 
-    // Consolidated and optimized event handlers
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (process.env.NODE_ENV === 'production') {
-        const suspiciousKeys = [
-          e.key === 'F12',
-          e.ctrlKey && e.shiftKey && e.key === 'I',
-          e.ctrlKey && e.shiftKey && e.key === 'J',
-          e.ctrlKey && e.key === 'u'
-        ];
+      const suspiciousKeys = [
+        e.key === 'F12',
+        e.ctrlKey && e.shiftKey && e.key === 'I',
+        e.ctrlKey && e.shiftKey && e.key === 'J',
+        e.ctrlKey && e.key === 'u'
+      ];
+      
+      if (suspiciousKeys.some(Boolean)) {
+        e.preventDefault();
         
-        if (suspiciousKeys.some(Boolean)) {
-          e.preventDefault();
-          
-          // Heavy throttling of security logs to reduce overhead
-          const now = Date.now();
-          if (now - logThrottle > 30000) { // Only log once every 30 seconds
-            setLogThrottle(now);
-            logSecurityEvent({
-              type: 'suspicious_activity',
-              timestamp: now,
-              details: `Suspicious keyboard: ${e.key}`
-            });
-          }
+        // Log only once every 60 seconds
+        const now = Date.now();
+        if (now - lastLogRef.current > 60000) {
+          lastLogRef.current = now;
+          logSecurityEvent({
+            type: 'suspicious_activity',
+            timestamp: now,
+            details: `Dev tools access attempt`
+          });
         }
       }
     };
 
     const handleContextMenu = (e: MouseEvent) => {
-      if (process.env.NODE_ENV === 'production') {
-        e.preventDefault();
-      }
+      e.preventDefault();
     };
 
-    // Use passive listeners where possible
-    document.addEventListener('contextmenu', handleContextMenu);
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('contextmenu', handleContextMenu, { passive: false });
+    document.addEventListener('keydown', handleKeyDown, { passive: false });
 
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [user, logSecurityEvent, logThrottle]);
+  }, [user, logSecurityEvent]);
 };
 
-export const ConsolidatedSecurityProvider = ({ children }: ConsolidatedSecurityProviderProps) => {
+export const ConsolidatedSecurityProvider = React.memo(({ children }: ConsolidatedSecurityProviderProps) => {
   const { user, session } = useAuth();
   const lastActivity = useOptimizedActivityTracking();
   const { logSecurityEvent } = useSecureAuth();
   
-  // Performance monitoring
-  usePerformanceMonitor('ConsolidatedSecurityProvider');
+  // Conditional performance monitoring (only in dev)
+  if (process.env.NODE_ENV === 'development') {
+    usePerformanceMonitor('ConsolidatedSecurityProvider');
+  }
 
   // Use consolidated hooks
   useConsolidatedSecurityMonitoring(user, session, lastActivity);
@@ -175,4 +165,6 @@ export const ConsolidatedSecurityProvider = ({ children }: ConsolidatedSecurityP
       <SessionTimeout />
     </>
   );
-};
+});
+
+ConsolidatedSecurityProvider.displayName = 'ConsolidatedSecurityProvider';
