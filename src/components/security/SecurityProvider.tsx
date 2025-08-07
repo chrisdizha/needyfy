@@ -1,7 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { RateLimitProvider } from './UniversalRateLimit';
 import { useSecurityHeaders } from '@/hooks/useSecurityHeaders';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface SecurityProviderProps {
   children: ReactNode;
@@ -9,7 +8,6 @@ interface SecurityProviderProps {
 
 export const SecurityProvider = ({ children }: SecurityProviderProps) => {
   const [isAuthReady, setIsAuthReady] = useState(false);
-  const auth = useAuth();
   
   // Initialize security headers immediately
   useSecurityHeaders();
@@ -27,7 +25,7 @@ export const SecurityProvider = ({ children }: SecurityProviderProps) => {
   return (
     <RateLimitProvider>
       {/* Only add auth-dependent security features after auth is ready */}
-      {isAuthReady && auth ? (
+      {isAuthReady ? (
         <AuthDependentSecurityProvider>
           {children}
         </AuthDependentSecurityProvider>
