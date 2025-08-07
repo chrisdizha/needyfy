@@ -75,5 +75,49 @@
       "form_factor": "wide",
       "label": "Needyfy Equipment Rental Platform"
     }
-  ]
+  ],
+  "iarc_rating_id": "e84b072d-71de-5b85-bcbc-38761d0fcec5",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "scope_extensions": [
+    {
+      "origin": "https://needyfy.com"
+    }
+  ],
+  "display_override": ["window-controls-overlay", "standalone"],
+  "handle_links": "preferred",
+  "file_handlers": [
+    {
+      "action": "/equipment/upload",
+      "accept": {
+        "image/*": [".jpg", ".jpeg", ".png", ".webp"],
+        "application/pdf": [".pdf"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+needyfy",
+      "url": "/equipment/%s"
+    }
+  ],
+  "share_target": {
+    "action": "/equipment/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "images",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  },
+  "edge_side_panel": {
+    "preferred_width": 412
+  }
 }
