@@ -4,8 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, MapPin, Star } from 'lucide-react';
 import BookingModal from '@/components/equipment/BookingModal';
-import { OptimizedImage } from '@/components/ui/optimized-image';
-import { useConsolidatedPerformance } from '@/hooks/useConsolidatedPerformance';
+import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 
 interface OptimizedEquipmentCardProps {
   id: string;
@@ -20,16 +19,17 @@ interface OptimizedEquipmentCardProps {
   isVerified?: boolean;
 }
 
-// Memoized internal components with optimized image loading
+// Memoized internal components
 const EquipmentImage = memo(({ image, title }: { image?: string; title: string }) => (
-  <OptimizedImage
-    src={image}
-    alt={title}
-    className="h-48 w-full rounded-t-lg transition-transform duration-300 hover:scale-105"
-    width={320}
-    height={192}
-    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-  />
+  <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+    <img
+      src={image || '/placeholder.svg'}
+      alt={title}
+      className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
 ));
 
 const EquipmentDetails = memo(({ 
@@ -124,11 +124,7 @@ const OptimizedEquipmentCard = memo(({
   totalRatings,
   isVerified = false,
 }: OptimizedEquipmentCardProps) => {
-  const { trackError } = useConsolidatedPerformance('OptimizedEquipmentCard', {
-    enableRenderTracking: true,
-    enableMemoryTracking: false,
-    logThreshold: 5
-  });
+  usePerformanceMonitor('OptimizedEquipmentCard');
   
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);

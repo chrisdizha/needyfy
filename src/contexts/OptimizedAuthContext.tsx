@@ -1,5 +1,5 @@
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode, useMemo, useCallback } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/integrations/supabase/client'
 import { toast } from 'sonner'
@@ -30,14 +30,14 @@ interface AuthProviderProps {
   children: ReactNode
 }
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const OptimizedAuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [userRoles, setUserRoles] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
 
-  const verifyAdminStatus = async (): Promise<boolean> => {
+  const verifyAdminStatus = useCallback(async (): Promise<boolean> => {
     try {
       const { data, error } = await supabase.functions.invoke('admin-verify', {
         body: { action: 'verify' }
@@ -53,9 +53,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('Admin verification failed:', error)
       return false
     }
-  }
+  }, [])
 
-  const fetchUserRoles = async (userId: string) => {
+  const fetchUserRoles = useCallback(async (userId: string) => {
     try {
       const { data, error } = await supabase
         .rpc('get_user_roles', { _user_id: userId })
@@ -70,9 +70,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('Failed to fetch user roles:', error)
       return []
     }
-  }
+  }, [])
 
-  const refreshAuthState = async () => {
+  const refreshAuthState = useCallback(async () => {
     try {
       const { data: { session }, error } = await supabase.auth.getSession()
       
@@ -89,7 +89,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(session?.user || null)
 
       if (session?.user) {
-        // Store device fingerprint for security
         const deviceFingerprint = getDeviceFingerprint()
         localStorage.setItem('device_fingerprint', deviceFingerprint)
         
@@ -124,11 +123,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [fetchUserRoles, verifyAdminStatus])
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
-      // Clear security-related localStorage
       localStorage.removeItem('device_fingerprint')
       localStorage.removeItem('active_sessions')
       localStorage.removeItem('security_events')
@@ -149,20 +147,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('Sign out failed:', error)
       toast.error('Failed to sign out')
     }
-  }
+  }, [])
 
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event)
         
-        // Only synchronous state updates here
         setSession(session)
         setUser(session?.user || null)
 
         if (session?.user) {
-          // Defer Supabase calls with setTimeout to prevent deadlock
           setTimeout(async () => {
             const deviceFingerprint = getDeviceFingerprint()
             localStorage.setItem('device_fingerprint', deviceFingerprint)
@@ -199,35 +194,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     )
 
-    // THEN check for existing session
     refreshAuthState()
 
-    // Enhanced session timeout handler (30 minutes)
     const sessionTimeout = setInterval(() => {
       if (session && session.expires_at) {
         const now = Math.floor(Date.now() / 1000)
         const expiresAt = session.expires_at
         
-        // If session expires in 5 minutes, show warning
         if (expiresAt - now < 300) {
           toast.warning('Your session will expire soon. Please refresh the page to continue.')
         }
         
-        // If session is expired, sign out
         if (expiresAt < now) {
           toast.error('Your session has expired. Please sign in again.')
           signOut()
         }
       }
-    }, 60000) // Check every minute
+    }, 60000)
 
     return () => {
       subscription.unsubscribe()
       clearInterval(sessionTimeout)
     }
-  }, [])
+  }, [session, refreshAuthState, signOut, fetchUserRoles, verifyAdminStatus])
 
-  const value: AuthContextType = {
+  const value: AuthContextType = useMemo(() => ({
     user,
     session,
     isAdmin,
@@ -236,7 +227,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signOut,
     refreshAuthState,
     verifyAdminStatus
-  }
+  }), [user, session, isAdmin, userRoles, loading, signOut, refreshAuthState, verifyAdminStatus])
 
   return (
     <AuthContext.Provider value={value}>

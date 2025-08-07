@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, ReactNode } from 'react';
-import { optimizedAnalytics } from '@/lib/optimizedAnalytics';
+import { analytics } from '@/lib/analytics';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface AnalyticsContextType {
-  trackEvent: typeof optimizedAnalytics.trackEvent;
-  trackPageView: typeof optimizedAnalytics.trackPageView;
-  trackUserAction: typeof optimizedAnalytics.trackUserAction;
-  trackBooking: typeof optimizedAnalytics.trackBooking;
-  trackError: typeof optimizedAnalytics.trackError;
+  trackEvent: typeof analytics.trackEvent;
+  trackPageView: typeof analytics.trackPageView;
+  trackUserAction: typeof analytics.trackUserAction;
+  trackBooking: typeof analytics.trackBooking;
+  trackError: typeof analytics.trackError;
 }
 
 const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefined);
@@ -29,15 +29,15 @@ export const AnalyticsProvider = ({ children }: AnalyticsProviderProps) => {
 
   useEffect(() => {
     // Set user ID when user logs in/out
-    optimizedAnalytics.setUserId(user?.id || null);
+    analytics.setUserId(user?.id || null);
   }, [user]);
 
   const value: AnalyticsContextType = {
-    trackEvent: optimizedAnalytics.trackEvent.bind(optimizedAnalytics),
-    trackPageView: optimizedAnalytics.trackPageView.bind(optimizedAnalytics),
-    trackUserAction: optimizedAnalytics.trackUserAction.bind(optimizedAnalytics),
-    trackBooking: optimizedAnalytics.trackBooking.bind(optimizedAnalytics),
-    trackError: optimizedAnalytics.trackError.bind(optimizedAnalytics),
+    trackEvent: analytics.trackEvent.bind(analytics),
+    trackPageView: analytics.trackPageView.bind(analytics),
+    trackUserAction: analytics.trackUserAction.bind(analytics),
+    trackBooking: analytics.trackBooking.bind(analytics),
+    trackError: analytics.trackError.bind(analytics),
   };
 
   return (
