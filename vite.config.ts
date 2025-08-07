@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { componentTagger } from "lovable-tagger";
 
 // NUCLEAR CACHE CLEARING CONFIG
-export default defineConfig(() => ({
+export default defineConfig(({ mode }) => ({
   // Nuclear cache directory change
   cacheDir: '.vite-nuclear-' + Date.now(),
   
@@ -34,7 +35,10 @@ export default defineConfig(() => ({
     include: ['react', 'react-dom']
   },
   
-  plugins: [react()],
+  plugins: [
+    react(),
+    mode === 'development' && componentTagger(),
+  ].filter(Boolean),
   
   resolve: {
     alias: {
