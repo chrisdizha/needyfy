@@ -35,29 +35,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Required Lovable script tag for new features -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script>
-      // EMERGENCY BYPASS - redirect to CDN React test
-      console.log('🚨 EMERGENCY: Redirecting to CDN React test');
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      // Clear all caches completely
-      if ('caches' in window) {
-        caches.keys().then(names => {
-          names.forEach(name => caches.delete(name));
-        });
-      }
-      
-      // Clear service workers
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(registrations => {
-          registrations.forEach(registration => registration.unregister());
-        });
-      }
-      
-      // Redirect to CDN version to bypass all Vite caching
-      window.location.href = '/simple.html';
-    </script>
   </head>
   <body>
     <div id="root">
