@@ -898,6 +898,10 @@ export type Database = {
         Args: { provider_user_id: string }
         Returns: string
       }
+      create_test_notification: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       get_feedback_stats: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -989,6 +993,10 @@ export type Database = {
       }
       validate_admin_action: {
         Args: { action_type: string; target_user_id?: string }
+        Returns: boolean
+      }
+      validate_payment_operation: {
+        Args: { p_user_id: string; p_operation: string; p_amount?: number }
         Returns: boolean
       }
     }
