@@ -17,12 +17,12 @@ const queryClient = new QueryClient()
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <SecurityProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <SecurityProvider>
           <AppWithServiceWorker />
-        </AuthProvider>
-      </QueryClientProvider>
-    </SecurityProvider>
+        </SecurityProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );

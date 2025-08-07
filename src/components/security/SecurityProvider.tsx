@@ -13,12 +13,12 @@ export const SecurityProvider = ({ children }: SecurityProviderProps) => {
   useSecurityHeaders();
 
   return (
-    <ConsolidatedSecurityProvider>
-      <RateLimitProvider>
-        <SecureSessionProvider>
+    <RateLimitProvider>
+      <SecureSessionProvider>
+        <ConsolidatedSecurityProvider>
           {children}
-        </SecureSessionProvider>
-      </RateLimitProvider>
-    </ConsolidatedSecurityProvider>
+        </ConsolidatedSecurityProvider>
+      </SecureSessionProvider>
+    </RateLimitProvider>
   );
 };
