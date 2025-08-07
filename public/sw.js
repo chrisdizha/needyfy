@@ -1,12 +1,13 @@
 // Service Worker for PWA and push notifications
-const CACHE_NAME = 'needyfy-v1';
+const CACHE_NAME = 'needyfy-v1.1';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
+  '/manifest.json',
   '/icon-192x192.png',
   '/icon-512x512.png'
 ];
+
+console.log('Service Worker script loaded');
 
 // Install event - cache app shell
 self.addEventListener('install', function(event) {
@@ -14,7 +15,10 @@ self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
-        return cache.addAll(urlsToCache);
+        console.log('Caching app shell');
+        return cache.addAll(urlsToCache).catch(function(error) {
+          console.error('Failed to cache:', error);
+        });
       })
   );
   self.skipWaiting();
