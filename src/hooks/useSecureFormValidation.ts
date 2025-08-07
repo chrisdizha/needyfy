@@ -2,11 +2,11 @@ import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { validateAndSanitize } from '@/components/security/EnhancedInputSanitization';
 import { useUniversalRateLimit } from '@/components/security/UniversalRateLimit';
-import { useSecureAuth } from './useSecureAuth';
+import { useSecureAuthSafe } from './useSecureAuthSafe';
 
 export const useSecureFormValidation = () => {
   const { checkGeneralRateLimit } = useUniversalRateLimit();
-  const { logSecurityEvent } = useSecureAuth();
+  const { logSecurityEvent } = useSecureAuthSafe();
 
   const validateSecureForm = useCallback(async (
     formData: Record<string, any>,

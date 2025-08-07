@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useSecureAuth } from '@/hooks/useSecureAuth';
+import { useSecureAuthSafe } from '@/hooks/useSecureAuthSafe';
 import { toast } from 'sonner';
 
 interface SessionContextType {
@@ -28,7 +28,7 @@ export const SecureSessionProvider = ({ children }: SecureSessionProviderProps) 
   const [isSessionValid, setIsSessionValid] = useState(true);
   const [sessionHealth, setSessionHealth] = useState<'healthy' | 'warning' | 'expired'>('healthy');
   const [lastValidation, setLastValidation] = useState(Date.now());
-  const { logSecurityEvent, validateSession } = useSecureAuth();
+  const { logSecurityEvent, validateSession } = useSecureAuthSafe();
 
   const validateCurrentSession = async (): Promise<boolean> => {
     try {
