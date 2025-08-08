@@ -1,5 +1,4 @@
 
-import { FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import ImageUpload from '@/components/ui/image-upload';
 
 interface EquipmentPhotosFieldProps {
@@ -9,10 +8,10 @@ interface EquipmentPhotosFieldProps {
 
 const EquipmentPhotosField = ({ photos, onPhotosChange }: EquipmentPhotosFieldProps) => {
   return (
-    <FormItem>
-      <FormLabel>
+    <div>
+      <label className="block text-sm font-medium mb-1">
         Equipment Photos <span className="text-destructive">*</span>
-      </FormLabel>
+      </label>
       <ImageUpload
         images={photos}
         onChange={onPhotosChange}
@@ -23,8 +22,7 @@ const EquipmentPhotosField = ({ photos, onPhotosChange }: EquipmentPhotosFieldPr
       <p className="text-sm text-muted-foreground">
         Upload high-quality photos of your equipment. The first photo will be used as the main image.
       </p>
-      <FormMessage />
-    </FormItem>
+    </div>
   );
 };
 

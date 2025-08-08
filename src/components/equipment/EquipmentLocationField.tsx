@@ -1,5 +1,4 @@
 
-import { FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import LocationPicker from '@/components/location/LocationPicker';
 
 interface EquipmentLocationFieldProps {
@@ -10,16 +9,16 @@ interface EquipmentLocationFieldProps {
 
 const EquipmentLocationField = ({ location, onChange, countryCode }: EquipmentLocationFieldProps) => {
   return (
-    <FormItem>
-      <FormLabel htmlFor="location">
+    <div>
+      <label htmlFor="location" className="block text-sm font-medium mb-1">
         Location <span className="text-destructive">*</span>
-      </FormLabel>
+      </label>
       <LocationPicker
         value={location}
         onChange={(value) => {
           // Convert to the expected event format
           const syntheticEvent = {
-            target: { name: 'location', value }
+            target: { name: 'location', value },
           } as React.ChangeEvent<HTMLInputElement>;
           onChange(syntheticEvent);
         }}
@@ -29,8 +28,7 @@ const EquipmentLocationField = ({ location, onChange, countryCode }: EquipmentLo
       <p className="text-sm text-muted-foreground">
         Specify where the equipment can be picked up or where you can deliver it.
       </p>
-      <FormMessage />
-    </FormItem>
+    </div>
   );
 };
 
