@@ -10,6 +10,7 @@ import CallToAction from '@/components/home/CallToAction';
 import UserFeatures from '@/components/home/UserFeatures';
 import ProviderFeatures from '@/components/home/ProviderFeatures';
 import AppAnnouncementBanner from '@/components/home/AppAnnouncementBanner';
+import AddToHomePrompt from '@/components/pwa/AddToHomePrompt';
 
 const PublicHome = () => {
   return (
@@ -25,6 +26,7 @@ const PublicHome = () => {
         <Testimonials />
         <AppAnnouncementBanner />
         <CallToAction />
+        <AddToHomePrompt />
       </main>
       <Footer />
     </div>

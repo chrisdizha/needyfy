@@ -13,11 +13,13 @@ import { useI18n } from '@/hooks/useI18n';
 import ImageUpload from '@/components/ui/image-upload';
 import MultiProviderAuth from '@/components/auth/MultiProviderAuth';
 import { Link } from 'react-router-dom';
+import VerifiedBadge from '@/components/badges/VerifiedBadge';
 
 interface ProfileData {
   full_name: string;
   phone: string;
   avatar_url?: string;
+  visa_card_verified?: boolean;
 }
 
 const ProfileManagement = () => {
@@ -54,7 +56,8 @@ const ProfileManagement = () => {
         setProfileData({
           full_name: data.full_name || '',
           phone: data.phone || '',
-          avatar_url: data.avatar_url || ''
+          avatar_url: data.avatar_url || '',
+          visa_card_verified: data.visa_card_verified || false,
         });
       }
 
@@ -147,15 +150,15 @@ const ProfileManagement = () => {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            {t('profile.profileInformation')}
-          </CardTitle>
-          <CardDescription>
-            {t('profile.profileDescription')}
-          </CardDescription>
-        </CardHeader>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              {t('profile.profileInformation')}
+            </CardTitle>
+            <CardDescription>
+              {t('profile.profileDescription')}
+            </CardDescription>
+          </CardHeader>
         <CardContent>
           <form onSubmit={handleProfileUpdate} className="space-y-6">
             {/* Profile Picture Section */}

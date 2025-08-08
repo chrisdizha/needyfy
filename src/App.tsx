@@ -38,7 +38,9 @@ import {
   LazyNotFound,
   LazyDashboard,
   LazyCategories,
-  LazyListEquipment
+  LazyListEquipment,
+  LazyBlog,
+  LazyPaymentTerms
 } from "@/components/routing/LazyRoutes";
 import "@/lib/i18n";
 
@@ -210,6 +212,8 @@ function App() {
                       </SecureRoute>
                     }
                   />
+                  <Route path="/blog" element={<LazyBlog />} />
+                  <Route path="/payment-terms" element={<LazyPaymentTerms />} />
                   <Route path="*" element={<LazyNotFound />} />
                   </Routes>
                 </Suspense>

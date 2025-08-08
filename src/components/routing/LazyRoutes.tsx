@@ -28,3 +28,5 @@ export const LazyNotFound = lazy(() => import('@/pages/NotFound'));
 export const LazyDashboard = lazy(() => import('@/pages/Dashboard'));
 export const LazyCategories = lazy(() => import('@/pages/Categories'));
 export const LazyListEquipment = lazy(() => import('@/pages/ListEquipment'));
+export const LazyBlog = lazy(() => import('@/pages/Blog'));
+export const LazyPaymentTerms = lazy(() => import('@/pages/PaymentTerms'));
