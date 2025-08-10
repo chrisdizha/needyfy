@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { SafeLink } from '@/components/navigation/SafeLink';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Menu, X } from 'lucide-react';
@@ -29,30 +29,30 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/categories" className="text-muted-foreground hover:text-primary font-medium">
+            <SafeLink to="/categories" className="text-muted-foreground hover:text-primary font-medium">
               Categories
-            </Link>
-            <Link to="/how-it-works" className="text-muted-foreground hover:text-primary font-medium">
+            </SafeLink>
+            <SafeLink to="/how-it-works" className="text-muted-foreground hover:text-primary font-medium">
               How It Works
-            </Link>
-            <Link to="/pricing" className="text-muted-foreground hover:text-primary font-medium">
+            </SafeLink>
+            <SafeLink to="/pricing" className="text-muted-foreground hover:text-primary font-medium">
               Pricing
-            </Link>
-            <Link to="/blog" className="text-muted-foreground hover:text-primary font-medium">
+            </SafeLink>
+            <SafeLink to="/blog" className="text-muted-foreground hover:text-primary font-medium">
               Blog
-            </Link>
-            <Link to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium">
+            </SafeLink>
+            <SafeLink to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium">
               List Equipment
-            </Link>
+            </SafeLink>
             <ThemeToggle />
-            <Link to="/login">
+            <SafeLink to="/login">
               <Button variant="outline" size="sm" className="mr-2">
                 Log In
               </Button>
-            </Link>
-            <Link to="/register">
+            </SafeLink>
+            <SafeLink to="/register">
               <Button size="sm">Sign Up</Button>
-            </Link>
+            </SafeLink>
           </div>
 
           <div className="md:hidden flex items-center">
@@ -85,28 +85,28 @@ const Navbar = () => {
           isMenuOpen ? "max-h-64 py-4" : "max-h-0 py-0 overflow-hidden"
         )}>
           <div className="container mx-auto px-4 flex flex-col space-y-3">
-            <Link to="/categories" className="text-muted-foreground hover:text-primary font-medium py-2">
+            <SafeLink to="/categories" className="text-muted-foreground hover:text-primary font-medium py-2">
               Categories
-            </Link>
-            <Link to="/how-it-works" className="text-muted-foreground hover:text-primary font-medium py-2">
+            </SafeLink>
+            <SafeLink to="/how-it-works" className="text-muted-foreground hover:text-primary font-medium py-2">
               How It Works
-            </Link>
-            <Link to="/pricing" className="text-muted-foreground hover:text-primary font-medium py-2">
+            </SafeLink>
+            <SafeLink to="/pricing" className="text-muted-foreground hover:text-primary font-medium py-2">
               Pricing
-            </Link>
-            <Link to="/blog" className="text-muted-foreground hover:text-primary font-medium py-2">
+            </SafeLink>
+            <SafeLink to="/blog" className="text-muted-foreground hover:text-primary font-medium py-2">
               Blog
-            </Link>
-            <Link to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium py-2">
+            </SafeLink>
+            <SafeLink to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium py-2">
               List Equipment
-            </Link>
+            </SafeLink>
             <div className="flex flex-col space-y-2 pt-2">
-              <Link to="/login">
+              <SafeLink to="/login">
                 <Button variant="outline" className="w-full">Log In</Button>
-              </Link>
-              <Link to="/register">
+              </SafeLink>
+              <SafeLink to="/register">
                 <Button className="w-full">Sign Up</Button>
-              </Link>
+              </SafeLink>
             </div>
           </div>
         </div>

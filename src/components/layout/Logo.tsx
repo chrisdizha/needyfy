@@ -1,5 +1,5 @@
 
-import { Link } from 'react-router-dom';
+import { SafeLink } from '@/components/navigation/SafeLink';
 
 interface LogoProps {
   className?: string;
@@ -15,7 +15,7 @@ const Logo = ({ className = "", showText = true, size = 'md' }: LogoProps) => {
   };
 
   return (
-    <Link to="/" className={`flex items-center space-x-3 ${className}`}>
+    <SafeLink to="/" className={`flex items-center space-x-3 ${className}`}>
       <div className="relative">
         <img 
           src="/lovable-uploads/f8c35258-6e1f-4caf-8eda-778b9f232b46.png"
@@ -31,7 +31,7 @@ const Logo = ({ className = "", showText = true, size = 'md' }: LogoProps) => {
           <div className="text-xs text-muted-foreground font-medium -mt-1">Equipment Rental</div>
         </div>
       )}
-    </Link>
+    </SafeLink>
   );
 };
 

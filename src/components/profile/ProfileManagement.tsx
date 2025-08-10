@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/hooks/useI18n';
 import ImageUpload from '@/components/ui/image-upload';
 import MultiProviderAuth from '@/components/auth/MultiProviderAuth';
-import { Link } from 'react-router-dom';
+import { SafeLink } from '@/components/navigation/SafeLink';
 import VerifiedBadge from '@/components/badges/VerifiedBadge';
 
 interface ProfileData {
@@ -170,6 +170,9 @@ const ProfileManagement = () => {
                    user?.email ? getInitials(user.email) : 'U'}
                 </AvatarFallback>
               </Avatar>
+              {profileData.visa_card_verified && (
+                <VerifiedBadge label="ID Verified" />
+              )}
               
               <div className="flex flex-col items-center space-y-2">
                 <ImageUpload
@@ -248,7 +251,7 @@ const ProfileManagement = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Link to="/list-equipment">
+            <SafeLink to="/list-equipment">
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 <CardContent className="flex flex-col items-center justify-center p-6 text-center">
                   <Plus className="h-8 w-8 text-primary mb-2" />
@@ -256,9 +259,9 @@ const ProfileManagement = () => {
                   <p className="text-sm text-muted-foreground">Add new equipment to rent out</p>
                 </CardContent>
               </Card>
-            </Link>
+            </SafeLink>
             
-            <Link to="/dashboard">
+            <SafeLink to="/dashboard">
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 <CardContent className="flex flex-col items-center justify-center p-6 text-center">
                   <Calendar className="h-8 w-8 text-primary mb-2" />
@@ -266,9 +269,9 @@ const ProfileManagement = () => {
                   <p className="text-sm text-muted-foreground">View and manage bookings</p>
                 </CardContent>
               </Card>
-            </Link>
+            </SafeLink>
             
-            <Link to="/equipment">
+            <SafeLink to="/equipment">
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 <CardContent className="flex flex-col items-center justify-center p-6 text-center">
                   <Search className="h-8 w-8 text-primary mb-2" />
@@ -276,7 +279,7 @@ const ProfileManagement = () => {
                   <p className="text-sm text-muted-foreground">Find equipment to rent</p>
                 </CardContent>
               </Card>
-            </Link>
+            </SafeLink>
           </div>
         </CardContent>
       </Card>

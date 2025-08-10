@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { SafeLink } from '@/components/navigation/SafeLink';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { List, FileText, Award, HelpCircle } from 'lucide-react';
@@ -85,11 +85,11 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><Link to="/" className="text-gray-400 hover:text-white">Home</Link></li>
-              <li><Link to="/categories" className="text-gray-400 hover:text-white">Categories</Link></li>
-              <li><Link to="/how-it-works" className="text-gray-400 hover:text-white">How It Works</Link></li>
-              <li><Link to="/pricing" className="text-gray-400 hover:text-white">Pricing</Link></li>
-              <li><Link to="/contact" className="text-gray-400 hover:text-white">Contact Us</Link></li>
+              <li><SafeLink to="/" className="text-gray-400 hover:text-white">Home</SafeLink></li>
+              <li><SafeLink to="/categories" className="text-gray-400 hover:text-white">Categories</SafeLink></li>
+              <li><SafeLink to="/how-it-works" className="text-gray-400 hover:text-white">How It Works</SafeLink></li>
+              <li><SafeLink to="/pricing" className="text-gray-400 hover:text-white">Pricing</SafeLink></li>
+              <li><SafeLink to="/contact" className="text-gray-400 hover:text-white">Contact Us</SafeLink></li>
             </ul>
           </div>
           
@@ -98,34 +98,34 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">For Providers</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/list-equipment" className="text-gray-400 hover:text-white flex items-center gap-2">
+                <SafeLink to="/list-equipment" className="text-gray-400 hover:text-white flex items-center gap-2">
                   <List className="h-4 w-4" />
                   <span>List Equipment</span>
-                </Link>
+                </SafeLink>
               </li>
               <li>
-                <Link to="/provider-resources" className="text-gray-400 hover:text-white flex items-center gap-2">
+                <SafeLink to="/provider-resources" className="text-gray-400 hover:text-white flex items-center gap-2">
                   <FileText className="h-4 w-4" />
                   <span>Resources</span>
-                </Link>
+                </SafeLink>
               </li>
               <li>
-                <Link to="/provider-guidelines" className="text-gray-400 hover:text-white flex items-center gap-2">
+                <SafeLink to="/provider-guidelines" className="text-gray-400 hover:text-white flex items-center gap-2">
                   <FileText className="h-4 w-4" />
                   <span>Guidelines</span>
-                </Link>
+                </SafeLink>
               </li>
               <li>
-                <Link to="/success-stories" className="text-gray-400 hover:text-white flex items-center gap-2">
+                <SafeLink to="/success-stories" className="text-gray-400 hover:text-white flex items-center gap-2">
                   <Award className="h-4 w-4" />
                   <span>Success Stories</span>
-                </Link>
+                </SafeLink>
               </li>
               <li>
-                <Link to="/provider-faq" className="text-gray-400 hover:text-white flex items-center gap-2">
+                <SafeLink to="/provider-faq" className="text-gray-400 hover:text-white flex items-center gap-2">
                   <HelpCircle className="h-4 w-4" />
                   <span>FAQ</span>
-                </Link>
+                </SafeLink>
               </li>
             </ul>
           </div>
@@ -161,15 +161,15 @@ const Footer = () => {
             © 2025 Needyfy. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link to="/terms" className="text-gray-400 hover:text-white text-sm">
+            <SafeLink to="/terms" className="text-gray-400 hover:text-white text-sm">
               Terms of Service
-            </Link>
-            <Link to="/privacy" className="text-gray-400 hover:text-white text-sm">
+            </SafeLink>
+            <SafeLink to="/privacy" className="text-gray-400 hover:text-white text-sm">
               Privacy Policy
-            </Link>
-            <Link to="/cookies" className="text-gray-400 hover:text-white text-sm">
+            </SafeLink>
+            <SafeLink to="/cookies" className="text-gray-400 hover:text-white text-sm">
               Cookie Policy
-            </Link>
+            </SafeLink>
           </div>
         </div>
       </div>
