@@ -18,5 +18,7 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    // Prevent duplicate React copies causing hooks to break
+    dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
 }));
