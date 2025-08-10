@@ -1,10 +1,6 @@
-import { ReactNode } from 'react';
+import type { PropsWithChildren } from 'react';
 
-interface SecurityProviderProps {
-  children: ReactNode;
-}
-
-// Minimal no-op SecurityProvider to avoid hook errors in environments without full React context
-export const SecurityProvider = ({ children }: SecurityProviderProps) => {
-  return <>{children}</>;
+// Super-minimal passthrough provider with no runtime React dependency or hooks
+export const SecurityProvider = ({ children }: PropsWithChildren<{}>) => {
+  return children as any;
 };

@@ -150,10 +150,8 @@ export const ConsolidatedSecurityProvider = React.memo(({ children }: Consolidat
   const lastActivity = useOptimizedActivityTracking();
   const { logSecurityEvent } = useSecureAuth();
   
-  // Conditional performance monitoring (only in dev)
-  if (process.env.NODE_ENV === 'development') {
-    usePerformanceMonitor('ConsolidatedSecurityProvider');
-  }
+  // Performance monitoring (internally no-ops in production)
+  usePerformanceMonitor('ConsolidatedSecurityProvider');
 
   // Use consolidated hooks
   useConsolidatedSecurityMonitoring(user, session, lastActivity);
