@@ -3,10 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { OptimizedAuthProvider, useAuth } from "@/contexts/OptimizedAuthContext";
-import { ConsolidatedSecurityProvider } from "@/components/security/ConsolidatedSecurityProvider";
-import { EnhancedSecurityProvider } from "@/components/security/EnhancedSecurityProvider";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
-import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
 import OptimizedErrorBoundary from "@/components/performance/OptimizedErrorBoundary";
 import { ThemeProvider } from "next-themes";
 import { Suspense } from "react";
@@ -78,9 +75,8 @@ const Home = () => {
   return user ? <LazyAuthenticatedHome /> : <LazyPublicHome />;
 };
 
-// Security headers hook component
-const SecurityHeadersProvider = ({ children }: { children: React.ReactNode }) => {
-  useSecurityHeaders();
+// Minimal wrapper component
+const AppWrapper = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
@@ -91,7 +87,7 @@ function App() {
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <OptimizedAuthProvider>
             <AnalyticsProvider>
-              <SecurityHeadersProvider>
+              <AppWrapper>
                     <Router>
               <Suspense fallback={<LoadingFallback />}>
                 <Routes>
@@ -226,7 +222,7 @@ function App() {
                 </Suspense>
                     </Router>
                     <Toaster />
-                    </SecurityHeadersProvider>
+                    </AppWrapper>
             </AnalyticsProvider>
           </OptimizedAuthProvider>
         </ThemeProvider>
