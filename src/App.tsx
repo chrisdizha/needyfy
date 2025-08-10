@@ -91,10 +91,8 @@ function App() {
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <OptimizedAuthProvider>
             <AnalyticsProvider>
-              <ConsolidatedSecurityProvider>
-                <EnhancedSecurityProvider>
-                  <SecurityHeadersProvider>
-                  <Router>
+              <SecurityHeadersProvider>
+                    <Router>
               <Suspense fallback={<LoadingFallback />}>
                 <Routes>
                   <Route path="/" element={<Home />} />
@@ -226,11 +224,9 @@ function App() {
                   <Route path="*" element={<LazyNotFound />} />
                   </Routes>
                 </Suspense>
-                  </Router>
-                  <Toaster />
-                  </SecurityHeadersProvider>
-                </EnhancedSecurityProvider>
-              </ConsolidatedSecurityProvider>
+                    </Router>
+                    <Toaster />
+                    </SecurityHeadersProvider>
             </AnalyticsProvider>
           </OptimizedAuthProvider>
         </ThemeProvider>
