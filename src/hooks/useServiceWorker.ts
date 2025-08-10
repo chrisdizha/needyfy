@@ -1,24 +1,5 @@
-import { useEffect } from 'react';
-
+// No-op hook: service worker is registered in src/main.tsx outside React
+// Keeping export for backward compatibility; does nothing to avoid hook runtime issues
 export const useServiceWorker = () => {
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then((registration) => {
-            console.log('SW registered: ', registration);
-            
-            // Request persistent storage
-            if ('storage' in navigator && 'persist' in navigator.storage) {
-              navigator.storage.persist().then(persistent => {
-                console.log('Persistent storage:', persistent);
-              });
-            }
-          })
-          .catch((registrationError) => {
-            console.log('SW registration failed: ', registrationError);
-          });
-      });
-    }
-  }, []);
+  // intentionally empty
 };
