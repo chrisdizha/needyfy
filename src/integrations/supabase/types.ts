@@ -611,6 +611,36 @@ export type Database = {
         }
         Relationships: []
       }
+      points_transactions: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json
+          points: number
+          reason: string
+          source: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          points: number
+          reason: string
+          source?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          points?: number
+          reason?: string
+          source?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -680,6 +710,51 @@ export type Database = {
           created_at?: string
           id?: string
           identifier?: string
+        }
+        Relationships: []
+      }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referred_id: string
+          referrer_id: string
+          reward_granted: boolean
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_id: string
+          referrer_id: string
+          reward_granted?: boolean
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+          reward_granted?: boolean
+          status?: string
         }
         Relationships: []
       }
@@ -836,6 +911,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_badges: {
+        Row: {
+          badge: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -885,6 +981,15 @@ export type Database = {
       }
     }
     Functions: {
+      award_points: {
+        Args: {
+          p_user_id: string
+          p_points: number
+          p_reason: string
+          p_source?: string
+        }
+        Returns: string
+      }
       calculate_escrow_schedule: {
         Args: {
           p_booking_id: string
@@ -918,8 +1023,16 @@ export type Database = {
         Args: { provider_user_id: string }
         Returns: number
       }
+      get_referrer_by_code: {
+        Args: { p_code: string }
+        Returns: string
+      }
       get_unread_count: {
         Args: { p_user_id?: string }
+        Returns: number
+      }
+      get_user_points_total: {
+        Args: { _user_id?: string }
         Returns: number
       }
       get_user_roles: {

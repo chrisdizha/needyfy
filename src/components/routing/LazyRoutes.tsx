@@ -30,3 +30,4 @@ export const LazyCategories = lazy(() => import('@/pages/Categories'));
 export const LazyListEquipment = lazy(() => import('@/pages/ListEquipment'));
 export const LazyBlog = lazy(() => import('@/pages/Blog'));
 export const LazyPaymentTerms = lazy(() => import('@/pages/PaymentTerms'));
+export const LazyRewards = lazy(() => import('@/pages/Rewards'));

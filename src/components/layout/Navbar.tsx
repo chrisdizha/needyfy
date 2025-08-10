@@ -41,6 +41,9 @@ const Navbar = () => {
             <SafeLink to="/blog" className="text-muted-foreground hover:text-primary font-medium">
               Blog
             </SafeLink>
+            <SafeLink to="/rewards" className="text-muted-foreground hover:text-primary font-medium">
+              Rewards
+            </SafeLink>
             <SafeLink to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium">
               List Equipment
             </SafeLink>
@@ -96,6 +99,9 @@ const Navbar = () => {
             </SafeLink>
             <SafeLink to="/blog" className="text-muted-foreground hover:text-primary font-medium py-2">
               Blog
+            </SafeLink>
+            <SafeLink to="/rewards" className="text-muted-foreground hover:text-primary font-medium py-2">
+              Rewards
             </SafeLink>
             <SafeLink to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium py-2">
               List Equipment

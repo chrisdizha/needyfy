@@ -178,74 +178,24 @@ export const useReviews = (equipmentId?: string) => {
     queryKey: ['reviews', equipmentId],
     queryFn: async () => {
       try {
-        // First, try to get reviews with profiles
-        let query = supabase
+        let baseQuery = supabase
           .from('reviews')
-          .select(`
-            *,
-            profiles(full_name, avatar_url)
-          `)
+          .select('*')
           .order('created_at', { ascending: false });
 
         if (equipmentId) {
-          query = query.eq('equipment_id', equipmentId);
+          baseQuery = baseQuery.eq('equipment_id', equipmentId);
         }
 
-        const { data, error } = await query;
+        const { data } = await baseQuery;
+        const databaseReviews = (data || []) as Review[];
 
-        let databaseReviews: Review[] = [];
-
-        if (error) {
-          console.error('Error fetching reviews with profiles:', error);
-          
-          // Fallback: get reviews without profiles
-          let fallbackQuery = supabase
-            .from('reviews')
-            .select('*')
-            .order('created_at', { ascending: false });
-          
-          if (equipmentId) {
-            fallbackQuery = fallbackQuery.eq('equipment_id', equipmentId);
-          }
-          
-          const { data: fallbackData, error: fallbackError } = await fallbackQuery;
-          
-          if (fallbackError) {
-            console.error('Fallback query error:', fallbackError);
-          } else {
-            // Return reviews without profiles data
-            databaseReviews = (fallbackData || []).map(item => ({
-              ...item,
-              profiles: null
-            })) as Review[];
-          }
-        } else {
-          // Successfully got reviews with profiles - ensure proper typing
-          databaseReviews = (data || []).map(item => ({
-            ...item,
-            profiles: isValidProfileData(item.profiles) ? {
-              full_name: item.profiles.full_name,
-              avatar_url: item.profiles.avatar_url
-            } : null
-          })) as Review[];
-        }
-        
-        // Combine database reviews with sample reviews
-        const sampleReviews = getSampleReviews();
-        
-        // Filter sample reviews if equipmentId is specified (return empty for specific equipment)
-        const filteredSampleReviews = equipmentId ? [] : sampleReviews;
-        
-        // Combine and sort by created_at descending
-        const allReviews = [...databaseReviews, ...filteredSampleReviews].sort(
+        const sampleReviews = equipmentId ? [] : getSampleReviews();
+        const allReviews = [...databaseReviews, ...sampleReviews].sort(
           (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
-        
         return allReviews;
-        
       } catch (err) {
-        console.error('Error in useReviews:', err);
-        // Return sample reviews as fallback
         return equipmentId ? [] : getSampleReviews();
       }
     },

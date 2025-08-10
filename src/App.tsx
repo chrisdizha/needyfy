@@ -40,8 +40,9 @@ import {
   LazyCategories,
   LazyListEquipment,
   LazyBlog,
-  LazyPaymentTerms
-} from "@/components/routing/LazyRoutes";
+  LazyPaymentTerms,
+  LazyRewards
+ } from "@/components/routing/LazyRoutes";
 import "@/lib/i18n";
 
 // Optimized QueryClient with better cache configuration
@@ -209,6 +210,14 @@ function App() {
                     element={
                       <SecureRoute>
                         <LazyListEquipment />
+                      </SecureRoute>
+                    }
+                  />
+                  <Route
+                    path="/rewards"
+                    element={
+                      <SecureRoute>
+                        <LazyRewards />
                       </SecureRoute>
                     }
                   />

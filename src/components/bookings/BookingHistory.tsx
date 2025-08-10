@@ -12,8 +12,9 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-import { FileText } from 'lucide-react';
+import { FileText, MessageSquare } from 'lucide-react';
 import { ConditionVerificationModal } from '@/components/equipment/ConditionVerificationModal';
+import BookingMessages from '@/components/provider/BookingMessages';
 
 interface Booking {
   id: string;
@@ -23,6 +24,8 @@ interface Booking {
   end_date: string;
   total_price: number;
   status: string;
+  owner_id: string;
+  user_id: string;
 }
 
 interface BookingHistoryProps {
@@ -32,8 +35,9 @@ interface BookingHistoryProps {
 const BookingHistory = ({ limit }: BookingHistoryProps) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showConditionForm, setShowConditionForm] = useState(false);
+const [showConditionForm, setShowConditionForm] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [chatBookingId, setChatBookingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -43,7 +47,7 @@ const BookingHistory = ({ limit }: BookingHistoryProps) => {
       if (user) {
         let query = supabase
           .from('bookings')
-          .select('id, equipment_id, equipment_title, start_date, end_date, total_price, status')
+          .select('id, equipment_id, equipment_title, start_date, end_date, total_price, status, owner_id, user_id')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
 
@@ -108,36 +112,53 @@ const BookingHistory = ({ limit }: BookingHistoryProps) => {
         </TableHeader>
         <TableBody>
           {bookings.map((booking) => (
-            <TableRow key={booking.id}>
-              <TableCell className="font-medium">
-                {booking.id.substring(0, 8)}...
-              </TableCell>
-              <TableCell>
-                {format(new Date(booking.start_date), 'MMM d, yyyy')} - {format(new Date(booking.end_date), 'MMM d, yyyy')}
-              </TableCell>
-              <TableCell>${booking.total_price / 100}</TableCell>
-              <TableCell>{getStatusBadge(booking.status)}</TableCell>
-              <TableCell className="text-right">
-                <div className="flex gap-2 justify-end">
-                  <Button variant="outline" size="sm">
-                    View Details
-                  </Button>
-                  {(booking.status === 'confirmed' || booking.status === 'completed') && (
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
-                        setSelectedBooking(booking);
-                        setShowConditionForm(true);
-                      }}
-                    >
-                      <FileText className="h-4 w-4 mr-1" />
-                      Condition Form
+            <>
+              <TableRow key={booking.id}>
+                <TableCell className="font-medium">
+                  {booking.id.substring(0, 8)}...
+                </TableCell>
+                <TableCell>
+                  {format(new Date(booking.start_date), 'MMM d, yyyy')} - {format(new Date(booking.end_date), 'MMM d, yyyy')}
+                </TableCell>
+                <TableCell>${booking.total_price / 100}</TableCell>
+                <TableCell>{getStatusBadge(booking.status)}</TableCell>
+                <TableCell className="text-right">
+                  <div className="flex gap-2 justify-end">
+                    <Button variant="outline" size="sm">
+                      View Details
                     </Button>
-                  )}
-                </div>
-              </TableCell>
-            </TableRow>
+                    {(booking.status === 'confirmed' || booking.status === 'completed') && (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setSelectedBooking(booking);
+                          setShowConditionForm(true);
+                        }}
+                      >
+                        <FileText className="h-4 w-4 mr-1" />
+                        Condition Form
+                      </Button>
+                    )}
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => setChatBookingId(prev => prev === booking.id ? null : booking.id)}
+                    >
+                      <MessageSquare className="h-4 w-4 mr-1" />
+                      Chat
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+              {chatBookingId === booking.id && (
+                <TableRow key={booking.id + '-chat'}>
+                  <TableCell colSpan={5}>
+                    <BookingMessages bookingId={booking.id} ownerId={booking.owner_id} userId={booking.user_id} />
+                  </TableCell>
+                </TableRow>
+              )}
+            </>
           ))}
         </TableBody>
       </Table>
