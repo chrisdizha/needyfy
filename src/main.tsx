@@ -4,7 +4,7 @@ import App from './App.tsx'
 import './index.css'
 
 // Runtime check for multiple React instances in development
-if (typeof __DEV_REACT_CHECK__ !== 'undefined' && __DEV_REACT_CHECK__) {
+if (typeof window !== 'undefined' && import.meta.env.DEV) {
   // Check for multiple React instances
   const reactInstances = [];
   if (window.React) reactInstances.push('window.React');

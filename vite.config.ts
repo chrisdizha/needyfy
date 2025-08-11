@@ -29,6 +29,6 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     // Add runtime check for multiple React instances in development
-    __DEV_REACT_CHECK__: mode === 'development',
+    __DEV_REACT_CHECK__: JSON.stringify(mode === 'development'),
   },
 }));
