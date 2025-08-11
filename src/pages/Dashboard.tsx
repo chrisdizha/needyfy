@@ -15,12 +15,15 @@ import {
   TrendingUp, 
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Eye,
+  Edit
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/hooks/useI18n';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useUserEquipmentListings } from '@/hooks/useEquipmentListings';
 
 interface DashboardStats {
   totalListings: number;
@@ -35,6 +38,7 @@ const Dashboard = () => {
   const { user, loading } = useAuth();
   const { t } = useI18n();
   const { profile } = useUserProfile();
+  const { userListings, isLoading: listingsLoading } = useUserEquipmentListings();
   const [stats, setStats] = useState<DashboardStats>({
     totalListings: 0,
     activeBookings: 0,
@@ -76,7 +80,7 @@ const Dashboard = () => {
         .reduce((sum, booking) => sum + booking.total_price, 0);
 
       setStats({
-        totalListings: 0, // This would need equipment table
+        totalListings: userListings?.length || 0,
         activeBookings,
         totalEarnings: totalEarnings / 100, // Convert from cents
         pendingBookings,
@@ -89,6 +93,13 @@ const Dashboard = () => {
       setStatsLoading(false);
     }
   };
+
+  // Update total listings when userListings changes
+  useEffect(() => {
+    if (userListings) {
+      setStats(prev => ({ ...prev, totalListings: userListings.length }));
+    }
+  }, [userListings]);
 
   if (loading) {
     return (
@@ -128,6 +139,13 @@ const Dashboard = () => {
 
   const statCards = [
     {
+      title: 'Equipment Listings',
+      value: stats.totalListings.toString(),
+      icon: Package,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50'
+    },
+    {
       title: t('dashboard.totalEarnings'),
       value: `$${stats.totalEarnings.toFixed(2)}`,
       icon: DollarSign,
@@ -147,13 +165,6 @@ const Dashboard = () => {
       icon: Clock,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50'
-    },
-    {
-      title: t('dashboard.completedBookings'),
-      value: stats.completedBookings.toString(),
-      icon: CheckCircle,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
     }
   ];
 
@@ -184,7 +195,7 @@ const Dashboard = () => {
                         {stat.title}
                       </p>
                       <p className="text-2xl font-bold text-foreground">
-                        {statsLoading ? '...' : stat.value}
+                        {statsLoading && !listingsLoading ? '...' : stat.value}
                       </p>
                     </div>
                     <div className={`p-3 rounded-full ${stat.bgColor}`}>
@@ -197,31 +208,107 @@ const Dashboard = () => {
           })}
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {quickActions.map((action, index) => {
-            const IconComponent = action.icon;
-            return (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${action.color} text-white`}>
-                      <IconComponent className="h-5 w-5" />
-                    </div>
-                    {action.title}
-                  </CardTitle>
-                  <CardDescription>
-                    {action.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild className="w-full">
-                    <Link to={action.href}>{t('common.getStarted')}</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Quick Actions */}
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold">Quick Actions</h2>
+            <div className="grid gap-4">
+              {quickActions.map((action, index) => {
+                const IconComponent = action.icon;
+                return (
+                  <Card key={index} className="hover:shadow-lg transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-4">
+                        <div className={`p-2 rounded-lg ${action.color} text-white flex-shrink-0`}>
+                          <IconComponent className="h-5 w-5" />
+                        </div>
+                        <div className="flex-grow">
+                          <h3 className="font-medium">{action.title}</h3>
+                          <p className="text-sm text-muted-foreground">{action.description}</p>
+                        </div>
+                        <Button asChild size="sm">
+                          <Link to={action.href}>Go</Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* My Equipment Listings */}
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">My Equipment</h2>
+              <Button asChild size="sm" variant="outline">
+                <Link to="/list-equipment">Add New</Link>
+              </Button>
+            </div>
+            <Card>
+              <CardContent className="p-4">
+                {listingsLoading ? (
+                  <div className="space-y-4">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : userListings && userListings.length > 0 ? (
+                  <div className="space-y-4">
+                    {userListings.slice(0, 5).map((listing) => (
+                      <div key={listing.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          {listing.photos && listing.photos.length > 0 ? (
+                            <img 
+                              src={listing.photos[0]} 
+                              alt={listing.title}
+                              className="w-12 h-12 object-cover rounded"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                              <Package className="h-6 w-6 text-gray-400" />
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-medium">{listing.title}</p>
+                            <p className="text-sm text-muted-foreground">
+                              ${(listing.price / 100).toFixed(2)}/{listing.price_unit}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={listing.status === 'active' ? 'default' : 'secondary'}>
+                            {listing.status}
+                          </Badge>
+                          <Button size="sm" variant="ghost">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    {userListings.length > 5 && (
+                      <div className="text-center pt-2">
+                        <Button variant="outline" size="sm">
+                          View All {userListings.length} Listings
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="mb-4">No equipment listed yet</p>
+                    <Button asChild>
+                      <Link to="/list-equipment">List Your First Item</Link>
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Recent Activity */}

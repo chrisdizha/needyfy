@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -14,6 +15,8 @@ import TermsEditor from './TermsEditor';
 import { useForm, type FieldErrors, type SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEquipmentListings } from '@/hooks/useEquipmentListings';
+import { useAuth } from '@/contexts/OptimizedAuthContext';
 
 const SAMPLE_TERMS = `Full refund for cancellations made at least 48 hours before the rental start date.
 50% refund for cancellations within 48 hours, no refund if cancelled on the day of rental.
@@ -66,6 +69,8 @@ type EquipmentFormValues = z.infer<typeof equipmentFormSchema>;
 
 const EquipmentForm = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { createListing, isCreating } = useEquipmentListings();
 
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [termsHistory, setTermsHistory] = useState<string[]>([]);
@@ -89,16 +94,41 @@ const EquipmentForm = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<EquipmentFormValues> = async () => {
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+  const onSubmit: SubmitHandler<EquipmentFormValues> = async (data) => {
+    if (!user) {
+      toast.error('You must be logged in to list equipment.');
+      return;
+    }
 
-      toast.success('Equipment listed successfully!');
+    try {
+      // Convert photos to URLs (in a real app, you'd upload these to storage first)
+      const photoUrls = data.photos.map((file, index) => 
+        URL.createObjectURL(file) // This is temporary - in production you'd upload to Supabase storage
+      );
+
+      const listingData = {
+        owner_id: user.id,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        price: Number(data.price) * 100, // Convert to cents
+        price_unit: data.priceUnit,
+        location: data.location,
+        photos: photoUrls,
+        terms_and_conditions: data.cancellationPolicy,
+        status: 'active' as const,
+        availability_calendar: {},
+        is_verified: false,
+      };
+
+      createListing(listingData);
+      
+      // Navigate to dashboard after a short delay to show success message
       setTimeout(() => {
-        navigate('/bookings');
+        navigate('/dashboard');
       }, 1500);
     } catch (error) {
+      console.error('Error creating listing:', error);
       toast.error('Failed to list equipment. Please try again.');
     }
   };
@@ -130,7 +160,6 @@ const EquipmentForm = () => {
         <CardContent>
           <EquipmentPolicyInfo />
           <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-6">
-            {/* Title */}
             <EquipmentTitleField
               title={watch('title')}
               onChange={(e) =>
@@ -138,7 +167,6 @@ const EquipmentForm = () => {
               }
             />
 
-            {/* Description */}
             <EquipmentDescriptionField
               description={watch('description')}
               onChange={(e) =>
@@ -148,7 +176,6 @@ const EquipmentForm = () => {
               }
             />
 
-            {/* Category and Price */}
             <EquipmentCategoryPriceFields
               categories={equipmentCategories}
               selectedCategory={watch('category')}
@@ -167,7 +194,6 @@ const EquipmentForm = () => {
               }
             />
 
-            {/* Cancellation Policy (now using TermsEditor) */}
             <div>
               <label htmlFor="cancellationPolicy" className="block text-sm font-medium mb-1">
                 Rental Terms / Cancellation Policy <span className="text-destructive">*</span>
@@ -185,7 +211,6 @@ const EquipmentForm = () => {
               </p>
             </div>
 
-            {/* Location */}
             <EquipmentLocationField
               location={watch('location')}
               onChange={(e) =>
@@ -193,7 +218,6 @@ const EquipmentForm = () => {
               }
             />
 
-            {/* Photos */}
             <EquipmentPhotosField
               photos={watch('photos')}
               onPhotosChange={(photos) =>
@@ -201,10 +225,9 @@ const EquipmentForm = () => {
               }
             />
 
-            {/* Submit Button */}
             <div className="pt-4">
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting...' : 'List Equipment'}
+              <Button type="submit" className="w-full" disabled={isSubmitting || isCreating}>
+                {isSubmitting || isCreating ? 'Listing Equipment...' : 'List Equipment'}
               </Button>
             </div>
           </form>
