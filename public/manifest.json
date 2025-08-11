@@ -18,25 +18,25 @@
   },
   "icons": [
     {
-      "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/lovable-uploads/b10588a4-3d99-4756-afca-c2bcf51374e2.png",
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/lovable-uploads/b10588a4-3d99-4756-afca-c2bcf51374e2.png",
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -50,7 +50,7 @@
       "url": "/equipment",
       "icons": [
         {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+          "src": "/icon-192x192.png",
           "sizes": "192x192"
         }
       ]
@@ -62,7 +62,7 @@
       "url": "/list-equipment",
       "icons": [
         {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+          "src": "/icon-192x192.png",
           "sizes": "192x192"
         }
       ]
@@ -74,7 +74,7 @@
       "url": "/categories",
       "icons": [
         {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+          "src": "/icon-192x192.png",
           "sizes": "192x192"
         }
       ]
@@ -86,7 +86,7 @@
       "url": "/dashboard",
       "icons": [
         {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+          "src": "/icon-192x192.png",
           "sizes": "192x192"
         }
       ]
@@ -185,7 +185,7 @@
       ],
       "icons": [
         {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+          "src": "/icon-192x192.png",
           "sizes": "192x192"
         }
       ],
@@ -210,7 +210,7 @@
       ],
       "icons": [
         {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+          "src": "/icon-192x192.png",
           "sizes": "192x192"
         }
       ],
@@ -235,7 +235,7 @@
       ],
       "icons": [
         {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+          "src": "/icon-192x192.png",
           "sizes": "192x192"
         }
       ],
@@ -260,7 +260,7 @@
       ],
       "icons": [
         {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+          "src": "/icon-192x192.png",
           "sizes": "192x192"
         }
       ],

@@ -1,13 +1,17 @@
 // Enhanced Service Worker for PWA with background sync and periodic sync
-const CACHE_NAME = 'needyfy-v1.2';
-const OFFLINE_CACHE = 'needyfy-offline-v1.2';
+const CACHE_NAME = 'needyfy-v1.3';
+const OFFLINE_CACHE = 'needyfy-offline-v1.3';
 const urlsToCache = [
   '/',
   '/manifest.json',
   '/icon-192x192.png',
   '/icon-512x512.png',
   '/equipment',
-  '/offline.html'
+  '/offline.html',
+  '/lovable-uploads/0c649a1e-0ba9-49ec-a985-237ab00f08a4.png',
+  '/lovable-uploads/4fe721dd-68db-496d-b1a3-ba8fb8d518da.png',
+  '/lovable-uploads/ea754658-c32e-4149-a5ac-2a906d4d031c.png',
+  '/lovable-uploads/31e5ee59-6e78-4ce6-bb12-c045bad04558.png'
 ];
 
 // Background sync queue
