@@ -1,264 +1,209 @@
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/contexts/OptimizedAuthContext';
+import { useEffect, useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { getDeviceFingerprint } from '@/components/security/SecurityEnhancements';
+import { useToast } from '@/hooks/use-toast';
 
-interface SessionSecurityMetrics {
-  sessionAge: number; // in minutes
-  timeUntilExpiry: number; // in minutes
-  securityScore: number; // 0-100
-  riskLevel: 'low' | 'medium' | 'high' | 'critical';
-  threats: string[];
+interface SessionMetrics {
+  isActive: boolean;
+  lastActivity: Date;
+  sessionDuration: number;
+  deviceFingerprint: string;
+  suspiciousActivity: boolean;
+  riskScore: number;
+}
+
+interface SecurityAlert {
+  id: string;
+  type: 'session_hijack' | 'unusual_location' | 'device_change' | 'concurrent_sessions';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+  timestamp: Date;
+  resolved: boolean;
 }
 
 export const useEnhancedSessionSecurity = () => {
-  const { user, session } = useAuth();
-  const [securityMetrics, setSecurityMetrics] = useState<SessionSecurityMetrics | null>(null);
-  const [isMonitoring, setIsMonitoring] = useState(false);
-  const [lastSecurityCheck, setLastSecurityCheck] = useState<Date | null>(null);
+  const [sessionMetrics, setSessionMetrics] = useState<SessionMetrics>({
+    isActive: false,
+    lastActivity: new Date(),
+    sessionDuration: 0,
+    deviceFingerprint: '',
+    suspiciousActivity: false,
+    riskScore: 0
+  });
+  const [alerts, setAlerts] = useState<SecurityAlert[]>([]);
+  const [sessionStartTime] = useState(new Date());
+  const { toast } = useToast();
 
-  const calculateSecurityScore = useCallback((metrics: Omit<SessionSecurityMetrics, 'securityScore' | 'riskLevel'>): { score: number; riskLevel: SessionSecurityMetrics['riskLevel'] } => {
-    let score = 100;
-    let riskLevel: SessionSecurityMetrics['riskLevel'] = 'low';
-
-    // Deduct points for session age (older sessions are riskier)
-    if (metrics.sessionAge > 480) { // 8 hours
-      score -= 30;
-      riskLevel = 'high';
-    } else if (metrics.sessionAge > 240) { // 4 hours
-      score -= 15;
-      riskLevel = 'medium';
-    } else if (metrics.sessionAge > 120) { // 2 hours
-      score -= 5;
-    }
-
-    // Deduct points for approaching expiry
-    if (metrics.timeUntilExpiry < 5) {
-      score -= 25;
-      riskLevel = 'critical';
-    } else if (metrics.timeUntilExpiry < 15) {
-      score -= 15;
-      if (riskLevel === 'low') riskLevel = 'high';
-    } else if (metrics.timeUntilExpiry < 30) {
-      score -= 10;
-      if (riskLevel === 'low') riskLevel = 'medium';
-    }
-
-    // Deduct points for each threat
-    score -= metrics.threats.length * 10;
-    if (metrics.threats.length > 2) {
-      riskLevel = 'critical';
-    } else if (metrics.threats.length > 0 && riskLevel === 'low') {
-      riskLevel = 'medium';
-    }
-
-    return { score: Math.max(0, score), riskLevel };
+  // Generate device fingerprint
+  const generateDeviceFingerprint = useCallback(() => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx?.fillText('Needyfy Security', 10, 10);
+    const canvasFingerprint = canvas.toDataURL();
+    
+    const fingerprint = btoa([
+      navigator.userAgent,
+      navigator.language,
+      screen.width + 'x' + screen.height,
+      new Date().getTimezoneOffset(),
+      canvasFingerprint.slice(-50)
+    ].join('|'));
+    
+    return fingerprint;
   }, []);
 
-  const checkSessionSecurity = useCallback(async (): Promise<SessionSecurityMetrics | null> => {
-    if (!session || !user) {
-      return null;
-    }
+  // Monitor session activity
+  const { data: currentSession } = useQuery({
+    queryKey: ['current-session'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    },
+    refetchInterval: 30000, // Check every 30 seconds
+  });
 
-    try {
-      const now = Date.now();
-      const sessionStart = new Date(session.created_at || 0).getTime();
-      const sessionExpiry = (session.expires_at || 0) * 1000;
-      
-      const sessionAge = Math.floor((now - sessionStart) / (1000 * 60)); // minutes
-      const timeUntilExpiry = Math.floor((sessionExpiry - now) / (1000 * 60)); // minutes
-      
-      const threats: string[] = [];
+  // Track user activity
+  const updateActivity = useCallback(() => {
+    setSessionMetrics(prev => ({
+      ...prev,
+      lastActivity: new Date(),
+      isActive: true,
+      sessionDuration: Date.now() - sessionStartTime.getTime()
+    }));
+  }, [sessionStartTime]);
 
-      // Check for potential security threats
-      
-      // 1. Device fingerprint mismatch
-      const currentFingerprint = getDeviceFingerprint();
-      const storedFingerprint = localStorage.getItem('device_fingerprint');
-      if (storedFingerprint && storedFingerprint !== currentFingerprint) {
-        threats.push('Device fingerprint mismatch detected');
-      }
-
-      // 2. Multiple active sessions
-      const activeSessions = JSON.parse(localStorage.getItem('active_sessions') || '[]');
-      if (activeSessions.length > 3) {
-        threats.push('Too many concurrent sessions');
-      }
-
-      // 3. Suspicious timing patterns
-      const lastActivity = localStorage.getItem('last_activity_timestamp');
-      if (lastActivity) {
-        const timeSinceActivity = now - parseInt(lastActivity);
-        if (timeSinceActivity > 30 * 60 * 1000) { // 30 minutes of inactivity
-          threats.push('Extended period of inactivity');
-        }
-      }
-
-      // 4. Check for session hijacking indicators
-      const userAgent = navigator.userAgent;
-      const storedUserAgent = localStorage.getItem('session_user_agent');
-      if (storedUserAgent && storedUserAgent !== userAgent) {
-        threats.push('User agent change detected');
-      } else if (!storedUserAgent) {
-        localStorage.setItem('session_user_agent', userAgent);
-      }
-
-      // 5. Time-based anomalies
-      const loginHour = new Date(sessionStart).getHours();
-      const currentHour = new Date().getHours();
-      if (Math.abs(currentHour - loginHour) > 8) {
-        threats.push('Unusual time-based activity pattern');
-      }
-
-      const baseMetrics = {
-        sessionAge,
-        timeUntilExpiry,
-        threats
-      };
-
-      const { score, riskLevel } = calculateSecurityScore(baseMetrics);
-
-      const metrics: SessionSecurityMetrics = {
-        ...baseMetrics,
-        securityScore: score,
-        riskLevel
-      };
-
-      // Log security events for high-risk situations
-      if (riskLevel === 'high' || riskLevel === 'critical') {
-        await supabase.rpc('log_security_event', {
-          p_user_id: user.id,
-          p_event_type: 'session_security_risk',
-          p_event_details: {
-            security_score: score,
-            risk_level: riskLevel,
-            threats: threats,
-            session_age_minutes: sessionAge,
-            time_until_expiry_minutes: timeUntilExpiry
-          },
-          p_risk_level: riskLevel === 'critical' ? 'high' : 'medium'
-        });
-      }
-
-      setSecurityMetrics(metrics);
-      setLastSecurityCheck(new Date());
-      
-      return metrics;
-    } catch (error) {
-      console.error('Session security check failed:', error);
-      return null;
-    }
-  }, [session, user, calculateSecurityScore]);
-
-  const handleSecurityThreat = useCallback(async (threat: string, severity: 'low' | 'medium' | 'high' | 'critical') => {
-    if (!user) return;
-
-    // Log the threat
-    await supabase.rpc('log_security_event', {
-      p_user_id: user.id,
-      p_event_type: 'security_threat_detected',
-      p_event_details: {
-        threat_description: threat,
-        threat_severity: severity,
-        session_id: session?.access_token?.substring(0, 8) || 'unknown',
-        user_agent: navigator.userAgent,
-        timestamp: new Date().toISOString()
-      },
-      p_risk_level: severity === 'critical' ? 'high' : severity
-    });
-
-    // Take appropriate action based on severity
-    switch (severity) {
-      case 'critical':
-        toast.error('Critical security threat detected. Please sign in again for your safety.', {
-          duration: 10000,
-          action: {
-            label: 'Sign Out',
-            onClick: async () => {
-              await supabase.auth.signOut();
-              window.location.href = '/login';
-            }
-          }
-        });
-        break;
-      case 'high':
-        toast.warning(`Security alert: ${threat}. Please verify your account security.`, {
-          duration: 8000
-        });
-        break;
-      case 'medium':
-        toast.info(`Security notice: ${threat}`, {
-          duration: 5000
-        });
-        break;
-      case 'low':
-        console.log(`Security info: ${threat}`);
-        break;
-    }
-  }, [user, session]);
-
-  const refreshSessionSecurity = useCallback(async () => {
-    if (!session) return;
-
-    try {
-      const { error } = await supabase.auth.refreshSession();
-      if (error) {
-        await handleSecurityThreat('Session refresh failed', 'high');
-      } else {
-        toast.success('Session refreshed successfully');
-        await checkSessionSecurity();
-      }
-    } catch (error) {
-      await handleSecurityThreat('Session refresh error', 'high');
-    }
-  }, [session, handleSecurityThreat, checkSessionSecurity]);
-
-  // Monitor session security continuously
-  useEffect(() => {
-    if (!user || !session) {
-      setIsMonitoring(false);
-      setSecurityMetrics(null);
-      return;
-    }
-
-    setIsMonitoring(true);
+  // Detect suspicious activity
+  const detectSuspiciousActivity = useCallback(() => {
+    const now = new Date();
+    const timeSinceLastActivity = now.getTime() - sessionMetrics.lastActivity.getTime();
+    const sessionDuration = now.getTime() - sessionStartTime.getTime();
     
-    // Initial security check
-    checkSessionSecurity();
+    let riskScore = 0;
+    let suspicious = false;
+    const newAlerts: SecurityAlert[] = [];
 
-    // Update activity timestamp
-    const updateActivity = () => {
-      localStorage.setItem('last_activity_timestamp', Date.now().toString());
-    };
+    // Check for unusual session duration (> 8 hours)
+    if (sessionDuration > 8 * 60 * 60 * 1000) {
+      riskScore += 30;
+      suspicious = true;
+      newAlerts.push({
+        id: `long-session-${Date.now()}`,
+        type: 'session_hijack',
+        severity: 'medium',
+        message: 'Unusually long session detected',
+        timestamp: now,
+        resolved: false
+      });
+    }
 
-    // Set up continuous monitoring
-    const securityInterval = setInterval(checkSessionSecurity, 2 * 60 * 1000); // Every 2 minutes
-    const activityInterval = setInterval(updateActivity, 30 * 1000); // Every 30 seconds
+    // Check for rapid activity bursts
+    if (timeSinceLastActivity < 100) {
+      riskScore += 20;
+    }
 
-    // Listen for user activity
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    // Update metrics
+    setSessionMetrics(prev => ({
+      ...prev,
+      suspiciousActivity: suspicious,
+      riskScore: Math.min(riskScore, 100)
+    }));
+
+    // Add new alerts
+    if (newAlerts.length > 0) {
+      setAlerts(prev => [...prev, ...newAlerts]);
+      
+      // Show toast for high-risk alerts
+      newAlerts.forEach(alert => {
+        if (alert.severity === 'high' || alert.severity === 'critical') {
+          toast({
+            title: "Security Alert",
+            description: alert.message,
+            variant: "destructive",
+          });
+        }
+      });
+    }
+  }, [sessionMetrics.lastActivity, sessionStartTime, toast]);
+
+  // Initialize device fingerprint and activity tracking
+  useEffect(() => {
+    const fingerprint = generateDeviceFingerprint();
+    setSessionMetrics(prev => ({
+      ...prev,
+      deviceFingerprint: fingerprint,
+      isActive: true
+    }));
+
+    // Set up activity listeners
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
     events.forEach(event => {
-      document.addEventListener(event, updateActivity, { passive: true });
+      document.addEventListener(event, updateActivity, true);
     });
+
+    // Set up periodic security checks
+    const securityCheckInterval = setInterval(detectSuspiciousActivity, 60000); // Every minute
 
     return () => {
-      clearInterval(securityInterval);
-      clearInterval(activityInterval);
       events.forEach(event => {
-        document.removeEventListener(event, updateActivity);
+        document.removeEventListener(event, updateActivity, true);
       });
-      setIsMonitoring(false);
+      clearInterval(securityCheckInterval);
     };
-  }, [user, session, checkSessionSecurity]);
+  }, [updateActivity, detectSuspiciousActivity, generateDeviceFingerprint]);
+
+  // Monitor session validity
+  useEffect(() => {
+    if (currentSession) {
+      // Session exists and is valid
+      setSessionMetrics(prev => ({
+        ...prev,
+        isActive: true
+      }));
+    } else {
+      // No valid session
+      setSessionMetrics(prev => ({
+        ...prev,
+        isActive: false
+      }));
+    }
+  }, [currentSession]);
+
+  const resolveAlert = useCallback((alertId: string) => {
+    setAlerts(prev => 
+      prev.map(alert => 
+        alert.id === alertId ? { ...alert, resolved: true } : alert
+      )
+    );
+  }, []);
+
+  const getActiveAlerts = useCallback(() => {
+    return alerts.filter(alert => !alert.resolved);
+  }, [alerts]);
+
+  const terminateSession = useCallback(async () => {
+    try {
+      await supabase.auth.signOut();
+      setSessionMetrics({
+        isActive: false,
+        lastActivity: new Date(),
+        sessionDuration: 0,
+        deviceFingerprint: '',
+        suspiciousActivity: false,
+        riskScore: 0
+      });
+      setAlerts([]);
+    } catch (error) {
+      console.error('Error terminating session:', error);
+    }
+  }, []);
 
   return {
-    securityMetrics,
-    isMonitoring,
-    lastSecurityCheck,
-    checkSessionSecurity,
-    handleSecurityThreat,
-    refreshSessionSecurity
+    sessionMetrics,
+    alerts: getActiveAlerts(),
+    resolveAlert,
+    terminateSession,
+    isSessionValid: !!currentSession,
+    securityScore: Math.max(0, 100 - sessionMetrics.riskScore)
   };
 };
