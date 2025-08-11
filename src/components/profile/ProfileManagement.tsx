@@ -14,6 +14,7 @@ import ImageUpload from '@/components/ui/image-upload';
 import MultiProviderAuth from '@/components/auth/MultiProviderAuth';
 import { SafeLink } from '@/components/navigation/SafeLink';
 import VerifiedBadge from '@/components/badges/VerifiedBadge';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ProfileData {
   full_name: string;
@@ -25,6 +26,7 @@ interface ProfileData {
 const ProfileManagement = () => {
   const { user, refreshAuthState } = useAuth();
   const { t } = useI18n();
+  const queryClient = useQueryClient();
   const [profileData, setProfileData] = useState<ProfileData>({
     full_name: '',
     phone: '',
@@ -91,7 +93,13 @@ const ProfileManagement = () => {
       if (error) throw error;
 
       toast.success(t('profile.updateSuccess'));
+      
+      // Refresh auth state and invalidate user profile queries
       await refreshAuthState();
+      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+      
+      // Force a re-fetch of the profile to update the local state
+      await fetchProfile();
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error(t('profile.updateError'));
@@ -121,7 +129,24 @@ const ProfileManagement = () => {
         .from('avatars')
         .getPublicUrl(filePath);
 
-      setProfileData(prev => ({ ...prev, avatar_url: urlData.publicUrl }));
+      const newAvatarUrl = urlData.publicUrl;
+      setProfileData(prev => ({ ...prev, avatar_url: newAvatarUrl }));
+      
+      // Immediately update the profile in the database
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user?.id,
+          avatar_url: newAvatarUrl,
+          updated_at: new Date().toISOString()
+        });
+
+      if (updateError) throw updateError;
+
+      // Refresh auth state and invalidate user profile queries
+      await refreshAuthState();
+      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+      
       toast.success(t('profile.imageUploadSuccess'));
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -137,7 +162,28 @@ const ProfileManagement = () => {
     
     if (socialAvatarUrl) {
       setProfileData(prev => ({ ...prev, avatar_url: socialAvatarUrl }));
-      toast.success(t('profile.socialImageImported'));
+      
+      try {
+        // Immediately update the profile in the database
+        const { error } = await supabase
+          .from('profiles')
+          .upsert({
+            id: user?.id,
+            avatar_url: socialAvatarUrl,
+            updated_at: new Date().toISOString()
+          });
+
+        if (error) throw error;
+
+        // Refresh auth state and invalidate user profile queries
+        await refreshAuthState();
+        queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+        
+        toast.success(t('profile.socialImageImported'));
+      } catch (error) {
+        console.error('Error updating profile with social image:', error);
+        toast.error(t('profile.updateError'));
+      }
     } else {
       toast.error(t('profile.noSocialImageFound'));
     }

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { 
   Table, 
@@ -15,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { FileText, MessageSquare } from 'lucide-react';
 import { ConditionVerificationModal } from '@/components/equipment/ConditionVerificationModal';
 import BookingMessages from '@/components/provider/BookingMessages';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface Booking {
   id: string;
@@ -33,41 +35,62 @@ interface BookingHistoryProps {
 }
 
 const BookingHistory = ({ limit }: BookingHistoryProps) => {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
-const [showConditionForm, setShowConditionForm] = useState(false);
+  const queryClient = useQueryClient();
+  const [showConditionForm, setShowConditionForm] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [chatBookingId, setChatBookingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      setLoading(true);
+  const { data: bookings = [], isLoading: loading } = useQuery({
+    queryKey: ['bookings', 'user'],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
 
-      if (user) {
-        let query = supabase
-          .from('bookings')
-          .select('id, equipment_id, equipment_title, start_date, end_date, total_price, status, owner_id, user_id')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+      if (!user) return [];
 
-        if (limit) {
-          query = query.limit(limit);
-        }
+      let query = supabase
+        .from('bookings')
+        .select('id, equipment_id, equipment_title, start_date, end_date, total_price, status, owner_id, user_id')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
-        const { data, error } = await query;
-
-        if (error) {
-          console.error('Error fetching bookings', error);
-        } else {
-          setBookings(data as Booking[]);
-        }
+      if (limit) {
+        query = query.limit(limit);
       }
-      setLoading(false);
-    };
 
-    fetchBookings();
-  }, [limit]);
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching bookings', error);
+        return [];
+      }
+
+      return data as Booking[];
+    },
+    staleTime: 0, // Always refetch to ensure fresh data
+    refetchOnWindowFocus: true,
+  });
+
+  // Set up real-time subscription for booking changes
+  useEffect(() => {
+    const subscription = supabase
+      .channel('booking-changes')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'bookings'
+        }, 
+        () => {
+          // Invalidate and refetch booking data when changes occur
+          queryClient.invalidateQueries({ queryKey: ['bookings'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [queryClient]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {

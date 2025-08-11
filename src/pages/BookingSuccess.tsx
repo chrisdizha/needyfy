@@ -2,14 +2,16 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 import { CheckCircle, Loader2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Navbar from '@/components/layout/Navbar';
+import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const BookingSuccess = () => {
   const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bookingId, setBookingId] = useState<string | null>(null);
@@ -34,6 +36,13 @@ const BookingSuccess = () => {
         
         if (data.booking) {
           setBookingId(data.booking.id);
+          
+          // Invalidate relevant queries to update dashboard immediately
+          queryClient.invalidateQueries({ queryKey: ['user-equipment-listings'] });
+          queryClient.invalidateQueries({ queryKey: ['equipment-listings'] });
+          // Add specific invalidation for dashboard stats and bookings
+          queryClient.invalidateQueries({ queryKey: ['bookings'] });
+          queryClient.invalidateQueries({ queryKey: ['provider-bookings'] });
         } else {
           setError('Booking confirmation failed. Please contact support.');
         }
@@ -46,11 +55,11 @@ const BookingSuccess = () => {
     };
 
     confirmBooking();
-  }, [searchParams]);
+  }, [searchParams, queryClient]);
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto text-center p-8 border rounded-lg shadow-lg">
           {loading ? (
@@ -86,7 +95,7 @@ const BookingSuccess = () => {
               <p className="text-muted-foreground">Your payment was successful and your booking is confirmed.</p>
               <div className="flex gap-4 justify-center mt-6">
                 <Button asChild>
-                  <Link to="/bookings">View My Bookings</Link>
+                  <Link to="/dashboard">View My Dashboard</Link>
                 </Button>
                 <Button asChild variant="outline">
                   <Link to="/">Continue Browsing</Link>

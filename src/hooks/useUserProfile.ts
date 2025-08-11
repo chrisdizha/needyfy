@@ -1,6 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/OptimizedAuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface ProfileData {
   full_name?: string;
@@ -10,41 +12,55 @@ interface ProfileData {
 
 export const useUserProfile = () => {
   const { user } = useAuth();
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (user) {
-      fetchProfile();
-    } else {
-      setProfile(null);
-      setLoading(false);
-    }
-  }, [user]);
-
-  const fetchProfile = async () => {
-    try {
-      setLoading(true);
+  const { data: profile, isLoading: loading, refetch } = useQuery({
+    queryKey: ['user-profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('full_name, phone, avatar_url')
-        .eq('id', user?.id)
+        .eq('id', user.id)
         .maybeSingle();
 
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         console.error('Error fetching profile:', error);
-        setProfile(null);
-        return;
+        return null;
       }
 
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      setProfile(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data;
+    },
+    enabled: !!user?.id,
+    staleTime: 0, // Always refetch to ensure fresh data
+    refetchOnWindowFocus: true,
+  });
+
+  // Set up real-time subscription for profile changes
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const subscription = supabase
+      .channel('profile-changes')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'profiles',
+          filter: `id=eq.${user.id}`
+        }, 
+        () => {
+          // Invalidate and refetch profile data when changes occur
+          queryClient.invalidateQueries({ queryKey: ['user-profile', user.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user?.id, queryClient]);
 
   const getUserDisplayName = () => {
     if (profile?.full_name) {
@@ -77,6 +93,6 @@ export const useUserProfile = () => {
     loading,
     getUserDisplayName,
     getUserAvatar,
-    refetch: fetchProfile
+    refetch
   };
 };
