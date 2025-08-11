@@ -11,6 +11,9 @@ interface SessionMetrics {
   deviceFingerprint: string;
   suspiciousActivity: boolean;
   riskScore: number;
+  sessionAge: number;
+  timeUntilExpiry: number;
+  threats: string[];
 }
 
 interface SecurityAlert {
@@ -22,6 +25,14 @@ interface SecurityAlert {
   resolved: boolean;
 }
 
+interface SecurityMetrics {
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  securityScore: number;
+  sessionAge: number;
+  timeUntilExpiry: number;
+  threats: string[];
+}
+
 export const useEnhancedSessionSecurity = () => {
   const [sessionMetrics, setSessionMetrics] = useState<SessionMetrics>({
     isActive: false,
@@ -29,10 +40,15 @@ export const useEnhancedSessionSecurity = () => {
     sessionDuration: 0,
     deviceFingerprint: '',
     suspiciousActivity: false,
-    riskScore: 0
+    riskScore: 0,
+    sessionAge: 0,
+    timeUntilExpiry: 0,
+    threats: []
   });
   const [alerts, setAlerts] = useState<SecurityAlert[]>([]);
   const [sessionStartTime] = useState(new Date());
+  const [isMonitoring, setIsMonitoring] = useState(false);
+  const [lastSecurityCheck, setLastSecurityCheck] = useState<Date | null>(null);
   const { toast } = useToast();
 
   // Generate device fingerprint
@@ -62,6 +78,32 @@ export const useEnhancedSessionSecurity = () => {
     },
     refetchInterval: 30000, // Check every 30 seconds
   });
+
+  // Calculate session metrics
+  const calculateSessionMetrics = useCallback(() => {
+    const now = new Date();
+    const sessionAge = Math.floor((now.getTime() - sessionStartTime.getTime()) / (1000 * 60)); // in minutes
+    
+    let timeUntilExpiry = 0;
+    if (currentSession?.expires_at) {
+      timeUntilExpiry = Math.floor((currentSession.expires_at * 1000 - now.getTime()) / (1000 * 60)); // in minutes
+    }
+
+    const threats: string[] = [];
+    if (sessionAge > 480) { // 8 hours
+      threats.push('Long session duration detected');
+    }
+    if (timeUntilExpiry < 5 && timeUntilExpiry > 0) {
+      threats.push('Session expiring soon');
+    }
+
+    setSessionMetrics(prev => ({
+      ...prev,
+      sessionAge,
+      timeUntilExpiry: Math.max(0, timeUntilExpiry),
+      threats
+    }));
+  }, [currentSession, sessionStartTime]);
 
   // Track user activity
   const updateActivity = useCallback(() => {
@@ -124,6 +166,8 @@ export const useEnhancedSessionSecurity = () => {
         }
       });
     }
+
+    setLastSecurityCheck(now);
   }, [sessionMetrics.lastActivity, sessionStartTime, toast]);
 
   // Initialize device fingerprint and activity tracking
@@ -134,6 +178,7 @@ export const useEnhancedSessionSecurity = () => {
       deviceFingerprint: fingerprint,
       isActive: true
     }));
+    setIsMonitoring(true);
 
     // Set up activity listeners
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
@@ -142,15 +187,19 @@ export const useEnhancedSessionSecurity = () => {
     });
 
     // Set up periodic security checks
-    const securityCheckInterval = setInterval(detectSuspiciousActivity, 60000); // Every minute
+    const securityCheckInterval = setInterval(() => {
+      detectSuspiciousActivity();
+      calculateSessionMetrics();
+    }, 60000); // Every minute
 
     return () => {
       events.forEach(event => {
         document.removeEventListener(event, updateActivity, true);
       });
       clearInterval(securityCheckInterval);
+      setIsMonitoring(false);
     };
-  }, [updateActivity, detectSuspiciousActivity, generateDeviceFingerprint]);
+  }, [updateActivity, detectSuspiciousActivity, calculateSessionMetrics, generateDeviceFingerprint]);
 
   // Monitor session validity
   useEffect(() => {
@@ -160,6 +209,7 @@ export const useEnhancedSessionSecurity = () => {
         ...prev,
         isActive: true
       }));
+      calculateSessionMetrics();
     } else {
       // No valid session
       setSessionMetrics(prev => ({
@@ -167,7 +217,7 @@ export const useEnhancedSessionSecurity = () => {
         isActive: false
       }));
     }
-  }, [currentSession]);
+  }, [currentSession, calculateSessionMetrics]);
 
   const resolveAlert = useCallback((alertId: string) => {
     setAlerts(prev => 
@@ -190,7 +240,10 @@ export const useEnhancedSessionSecurity = () => {
         sessionDuration: 0,
         deviceFingerprint: '',
         suspiciousActivity: false,
-        riskScore: 0
+        riskScore: 0,
+        sessionAge: 0,
+        timeUntilExpiry: 0,
+        threats: []
       });
       setAlerts([]);
     } catch (error) {
@@ -198,12 +251,36 @@ export const useEnhancedSessionSecurity = () => {
     }
   }, []);
 
+  const refreshSessionSecurity = useCallback(async () => {
+    detectSuspiciousActivity();
+    calculateSessionMetrics();
+    toast({
+      title: "Session Security Refreshed",
+      description: "Security checks have been updated",
+    });
+  }, [detectSuspiciousActivity, calculateSessionMetrics, toast]);
+
+  // Create security metrics object for compatibility
+  const securityMetrics: SecurityMetrics = {
+    riskLevel: sessionMetrics.riskScore > 70 ? 'critical' : 
+               sessionMetrics.riskScore > 50 ? 'high' :
+               sessionMetrics.riskScore > 30 ? 'medium' : 'low',
+    securityScore: Math.max(0, 100 - sessionMetrics.riskScore),
+    sessionAge: sessionMetrics.sessionAge,
+    timeUntilExpiry: sessionMetrics.timeUntilExpiry,
+    threats: sessionMetrics.threats
+  };
+
   return {
     sessionMetrics,
     alerts: getActiveAlerts(),
     resolveAlert,
     terminateSession,
     isSessionValid: !!currentSession,
-    securityScore: Math.max(0, 100 - sessionMetrics.riskScore)
+    securityScore: Math.max(0, 100 - sessionMetrics.riskScore),
+    securityMetrics,
+    isMonitoring,
+    lastSecurityCheck,
+    refreshSessionSecurity
   };
 };
