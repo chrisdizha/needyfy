@@ -3,14 +3,14 @@
   "name": "Needyfy - Hire & Rent Anything",
   "short_name": "Needyfy",
   "id": "/",
-  "description": "The ultimate platform for hiring and renting equipment, tools, and services",
+  "description": "List. Rent. Earn. Everything you need, just when you need it! The ultimate platform for hiring and renting equipment, tools, and services.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
   "orientation": "portrait-primary",
   "scope": "/",
-  "categories": ["productivity", "business", "utilities"],
+  "categories": ["productivity", "business", "utilities", "lifestyle"],
   "lang": "en",
   "dir": "ltr",
   "launch_handler": {
@@ -46,7 +46,7 @@
     {
       "name": "Browse Equipment",
       "short_name": "Browse",
-      "description": "Browse available equipment for rent",
+      "description": "Browse thousands of items available for rent from local providers",
       "url": "/equipment",
       "icons": [
         {
@@ -58,8 +58,32 @@
     {
       "name": "List Equipment",
       "short_name": "List",
-      "description": "List your equipment for rent",
+      "description": "Turn your idle equipment into income - list your items",
       "url": "/list-equipment",
+      "icons": [
+        {
+          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Popular Categories",
+      "short_name": "Categories",
+      "description": "Explore trucks, construction equipment, electronics, and more",
+      "url": "/categories",
+      "icons": [
+        {
+          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "My Dashboard",
+      "short_name": "Dashboard",
+      "description": "Manage your bookings and equipment performance",
+      "url": "/dashboard",
       "icons": [
         {
           "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
@@ -70,11 +94,32 @@
   ],
   "screenshots": [
     {
-      "src": "/lovable-uploads/b10588a4-3d99-4756-afca-c2bcf51374e2.png",
-      "sizes": "512x512",
+      "src": "/lovable-uploads/0c649a1e-0ba9-49ec-a985-237ab00f08a4.png",
+      "sizes": "862x1522",
       "type": "image/png",
-      "form_factor": "wide",
-      "label": "Needyfy Equipment Rental Platform"
+      "form_factor": "narrow",
+      "label": "Needyfy Homepage - List, Rent, Earn"
+    },
+    {
+      "src": "/lovable-uploads/4fe721dd-68db-496d-b1a3-ba8fb8d518da.png",
+      "sizes": "862x1522",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Popular Equipment Categories"
+    },
+    {
+      "src": "/lovable-uploads/ea754658-c32e-4149-a5ac-2a906d4d031c.png",
+      "sizes": "862x1522",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Construction Equipment and Event Supplies"
+    },
+    {
+      "src": "/lovable-uploads/31e5ee59-6e78-4ce6-bb12-c045bad04558.png",
+      "sizes": "862x1522",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Easy Booking and Secure Payments"
     }
   ],
   "iarc_rating_id": "e84b072d-71de-5b85-bcbc-38761d0fcec5",
@@ -125,7 +170,7 @@
     {
       "name": "quick-search",
       "short_name": "Search",
-      "description": "Quick search for equipment rentals",
+      "description": "Quick search for equipment rentals - trucks, construction tools, electronics",
       "tag": "search",
       "template": "search-widget",
       "ms_ac_template": "search-widget",
@@ -150,7 +195,7 @@
     {
       "name": "featured-equipment",
       "short_name": "Featured",
-      "description": "Featured equipment available for rent",
+      "description": "Featured equipment: trucks, construction tools, party supplies, electronics",
       "tag": "featured",
       "template": "featured-widget",
       "ms_ac_template": "featured-widget",
@@ -175,7 +220,7 @@
     {
       "name": "user-dashboard",
       "short_name": "Dashboard",
-      "description": "Your rental dashboard and bookings",
+      "description": "Your rental dashboard: bookings, earnings, performance analytics",
       "tag": "dashboard",
       "template": "dashboard-widget",
       "ms_ac_template": "dashboard-widget",
@@ -196,6 +241,31 @@
       ],
       "auth": true,
       "update": 900
+    },
+    {
+      "name": "categories-widget",
+      "short_name": "Categories",
+      "description": "Browse popular categories: trucks & trailers, construction, electronics, events",
+      "tag": "categories",
+      "template": "categories-widget",
+      "ms_ac_template": "categories-widget",
+      "data": "/api/categories",
+      "type": "application/json",
+      "screenshots": [
+        {
+          "src": "/lovable-uploads/4fe721dd-68db-496d-b1a3-ba8fb8d518da.png",
+          "sizes": "320x240",
+          "label": "Categories Widget"
+        }
+      ],
+      "icons": [
+        {
+          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
+          "sizes": "192x192"
+        }
+      ],
+      "auth": false,
+      "update": 7200
     }
   ]
 }
