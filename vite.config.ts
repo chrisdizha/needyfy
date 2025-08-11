@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
     componentTagger(),
   ].filter(Boolean),
   optimizeDeps: {
-    include: ["react", "react-dom", "react/jsx-runtime"],
+    include: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
   resolve: {
     alias: {
@@ -24,6 +24,6 @@ export default defineConfig(({ mode }) => ({
       "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
     },
     // Prevent duplicate React copies causing hooks to break
-    dedupe: ["react", "react-dom", "react/jsx-runtime"],
+    dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
 }));
