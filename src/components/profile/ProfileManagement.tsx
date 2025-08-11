@@ -78,6 +78,9 @@ const ProfileManagement = () => {
     setLoading(true);
 
     try {
+      // Optimistically update the UI
+      queryClient.setQueryData(['user-profile', user?.id], () => profileData);
+
       const { error } = await supabase
         .from('profiles')
         .upsert({
@@ -101,6 +104,8 @@ const ProfileManagement = () => {
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error(t('profile.updateError'));
+      // Revert optimistic update on error
+      queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
     } finally {
       setLoading(false);
     }
@@ -125,9 +130,15 @@ const ProfileManagement = () => {
         .getPublicUrl(filePath);
 
       const newAvatarUrl = urlData.publicUrl;
-      setProfileData(prev => ({ ...prev, avatar_url: newAvatarUrl }));
       
-      // Immediately update the profile in the database
+      // Optimistically update UI immediately
+      setProfileData(prev => ({ ...prev, avatar_url: newAvatarUrl }));
+      queryClient.setQueryData(['user-profile', user?.id], (oldData: any) => ({
+        ...oldData,
+        avatar_url: newAvatarUrl
+      }));
+      
+      // Update the profile in the database
       const { error: updateError } = await supabase
         .from('profiles')
         .upsert({
@@ -146,6 +157,8 @@ const ProfileManagement = () => {
     } catch (error) {
       console.error('Error uploading image:', error);
       toast.error(t('profile.imageUploadError'));
+      // Revert optimistic update on error
+      queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
     } finally {
       setUploading(false);
     }
@@ -153,7 +166,12 @@ const ProfileManagement = () => {
 
   const handleImageRemove = async () => {
     try {
+      // Optimistically update UI
       setProfileData(prev => ({ ...prev, avatar_url: '' }));
+      queryClient.setQueryData(['user-profile', user?.id], (oldData: any) => ({
+        ...oldData,
+        avatar_url: null
+      }));
       
       // Update the profile in the database
       const { error } = await supabase
@@ -171,6 +189,8 @@ const ProfileManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['user-profile'] });
     } catch (error) {
       console.error('Error removing image:', error);
+      // Revert optimistic update on error
+      queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
       throw error;
     }
   };
@@ -180,10 +200,15 @@ const ProfileManagement = () => {
                            user?.user_metadata?.picture;
     
     if (socialAvatarUrl) {
+      // Optimistically update UI
       setProfileData(prev => ({ ...prev, avatar_url: socialAvatarUrl }));
+      queryClient.setQueryData(['user-profile', user?.id], (oldData: any) => ({
+        ...oldData,
+        avatar_url: socialAvatarUrl
+      }));
       
       try {
-        // Immediately update the profile in the database
+        // Update the profile in the database
         const { error } = await supabase
           .from('profiles')
           .upsert({
@@ -202,6 +227,8 @@ const ProfileManagement = () => {
       } catch (error) {
         console.error('Error updating profile with social image:', error);
         toast.error(t('profile.updateError'));
+        // Revert optimistic update on error
+        queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
       }
     } else {
       toast.error(t('profile.noSocialImageFound'));

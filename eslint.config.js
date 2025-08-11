@@ -1,3 +1,4 @@
+
 import js from "@eslint/js";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -24,6 +25,19 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       "@typescript-eslint/no-unused-vars": "off",
+      // Enforce named React hook imports to prevent useState errors
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            {
+              "group": ["react"],
+              "importNames": ["default"],
+              "message": "Import React hooks by name (useState, useEffect, etc.) instead of React.useState to prevent hook errors."
+            }
+          ]
+        }
+      ]
     },
   }
 );

@@ -8,10 +8,12 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { useBookings } from '@/hooks/useBookings';
 
 const BookingSuccess = () => {
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
+  const { addBookingOptimistically } = useBookings();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bookingId, setBookingId] = useState<string | null>(null);
@@ -37,10 +39,12 @@ const BookingSuccess = () => {
         if (data.booking) {
           setBookingId(data.booking.id);
           
+          // Add the booking optimistically for immediate UI feedback
+          addBookingOptimistically(data.booking);
+          
           // Invalidate relevant queries to update dashboard immediately
           queryClient.invalidateQueries({ queryKey: ['user-equipment-listings'] });
           queryClient.invalidateQueries({ queryKey: ['equipment-listings'] });
-          // Add specific invalidation for dashboard stats and bookings
           queryClient.invalidateQueries({ queryKey: ['bookings'] });
           queryClient.invalidateQueries({ queryKey: ['provider-bookings'] });
         } else {
@@ -55,7 +59,7 @@ const BookingSuccess = () => {
     };
 
     confirmBooking();
-  }, [searchParams, queryClient]);
+  }, [searchParams, queryClient, addBookingOptimistically]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -79,7 +83,7 @@ const BookingSuccess = () => {
                     <ul className="list-disc ml-6 text-sm mb-2">
                       <li>Make sure you completed payment with Stripe.</li>
                       <li>If unsure, check your email for booking/payment confirmation from Needyfy.</li>
-                      <li><span className="font-semibold">Still having trouble?</span> <a href="/contact" className="underline text-primary">Contact support</a></li>
+                      <li><span className="font-semibold">Still having trouble?</span> <Link to="/contact" className="underline text-primary">Contact support</Link></li>
                     </ul>
                   </AlertDescription>
                 </div>

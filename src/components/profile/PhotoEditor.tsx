@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -44,7 +44,7 @@ const PhotoEditor = ({ isOpen, onClose, imageFile, onSave }: PhotoEditorProps) =
     setCrop(crop);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (imageFile) {
       const url = URL.createObjectURL(imageFile);
       setImageUrl(url);

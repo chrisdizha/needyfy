@@ -1,4 +1,5 @@
-import React, { Component, ReactNode } from 'react';
+
+import { Component, ReactNode } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, AlertTriangle } from 'lucide-react';
@@ -14,6 +15,7 @@ interface State {
   error?: Error;
   errorId: string;
   retryCount: number;
+  componentStack?: string;
 }
 
 class OptimizedErrorBoundary extends Component<Props, State> {
@@ -38,11 +40,20 @@ class OptimizedErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log error with performance context
+    // Enhanced logging with component stack
     console.group(`🚨 Error Boundary Caught Error [${this.state.errorId}]`);
     console.error('Error:', error);
     console.error('Error Info:', errorInfo);
-    console.error('Stack:', error.stack);
+    console.error('Component Stack:', errorInfo.componentStack);
+    console.error('Error Stack:', error.stack);
+    
+    // Check for React-specific issues
+    if (error.message?.includes('useState') || error.message?.includes('hooks')) {
+      console.error('🔍 React Hooks Error Detected - Possible causes:');
+      console.error('  - Mixed React imports (React.useState vs useState)');
+      console.error('  - Component rendered outside React context');
+      console.error('  - Hooks called conditionally');
+    }
     
     // Memory usage at time of error
     if ('memory' in performance) {
@@ -54,6 +65,9 @@ class OptimizedErrorBoundary extends Component<Props, State> {
       });
     }
     console.groupEnd();
+
+    // Store component stack for debugging
+    this.setState({ componentStack: errorInfo.componentStack });
 
     // Call optional error handler
     if (this.props.onError) {
@@ -96,7 +110,8 @@ class OptimizedErrorBoundary extends Component<Props, State> {
         hasError: false,
         error: undefined,
         errorId: '',
-        retryCount: prevState.retryCount + 1
+        retryCount: prevState.retryCount + 1,
+        componentStack: undefined
       }));
     }, delay);
   };
@@ -127,6 +142,12 @@ class OptimizedErrorBoundary extends Component<Props, State> {
               <AlertTitle>Something went wrong</AlertTitle>
               <AlertDescription className="mt-2">
                 {this.state.error?.message || 'An unexpected error occurred'}
+                {this.state.error?.message?.includes('useState') && (
+                  <div className="mt-2 text-sm">
+                    <strong>React Hook Error:</strong> This appears to be a React hooks issue. 
+                    The page will attempt to recover automatically.
+                  </div>
+                )}
               </AlertDescription>
             </Alert>
             
@@ -161,7 +182,13 @@ class OptimizedErrorBoundary extends Component<Props, State> {
                     <strong>Message:</strong> {this.state.error?.message}
                   </div>
                   <div>
-                    <strong>Stack:</strong>
+                    <strong>Component Stack:</strong>
+                    <pre className="mt-1 text-xs bg-background p-2 rounded overflow-auto">
+                      {this.state.componentStack}
+                    </pre>
+                  </div>
+                  <div>
+                    <strong>Error Stack:</strong>
                     <pre className="mt-1 text-xs bg-background p-2 rounded overflow-auto">
                       {this.state.error?.stack}
                     </pre>
