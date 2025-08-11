@@ -19,11 +19,10 @@ export const usePWAFeatures = () => {
         setSwRegistration(registration);
         
         // Register for periodic sync when service worker is ready
-        if ('periodicSync' in window.ServiceWorkerRegistration.prototype) {
-          // @ts-ignore - periodicSync is experimental
-          registration.periodicSync.register('periodic-content-sync', {
+        if ('periodicSync' in registration) {
+          (registration as any).periodicSync.register('periodic-content-sync', {
             minInterval: 24 * 60 * 60 * 1000, // 24 hours
-          }).catch(err => {
+          }).catch((err: any) => {
             console.log('Periodic sync registration failed:', err);
           });
         }
@@ -33,9 +32,8 @@ export const usePWAFeatures = () => {
     }
 
     // Handle file handlers
-    if ('launchQueue' in window) {
-      // @ts-ignore - launchQueue is experimental
-      window.launchQueue.setConsumer((launchParams) => {
+    if (window.launchQueue) {
+      window.launchQueue.setConsumer((launchParams: any) => {
         if (launchParams.files && launchParams.files.length) {
           const files = launchParams.files;
           // Handle file uploads
@@ -69,9 +67,11 @@ export const usePWAFeatures = () => {
         // Queue the action (in a real app, this would use IndexedDB)
         console.log('Queuing action for background sync:', action);
         
-        // Register background sync
-        await swRegistration.sync.register('background-sync');
-        return true;
+        // Register background sync - use type assertion for experimental API
+        if ('sync' in swRegistration) {
+          await (swRegistration as any).sync.register('background-sync');
+          return true;
+        }
       } catch (error) {
         console.error('Failed to queue action:', error);
         return false;

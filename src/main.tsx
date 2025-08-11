@@ -30,23 +30,22 @@ if ('serviceWorker' in navigator) {
           });
         }
 
-        // Register for background sync
-        if ('sync' in window.ServiceWorkerRegistration.prototype) {
-          registration.sync.register('background-sync').then(() => {
+        // Register for background sync with proper type handling
+        if ('sync' in registration) {
+          (registration as any).sync.register('background-sync').then(() => {
             console.log('Background sync registered');
-          }).catch((err) => {
+          }).catch((err: any) => {
             console.log('Background sync registration failed:', err);
           });
         }
 
         // Register for periodic sync (if supported)
-        if ('periodicSync' in window.ServiceWorkerRegistration.prototype) {
-          // @ts-ignore - periodicSync is experimental
-          registration.periodicSync.register('periodic-content-sync', {
+        if ('periodicSync' in registration) {
+          (registration as any).periodicSync.register('periodic-content-sync', {
             minInterval: 24 * 60 * 60 * 1000, // 24 hours
           }).then(() => {
             console.log('Periodic sync registered');
-          }).catch((err) => {
+          }).catch((err: any) => {
             console.log('Periodic sync registration failed:', err);
           });
         }
