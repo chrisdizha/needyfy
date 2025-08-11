@@ -5,16 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Upload, User, Plus, Calendar, Search } from 'lucide-react';
+import { User, Plus, Calendar, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/hooks/useI18n';
-import ImageUpload from '@/components/ui/image-upload';
 import MultiProviderAuth from '@/components/auth/MultiProviderAuth';
 import { SafeLink } from '@/components/navigation/SafeLink';
-import VerifiedBadge from '@/components/badges/VerifiedBadge';
 import { useQueryClient } from '@tanstack/react-query';
+import ProfilePhotoManager from './ProfilePhotoManager';
 
 interface ProfileData {
   full_name: string;
@@ -108,10 +106,7 @@ const ProfileManagement = () => {
     }
   };
 
-  const handleImageUpload = async (files: File[]) => {
-    if (!files || files.length === 0) return;
-    
-    const file = files[0];
+  const handleImageUpload = async (file: File) => {
     setUploading(true);
 
     try {
@@ -156,6 +151,30 @@ const ProfileManagement = () => {
     }
   };
 
+  const handleImageRemove = async () => {
+    try {
+      setProfileData(prev => ({ ...prev, avatar_url: '' }));
+      
+      // Update the profile in the database
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user?.id,
+          avatar_url: null,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+
+      // Refresh auth state and invalidate user profile queries
+      await refreshAuthState();
+      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+    } catch (error) {
+      console.error('Error removing image:', error);
+      throw error;
+    }
+  };
+
   const importSocialProfilePicture = async () => {
     const socialAvatarUrl = user?.user_metadata?.avatar_url || 
                            user?.user_metadata?.picture;
@@ -189,58 +208,37 @@ const ProfileManagement = () => {
     }
   };
 
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const getDisplayName = () => {
+    return profileData.full_name || user?.email || 'User';
   };
+
+  const hasSocialPhoto = !!(user?.user_metadata?.avatar_url || user?.user_metadata?.picture);
 
   return (
     <div className="space-y-6">
       <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              {t('profile.profileInformation')}
-            </CardTitle>
-            <CardDescription>
-              {t('profile.profileDescription')}
-            </CardDescription>
-          </CardHeader>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            {t('profile.profileInformation')}
+          </CardTitle>
+          <CardDescription>
+            {t('profile.profileDescription')}
+          </CardDescription>
+        </CardHeader>
         <CardContent>
           <form onSubmit={handleProfileUpdate} className="space-y-6">
             {/* Profile Picture Section */}
-            <div className="flex flex-col items-center space-y-4">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={profileData.avatar_url} />
-                <AvatarFallback className="text-lg">
-                  {profileData.full_name ? getInitials(profileData.full_name) : 
-                   user?.email ? getInitials(user.email) : 'U'}
-                </AvatarFallback>
-              </Avatar>
-              {profileData.visa_card_verified && (
-                <VerifiedBadge label="ID Verified" />
-              )}
-              
-              <div className="flex flex-col items-center space-y-2">
-                <ImageUpload
-                  onChange={handleImageUpload}
-                  maxImages={1}
-                  maxFileSize={5}
-                  acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
-                >
-                  <Button variant="outline" disabled={uploading}>
-                    <Camera className="h-4 w-4 mr-2" />
-                    {uploading ? t('common.uploading') : t('profile.uploadPhoto')}
-                  </Button>
-                </ImageUpload>
-                
-                {(user?.user_metadata?.avatar_url || user?.user_metadata?.picture) && (
-                  <Button variant="ghost" size="sm" onClick={importSocialProfilePicture}>
-                    <Upload className="h-4 w-4 mr-2" />
-                    {t('profile.importSocialPhoto')}
-                  </Button>
-                )}
-              </div>
-            </div>
+            <ProfilePhotoManager
+              avatarUrl={profileData.avatar_url}
+              displayName={getDisplayName()}
+              isVerified={profileData.visa_card_verified}
+              onPhotoUpload={handleImageUpload}
+              onPhotoRemove={handleImageRemove}
+              onImportSocialPhoto={importSocialProfilePicture}
+              uploading={uploading}
+              hasSocialPhoto={hasSocialPhoto}
+            />
 
             {/* Profile Form Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
