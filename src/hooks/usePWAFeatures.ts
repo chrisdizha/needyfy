@@ -1,16 +1,34 @@
-import { useEffect } from 'react';
+
+import { useEffect, useState } from 'react';
 
 export const usePWAFeatures = () => {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [swRegistration, setSwRegistration] = useState<ServiceWorkerRegistration | null>(null);
+
   useEffect(() => {
-    // Register periodic sync when service worker is ready
-    if ('serviceWorker' in navigator && 'periodicSync' in window) {
+    // Handle online/offline status
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Get service worker registration
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then(registration => {
-        // @ts-ignore - periodicSync is experimental
-        return registration.periodicSync.register('content-sync', {
-          minInterval: 24 * 60 * 60 * 1000, // 24 hours
-        });
+        setSwRegistration(registration);
+        
+        // Register for periodic sync when service worker is ready
+        if ('periodicSync' in window.ServiceWorkerRegistration.prototype) {
+          // @ts-ignore - periodicSync is experimental
+          registration.periodicSync.register('periodic-content-sync', {
+            minInterval: 24 * 60 * 60 * 1000, // 24 hours
+          }).catch(err => {
+            console.log('Periodic sync registration failed:', err);
+          });
+        }
       }).catch(err => {
-        console.log('Periodic sync registration failed:', err);
+        console.log('Service worker not ready:', err);
       });
     }
 
@@ -38,16 +56,46 @@ export const usePWAFeatures = () => {
     navigator.serviceWorker?.addEventListener('message', handleProtocol);
 
     return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
       navigator.serviceWorker?.removeEventListener('message', handleProtocol);
     };
   }, []);
 
-  // Background sync status
-  const isOnline = navigator.onLine;
-  
+  // Queue action for background sync when offline
+  const queueForBackgroundSync = async (action: any) => {
+    if (!isOnline && swRegistration) {
+      try {
+        // Queue the action (in a real app, this would use IndexedDB)
+        console.log('Queuing action for background sync:', action);
+        
+        // Register background sync
+        await swRegistration.sync.register('background-sync');
+        return true;
+      } catch (error) {
+        console.error('Failed to queue action:', error);
+        return false;
+      }
+    }
+    return false;
+  };
+
+  // Request push notification permission
+  const requestNotificationPermission = async () => {
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+      const permission = await Notification.requestPermission();
+      return permission === 'granted';
+    }
+    return false;
+  };
+
   return {
     isOnline,
+    swRegistration,
     supportsBackgroundSync: 'serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype,
     supportsPeriodicSync: 'serviceWorker' in navigator && 'periodicSync' in window,
+    supportsPushNotifications: 'Notification' in window && 'serviceWorker' in navigator,
+    queueForBackgroundSync,
+    requestNotificationPermission,
   };
 };
