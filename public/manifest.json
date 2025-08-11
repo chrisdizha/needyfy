@@ -1,4 +1,3 @@
-
 {
   "name": "Needyfy - Hire & Rent Anything",
   "short_name": "Needyfy",
@@ -42,6 +41,24 @@
       "purpose": "maskable"
     }
   ],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.needyfy.app",
+      "id": "com.needyfy.app"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/needyfy/id123456789",
+      "id": "123456789"
+    },
+    {
+      "platform": "windows",
+      "url": "https://www.microsoft.com/store/apps/9NBLGGH12345",
+      "id": "9NBLGGH12345"
+    }
+  ],
+  "prefer_related_applications": false,
   "shortcuts": [
     {
       "name": "Browse Equipment",
@@ -166,7 +183,6 @@
   ],
   "iarc_rating_id": "e84b072d-71de-5b85-bcbc-38761d0fcec5",
   "prefer_related_applications": false,
-  "related_applications": [],
   "scope_extensions": [
     {
       "origin": "https://needyfy.com"
