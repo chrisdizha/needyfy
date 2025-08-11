@@ -25,7 +25,7 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       "@typescript-eslint/no-unused-vars": "off",
-      // Enforce named React hook imports to prevent useState errors
+      // Completely disallow React namespace imports to prevent hook errors
       "no-restricted-imports": [
         "error",
         {
@@ -33,9 +33,17 @@ export default tseslint.config(
             {
               "group": ["react"],
               "importNames": ["default"],
-              "message": "Import React hooks by name (useState, useEffect, etc.) instead of React.useState to prevent hook errors."
+              "message": "Import React hooks by name (useState, useEffect, etc.) instead of React.useState to prevent hook errors. Use 'import { useState, useEffect } from \"react\"' instead of 'import React from \"react\"'."
             }
           ]
+        }
+      ],
+      // Additional rule to catch React.* usage in code
+      "no-restricted-syntax": [
+        "error",
+        {
+          "selector": "MemberExpression[object.name='React'][property.name=/^use/]",
+          "message": "Use named imports for React hooks instead of React.useState, React.useEffect, etc."
         }
       ]
     },

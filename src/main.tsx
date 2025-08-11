@@ -1,14 +1,73 @@
 
-import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// Runtime check for multiple React instances in development
+if (typeof __DEV_REACT_CHECK__ !== 'undefined' && __DEV_REACT_CHECK__) {
+  // Check for multiple React instances
+  const reactInstances = [];
+  if (window.React) reactInstances.push('window.React');
+  if (globalThis.React) reactInstances.push('globalThis.React');
+  
+  if (reactInstances.length > 0) {
+    console.warn('⚠️ Multiple React instances detected:', reactInstances);
+    console.warn('This can cause "Cannot read properties of null" hook errors');
+  }
+  
+  // Check React internals
+  try {
+    const { createElement, useState } = await import('react');
+    if (!createElement || !useState) {
+      console.error('❌ React hooks are not properly imported');
+    } else {
+      console.log('✅ React hooks are properly available');
+    }
+  } catch (error) {
+    console.error('❌ Failed to import React hooks:', error);
+  }
+}
+
+// Enhanced error handling for root creation
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  throw new Error('Root element not found. Make sure there is an element with id="root" in your HTML.');
+}
+
+let root;
+try {
+  root = createRoot(rootElement);
+} catch (error) {
+  console.error('Failed to create React root:', error);
+  // Fallback error display
+  rootElement.innerHTML = `
+    <div style="padding: 20px; text-align: center; color: red;">
+      <h2>Application Failed to Start</h2>
+      <p>React root creation failed. Please refresh the page.</p>
+      <button onclick="window.location.reload()" style="padding: 10px 20px; margin-top: 10px;">
+        Reload Page
+      </button>
+    </div>
+  `;
+  throw error;
+}
+
+try {
+  root.render(<App />);
+} catch (error) {
+  console.error('Failed to render App:', error);
+  // Fallback error display
+  rootElement.innerHTML = `
+    <div style="padding: 20px; text-align: center; color: red;">
+      <h2>Application Render Error</h2>
+      <p>The app failed to render. Please refresh the page.</p>
+      <button onclick="window.location.reload()" style="padding: 10px 20px; margin-top: 10px;">
+        Reload Page
+      </button>
+    </div>
+  `;
+  throw error;
+}
 
 // Enhanced service worker registration with timeout handling and background sync
 if ('serviceWorker' in navigator) {

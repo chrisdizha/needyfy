@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -25,5 +26,9 @@ export default defineConfig(({ mode }) => ({
     },
     // Prevent duplicate React copies causing hooks to break
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
+  },
+  define: {
+    // Add runtime check for multiple React instances in development
+    __DEV_REACT_CHECK__: mode === 'development',
   },
 }));
