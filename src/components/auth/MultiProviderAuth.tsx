@@ -29,13 +29,6 @@ const MultiProviderAuth = () => {
       color: 'bg-blue-600',
       textColor: 'text-blue-700',
       bgColor: 'bg-blue-50'
-    },
-    { 
-      name: 'GitHub', 
-      id: 'github',
-      color: 'bg-gray-800',
-      textColor: 'text-gray-700',
-      bgColor: 'bg-gray-50'
     }
   ];
 
