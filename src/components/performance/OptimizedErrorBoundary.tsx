@@ -66,70 +66,15 @@ class OptimizedErrorBoundary extends Component<Props, State> {
     
     // Enhanced React-specific issue detection
     if (this.state.isReactHookError) {
-      console.error('🔍 React Hooks Error Detected - Detailed Analysis:');
-      console.error('  - Error message:', error.message);
-      
-      // Log React versions when hook error occurs
-      try {
-        const reactVersion = require('react/package.json')?.version;
-        const reactDomVersion = require('react-dom/package.json')?.version;
-        console.error('  - React versions at error time:', { react: reactVersion, reactDom: reactDomVersion });
-      } catch (e) {
-        console.error('  - Could not determine React versions');
-      }
-
-      // Enhanced debugging for hook errors
-      try {
-        const React = require('react');
-        console.error('  - React object at error time:', {
-          hasUseState: !!React.useState,
-          hasUseEffect: !!React.useEffect,
-          reactType: typeof React,
-          reactKeys: Object.keys(React).slice(0, 10)
-        });
-      } catch (e) {
-        console.error('  - Could not inspect React object:', e);
-      }
+      console.error('🔍 React Hooks Error Detected - this typically requires a page reload');
       
       if (error.message?.includes('Cannot read properties of null')) {
         console.error('  ❌ Null reference in React hooks - possible causes:');
         console.error('    • Multiple React instances loaded');
-        console.error('    • React hooks imported incorrectly (React.useState vs useState)');
+        console.error('    • React hooks imported incorrectly');
         console.error('    • Component rendered outside React context');
         console.error('    • Hooks called conditionally');
         console.error('    • React internals corrupted');
-      }
-
-      // Check for multiple React instances
-      console.group('🔍 React Instance Check:');
-      if (typeof window !== 'undefined') {
-        const reactOnWindow = !!(window as any).React;
-        const reactOnGlobal = !!(globalThis as any).React;
-        console.log('React on window:', reactOnWindow);
-        console.log('React on globalThis:', reactOnGlobal);
-        
-        if (reactOnWindow || reactOnGlobal) {
-          console.error('⚠️ Multiple React instances detected! This causes hook errors.');
-          // Try to clean up
-          try {
-            delete (window as any).React;
-            delete (globalThis as any).React;
-            console.log('✅ Attempted cleanup of multiple React instances');
-          } catch (cleanupError) {
-            console.error('❌ Failed to cleanup React instances:', cleanupError);
-          }
-        }
-      }
-      console.groupEnd();
-
-      // Check React internals
-      try {
-        const reactInternals = (error as any).__reactInternalInstance;
-        if (reactInternals) {
-          console.log('React internals present on error');
-        }
-      } catch (e) {
-        console.log('No React internals on error object');
       }
     }
     
@@ -171,8 +116,8 @@ class OptimizedErrorBoundary extends Component<Props, State> {
     
     console.log(`🔄 Retry attempt ${retryCount + 1}/3 for error ${this.state.errorId}`);
     
-    // For React hook errors, force page reload after first retry
-    if (this.state.isReactHookError && retryCount >= 1) {
+    // For React hook errors, force page reload immediately
+    if (this.state.isReactHookError) {
       console.log('React hook error - forcing page reload for recovery');
       window.location.reload();
       return;
@@ -191,8 +136,8 @@ class OptimizedErrorBoundary extends Component<Props, State> {
       clearTimeout(this.retryTimeoutId);
     }
 
-    // For React hook errors, retry immediately, otherwise use exponential backoff
-    const delay = this.state.isReactHookError ? 0 : Math.min(1000 * Math.pow(2, retryCount), 5000);
+    // Use exponential backoff for non-hook errors
+    const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
     
     this.retryTimeoutId = setTimeout(() => {
       this.setState(prevState => ({
@@ -236,10 +181,7 @@ class OptimizedErrorBoundary extends Component<Props, State> {
                 {this.state.isReactHookError && (
                   <div className="mt-2 text-sm">
                     <strong>React Hook Error:</strong> This appears to be a React hooks issue. 
-                    {this.state.retryCount === 0 
-                      ? ' The page will attempt to recover automatically.' 
-                      : ' Reloading the page may resolve this issue.'
-                    }
+                    A page reload is required to recover.
                   </div>
                 )}
               </AlertDescription>
@@ -253,7 +195,7 @@ class OptimizedErrorBoundary extends Component<Props, State> {
                 disabled={this.state.retryCount >= 3}
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
-                {this.state.isReactHookError && this.state.retryCount >= 1
+                {this.state.isReactHookError
                   ? 'Reload Page'
                   : this.state.retryCount >= 3 
                     ? 'Max Retries' 
