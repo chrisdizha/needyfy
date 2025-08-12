@@ -62,7 +62,7 @@ export const EnhancedSecurityMonitoring = () => {
 
       const { data, error } = await supabase
         .from('security_events')
-        .select('risk_level, event_type')
+        .select('risk_level, event_type, created_at')
         .gte('created_at', startTime);
 
       if (error) throw error;
