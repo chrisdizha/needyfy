@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,14 +29,14 @@ const commonDamages = [
   'Other damage (specify in notes)'
 ];
 
-export const ConditionVerificationForm: React.FC<ConditionVerificationFormProps> = ({
+export const ConditionVerificationForm = ({
   bookingId,
   equipmentId,
   equipmentTitle,
   handoverType,
   userRole,
   onComplete
-}) => {
+}: ConditionVerificationFormProps) => {
   const [conditionRating, setConditionRating] = useState<number>(5);
   const [conditionNotes, setConditionNotes] = useState('');
   const [damagesReported, setDamagesReported] = useState<string[]>([]);
@@ -230,7 +230,7 @@ export const ConditionVerificationForm: React.FC<ConditionVerificationFormProps>
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const cleanup = generateSignaturePad();
     return cleanup;
   }, []);

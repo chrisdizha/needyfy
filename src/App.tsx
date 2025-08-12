@@ -2,46 +2,14 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
-import { OptimizedAuthProvider, useAuth } from "@/contexts/OptimizedAuthContext";
-import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
-import OptimizedErrorBoundary from "@/components/performance/OptimizedErrorBoundary";
 import { ThemeProvider } from "next-themes";
 import { Suspense } from "react";
-import { SecureRoute } from "@/components/auth/SecureRoute";
-import { AdminRoute } from "@/components/auth/AdminRoute";
 import { useReactValidation } from "@/hooks/useReactValidation";
 import {
   LazyPublicHome,
-  LazyAuthenticatedHome,
   LazyLogin,
-  LazyRegister,
-  LazyProfile,
-  LazyAdmin,
-  LazyEquipment,
-  LazyNewEquipment,
-  LazyEditEquipment,
-  LazyEquipmentDetails,
-  LazyNewReport,
-  LazyReportDetails,
-  LazyEditReport,
-  LazyNewDispute,
-  LazyDisputeDetails,
-  LazyEditDispute,
-  LazyForgotPassword,
-  LazyResetPassword,
-  LazyTerms,
-  LazyPrivacy,
-  LazyContact,
-  LazyAbout,
   LazyNotFound,
-  LazyDashboard,
-  LazyCategories,
-  LazyListEquipment,
-  LazyBlog,
-  LazyPaymentTerms,
-  LazyRewards
  } from "@/components/routing/LazyRoutes";
-import "@/lib/i18n";
 
 // Optimized QueryClient with better cache configuration
 const queryClient = new QueryClient({
@@ -67,13 +35,7 @@ const LoadingFallback = () => (
 
 // Simple Home component
 const Home = () => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <LoadingFallback />;
-  }
-
-  return user ? <LazyAuthenticatedHome /> : <LazyPublicHome />;
+  return <LazyPublicHome />;
 };
 
 // App wrapper with React validation
@@ -86,152 +48,22 @@ function App() {
   console.log('🔍 App component rendering...');
   
   return (
-    <OptimizedErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <OptimizedAuthProvider>
-            <AnalyticsProvider>
-              <AppWrapper>
-                <Router>
-                  <Suspense fallback={<LoadingFallback />}>
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/login" element={<LazyLogin />} />
-                      <Route path="/register" element={<LazyRegister />} />
-                      <Route path="/forgot-password" element={<LazyForgotPassword />} />
-                      <Route path="/reset-password" element={<LazyResetPassword />} />
-                      <Route path="/terms" element={<LazyTerms />} />
-                      <Route path="/privacy" element={<LazyPrivacy />} />
-                      <Route path="/contact" element={<LazyContact />} />
-                      <Route path="/about" element={<LazyAbout />} />
-                      <Route path="/categories" element={<LazyCategories />} />
-                      <Route path="/equipment" element={<LazyEquipment />} />
-                      <Route path="/equipment/:id" element={<LazyEquipmentDetails />} />
-                      <Route
-                        path="/dashboard"
-                        element={
-                          <SecureRoute>
-                            <LazyDashboard />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route
-                        path="/profile"
-                        element={
-                          <SecureRoute>
-                            <LazyProfile />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route
-                        path="/admin"
-                        element={
-                          <AdminRoute>
-                            <LazyAdmin />
-                          </AdminRoute>
-                        }
-                      />
-                      <Route
-                        path="/equipment/new"
-                        element={
-                          <SecureRoute>
-                            <LazyNewEquipment />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route
-                        path="/equipment/:id/edit"
-                        element={
-                          <SecureRoute>
-                            <LazyEditEquipment />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route
-                        path="/reports/new"
-                        element={
-                          <SecureRoute>
-                            <LazyNewReport />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route
-                        path="/reports/:id"
-                        element={
-                          <SecureRoute>
-                            <LazyReportDetails />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route
-                        path="/reports/:id/edit"
-                        element={
-                          <SecureRoute>
-                            <LazyEditReport />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route
-                        path="/disputes/new"
-                        element={
-                          <SecureRoute>
-                            <LazyNewDispute />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route
-                        path="/disputes/:id"
-                        element={
-                          <SecureRoute>
-                            <LazyDisputeDetails />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route
-                        path="/disputes/:id/edit"
-                        element={
-                          <SecureRoute>
-                            <LazyEditDispute />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route
-                        path="/bookings"
-                        element={
-                          <SecureRoute>
-                            <LazyDashboard />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route
-                        path="/list-equipment"
-                        element={
-                          <SecureRoute>
-                            <LazyListEquipment />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route
-                        path="/rewards"
-                        element={
-                          <SecureRoute>
-                            <LazyRewards />
-                          </SecureRoute>
-                        }
-                      />
-                      <Route path="/blog" element={<LazyBlog />} />
-                      <Route path="/payment-terms" element={<LazyPaymentTerms />} />
-                      <Route path="*" element={<LazyNotFound />} />
-                    </Routes>
-                  </Suspense>
-                </Router>
-                <Toaster />
-              </AppWrapper>
-            </AnalyticsProvider>
-          </OptimizedAuthProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </OptimizedErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+        <AppWrapper>
+          <Router>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<LazyLogin />} />
+                <Route path="*" element={<LazyNotFound />} />
+              </Routes>
+            </Suspense>
+          </Router>
+          <Toaster />
+        </AppWrapper>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
