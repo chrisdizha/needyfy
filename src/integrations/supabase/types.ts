@@ -982,6 +982,22 @@ export type Database = {
           suspended_at: string | null
           suspension_reason: string | null
         }
+        Insert: {
+          full_name?: string | null
+          id?: string | null
+          phone?: never
+          suspended?: never
+          suspended_at?: never
+          suspension_reason?: never
+        }
+        Update: {
+          full_name?: string | null
+          id?: string | null
+          phone?: never
+          suspended?: never
+          suspended_at?: never
+          suspension_reason?: never
+        }
         Relationships: []
       }
     }
