@@ -7,12 +7,6 @@ export const useReactValidation = () => {
     if (process.env.NODE_ENV !== 'development') return;
 
     console.log('🔍 useReactValidation running...');
-
-    try {
-      // Simple validation that the hook is working
-      console.log('✅ React validation passed - hooks are working correctly');
-    } catch (error) {
-      console.error('❌ React validation failed:', error);
-    }
+    console.log('✅ React validation passed - hooks are working correctly');
   }, []);
 };
