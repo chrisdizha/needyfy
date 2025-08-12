@@ -1,3 +1,4 @@
+
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCallback, useMemo } from 'react';
@@ -105,15 +106,22 @@ export const useOptimizedEquipmentDatabase = () => {
     await Promise.allSettled(prefetchPromises);
   }, [queryClient]);
 
-  // Optimized user data fetching
+  // Optimized user data fetching using the new secure patterns
   const getUserData = useCallback(async (userId: string) => {
+    // Use the public_profiles view for non-sensitive data
     const { data, error } = await supabase
-      .from('profiles')
-      .select('id, full_name, avatar_url, suspended')
+      .from('public_profiles')
+      .select('id, full_name, avatar_url')
       .eq('id', userId)
       .single();
       
-    if (error) throw error;
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No rows returned
+        return null;
+      }
+      throw error;
+    }
     return data;
   }, []);
 
@@ -198,14 +206,15 @@ export const useOptimizedCaching = () => {
         break;
       case 'user':
         if (id) {
-          queryClient.invalidateQueries({ queryKey: ['user', id] });
+          queryClient.invalidateQueries({ queryKey: ['user-profile', id] });
+          queryClient.invalidateQueries({ queryKey: ['public-profile', id] });
           queryClient.invalidateQueries({ queryKey: ['bookings', id] });
         }
         break;
     }
   }, [queryClient]);
 
-  // Preload critical data
+  // Preload critical data using secure patterns
   const preloadCriticalData = useCallback(async (userId?: string) => {
     if (!userId) return;
 
@@ -229,6 +238,16 @@ export const useOptimizedCaching = () => {
           .select('id, title, status, price')
           .eq('owner_id', userId)
           .limit(10),
+        staleTime: 5 * 60 * 1000 // 5 minutes
+      }),
+      // User's public profile
+      queryClient.prefetchQuery({
+        queryKey: ['public-profile', userId],
+        queryFn: () => supabase
+          .from('public_profiles')
+          .select('*')
+          .eq('id', userId)
+          .single(),
         staleTime: 5 * 60 * 1000 // 5 minutes
       })
     ];

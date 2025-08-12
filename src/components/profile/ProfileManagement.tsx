@@ -1,123 +1,78 @@
 
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/contexts/OptimizedAuthContext';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Plus, Calendar, Search } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { useI18n } from '@/hooks/useI18n';
-import MultiProviderAuth from '@/components/auth/MultiProviderAuth';
-import { SafeLink } from '@/components/navigation/SafeLink';
-import { useQueryClient } from '@tanstack/react-query';
+import { Loader2, Save, User, Phone, CreditCard } from 'lucide-react';
 import ProfilePhotoManager from './ProfilePhotoManager';
 
-interface ProfileData {
-  full_name: string;
-  phone: string;
-  avatar_url?: string;
-  visa_card_verified?: boolean;
-}
-
 const ProfileManagement = () => {
-  const { user, refreshAuthState } = useAuth();
-  const { t } = useI18n();
-  const queryClient = useQueryClient();
-  const [profileData, setProfileData] = useState<ProfileData>({
+  const { user } = useAuth();
+  const { profile, loading, refetch } = useUserProfile();
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  
+  const [formData, setFormData] = useState({
     full_name: '',
     phone: '',
-    avatar_url: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      fetchProfile();
+  // Initialize form data when profile loads
+  React.useEffect(() => {
+    if (profile) {
+      setFormData({
+        full_name: profile.full_name || '',
+        phone: profile.phone || '',
+      });
     }
-  }, [user]);
+  }, [profile]);
 
-  const fetchProfile = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user?.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching profile:', error);
-        return;
-      }
-
-      if (data) {
-        setProfileData({
-          full_name: data.full_name || '',
-          phone: data.phone || '',
-          avatar_url: data.avatar_url || '',
-          visa_card_verified: data.visa_card_verified || false,
-        });
-      }
-
-      // Also get profile picture from social providers if available
-      const socialAvatarUrl = user?.user_metadata?.avatar_url || 
-                             user?.user_metadata?.picture;
-      
-      if (socialAvatarUrl && !data?.avatar_url) {
-        setProfileData(prev => ({ ...prev, avatar_url: socialAvatarUrl }));
-      }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
-  const handleProfileUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    
+    setSaving(true);
     try {
-      // Optimistically update the UI
-      queryClient.setQueryData(['user-profile', user?.id], () => profileData);
-
       const { error } = await supabase
         .from('profiles')
-        .upsert({
-          id: user?.id,
-          full_name: profileData.full_name,
-          phone: profileData.phone,
-          avatar_url: profileData.avatar_url,
-          updated_at: new Date().toISOString()
-        });
+        .update({
+          full_name: formData.full_name,
+          phone: formData.phone,
+        })
+        .eq('id', user.id);
 
       if (error) throw error;
 
-      toast.success(t('profile.updateSuccess'));
-      
-      // Refresh auth state and invalidate user profile queries
-      await refreshAuthState();
-      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-      
-      // Force a re-fetch of the profile to update the local state
-      await fetchProfile();
+      toast.success('Profile updated successfully');
+      await refetch();
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error(t('profile.updateError'));
-      // Revert optimistic update on error
-      queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
+      toast.error('Failed to update profile');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  const handleImageUpload = async (file: File) => {
+  const handlePhotoUpload = async (file: File) => {
+    if (!user) return;
+    
     setUploading(true);
-
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
-      const filePath = `${user?.id}/${fileName}`;
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
@@ -125,237 +80,188 @@ const ProfileManagement = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: urlData } = supabase.storage
+      const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
-      const newAvatarUrl = urlData.publicUrl;
-      
-      // Optimistically update UI immediately
-      setProfileData(prev => ({ ...prev, avatar_url: newAvatarUrl }));
-      queryClient.setQueryData(['user-profile', user?.id], (oldData: any) => ({
-        ...oldData,
-        avatar_url: newAvatarUrl
-      }));
-      
-      // Update the profile in the database
       const { error: updateError } = await supabase
         .from('profiles')
-        .upsert({
-          id: user?.id,
-          avatar_url: newAvatarUrl,
-          updated_at: new Date().toISOString()
-        });
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
 
       if (updateError) throw updateError;
 
-      // Refresh auth state and invalidate user profile queries
-      await refreshAuthState();
-      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-      
-      toast.success(t('profile.imageUploadSuccess'));
+      toast.success('Photo uploaded successfully');
+      await refetch();
     } catch (error) {
-      console.error('Error uploading image:', error);
-      toast.error(t('profile.imageUploadError'));
-      // Revert optimistic update on error
-      queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
+      console.error('Error uploading photo:', error);
+      toast.error('Failed to upload photo');
     } finally {
       setUploading(false);
     }
   };
 
-  const handleImageRemove = async () => {
+  const handlePhotoRemove = async () => {
+    if (!user) return;
+    
     try {
-      // Optimistically update UI
-      setProfileData(prev => ({ ...prev, avatar_url: '' }));
-      queryClient.setQueryData(['user-profile', user?.id], (oldData: any) => ({
-        ...oldData,
-        avatar_url: null
-      }));
-      
-      // Update the profile in the database
       const { error } = await supabase
         .from('profiles')
-        .upsert({
-          id: user?.id,
-          avatar_url: null,
-          updated_at: new Date().toISOString()
-        });
+        .update({ avatar_url: null })
+        .eq('id', user.id);
 
       if (error) throw error;
 
-      // Refresh auth state and invalidate user profile queries
-      await refreshAuthState();
-      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+      toast.success('Photo removed successfully');
+      await refetch();
     } catch (error) {
-      console.error('Error removing image:', error);
-      // Revert optimistic update on error
-      queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
-      throw error;
+      console.error('Error removing photo:', error);
+      toast.error('Failed to remove photo');
     }
   };
 
-  const importSocialProfilePicture = async () => {
-    const socialAvatarUrl = user?.user_metadata?.avatar_url || 
-                           user?.user_metadata?.picture;
-    
-    if (socialAvatarUrl) {
-      // Optimistically update UI
-      setProfileData(prev => ({ ...prev, avatar_url: socialAvatarUrl }));
-      queryClient.setQueryData(['user-profile', user?.id], (oldData: any) => ({
-        ...oldData,
-        avatar_url: socialAvatarUrl
-      }));
-      
-      try {
-        // Update the profile in the database
-        const { error } = await supabase
-          .from('profiles')
-          .upsert({
-            id: user?.id,
-            avatar_url: socialAvatarUrl,
-            updated_at: new Date().toISOString()
-          });
-
-        if (error) throw error;
-
-        // Refresh auth state and invalidate user profile queries
-        await refreshAuthState();
-        queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-        
-        toast.success(t('profile.socialImageImported'));
-      } catch (error) {
-        console.error('Error updating profile with social image:', error);
-        toast.error(t('profile.updateError'));
-        // Revert optimistic update on error
-        queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
-      }
-    } else {
-      toast.error(t('profile.noSocialImageFound'));
-    }
-  };
-
-  const getDisplayName = () => {
-    return profileData.full_name || user?.email || 'User';
-  };
-
-  const hasSocialPhoto = !!(user?.user_metadata?.avatar_url || user?.user_metadata?.picture);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
+      {/* Profile Photo Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
-            {t('profile.profileInformation')}
+            Profile Photo
           </CardTitle>
           <CardDescription>
-            {t('profile.profileDescription')}
+            Upload a profile photo to help others recognize you
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleProfileUpdate} className="space-y-6">
-            {/* Profile Picture Section */}
-            <ProfilePhotoManager
-              avatarUrl={profileData.avatar_url}
-              displayName={getDisplayName()}
-              isVerified={profileData.visa_card_verified}
-              onPhotoUpload={handleImageUpload}
-              onPhotoRemove={handleImageRemove}
-              onImportSocialPhoto={importSocialProfilePicture}
-              uploading={uploading}
-              hasSocialPhoto={hasSocialPhoto}
-            />
-
-            {/* Profile Form Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="full_name">{t('profile.fullName')}</Label>
-                <Input
-                  id="full_name"
-                  value={profileData.full_name}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, full_name: e.target.value }))}
-                  placeholder={t('profile.enterFullName')}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="phone">{t('profile.phoneNumber')}</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={profileData.phone}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                  placeholder={t('profile.enterPhone')}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">{t('profile.email')}</Label>
-              <Input
-                id="email"
-                type="email"
-                value={user?.email || ''}
-                disabled
-                className="bg-muted"
-              />
-              <p className="text-xs text-muted-foreground">
-                {t('profile.emailNote')}
-              </p>
-            </div>
-
-            <Button type="submit" disabled={loading} className="w-full">
-              {loading ? t('common.saving') : t('profile.saveChanges')}
-            </Button>
-          </form>
+          <ProfilePhotoManager
+            avatarUrl={profile?.avatar_url}
+            displayName={formData.full_name || user?.email || 'User'}
+            onPhotoUpload={handlePhotoUpload}
+            onPhotoRemove={handlePhotoRemove}
+            uploading={uploading}
+          />
         </CardContent>
       </Card>
 
-      {/* Quick Actions Section */}
+      {/* Personal Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            Personal Information
+          </CardTitle>
           <CardDescription>
-            Manage your equipment and bookings
+            Update your personal details
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <SafeLink to="/list-equipment">
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-                  <Plus className="h-8 w-8 text-primary mb-2" />
-                  <h3 className="font-semibold mb-1">List Equipment</h3>
-                  <p className="text-sm text-muted-foreground">Add new equipment to rent out</p>
-                </CardContent>
-              </Card>
-            </SafeLink>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="full_name">Full Name</Label>
+              <Input
+                id="full_name"
+                value={formData.full_name}
+                onChange={(e) => handleInputChange('full_name', e.target.value)}
+                placeholder="Enter your full name"
+              />
+            </div>
             
-            <SafeLink to="/dashboard">
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-                  <Calendar className="h-8 w-8 text-primary mb-2" />
-                  <h3 className="font-semibold mb-1">My Bookings</h3>
-                  <p className="text-sm text-muted-foreground">View and manage bookings</p>
-                </CardContent>
-              </Card>
-            </SafeLink>
-            
-            <SafeLink to="/equipment">
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-                  <Search className="h-8 w-8 text-primary mb-2" />
-                  <h3 className="font-semibold mb-1">Browse Equipment</h3>
-                  <p className="text-sm text-muted-foreground">Find equipment to rent</p>
-                </CardContent>
-              </Card>
-            </SafeLink>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                placeholder="Enter your phone number"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Email Address</Label>
+            <Input
+              id="email"
+              type="email"
+              value={user?.email || ''}
+              disabled
+              className="bg-muted"
+            />
+            <p className="text-sm text-muted-foreground">
+              Email cannot be changed here. Contact support if you need to update your email.
+            </p>
+          </div>
+
+          <Separator />
+
+          <div className="flex justify-end">
+            <Button
+              onClick={handleSaveProfile}
+              disabled={saving}
+              className="min-w-[120px]"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Changes
+                </>
+              )}
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      <MultiProviderAuth />
+      {/* Account Status */}
+      {profile && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              Account Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium">Verification Status</Label>
+                <p className="text-sm text-muted-foreground">
+                  {profile.visa_card_verified ? 'Verified' : 'Not verified'}
+                </p>
+              </div>
+              
+              <div>
+                <Label className="text-sm font-medium">Account Status</Label>
+                <p className={`text-sm ${profile.suspended ? 'text-destructive' : 'text-green-600'}`}>
+                  {profile.suspended ? 'Suspended' : 'Active'}
+                </p>
+              </div>
+            </div>
+
+            {profile.suspended && profile.suspension_reason && (
+              <div className="p-4 border border-destructive/20 bg-destructive/5 rounded-md">
+                <Label className="text-sm font-medium text-destructive">Suspension Reason</Label>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {profile.suspension_reason}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

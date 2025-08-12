@@ -5,9 +5,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface ProfileData {
+  id: string;
   full_name?: string;
   phone?: string;
   avatar_url?: string;
+  suspended?: boolean;
+  suspension_reason?: string;
+  suspended_at?: string;
+  visa_card_verified?: boolean;
+  minimum_payout_amount?: number;
+  payout_method?: string;
+  payout_schedule?: string;
+  updated_at?: string;
 }
 
 export const useUserProfile = () => {
@@ -19,18 +28,16 @@ export const useUserProfile = () => {
     queryFn: async () => {
       if (!user?.id) return null;
       
+      // Use the new secure RPC function instead of direct table access
       const { data, error } = await supabase
-        .from('profiles')
-        .select('full_name, phone, avatar_url')
-        .eq('id', user.id)
-        .maybeSingle();
+        .rpc('get_my_profile');
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Error fetching profile:', error);
         return null;
       }
 
-      return data;
+      return data?.[0] || null;
     },
     enabled: !!user?.id,
     staleTime: 0, // Always refetch to ensure fresh data

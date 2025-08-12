@@ -973,35 +973,28 @@ export type Database = {
         }
         Relationships: []
       }
-      user_profile_summary: {
-        Row: {
-          full_name: string | null
-          id: string | null
-          phone: string | null
-          suspended: boolean | null
-          suspended_at: string | null
-          suspension_reason: string | null
-        }
-        Insert: {
-          full_name?: string | null
-          id?: string | null
-          phone?: never
-          suspended?: never
-          suspended_at?: never
-          suspension_reason?: never
-        }
-        Update: {
-          full_name?: string | null
-          id?: string | null
-          phone?: never
-          suspended?: never
-          suspended_at?: never
-          suspension_reason?: never
-        }
-        Relationships: []
-      }
     }
     Functions: {
+      admin_get_profile: {
+        Args: { target_user_id: string }
+        Returns: {
+          id: string
+          full_name: string
+          phone: string
+          avatar_url: string
+          suspended: boolean
+          suspension_reason: string
+          suspended_at: string
+          visa_card_verified: boolean
+          minimum_payout_amount: number
+          payout_method: string
+          payout_schedule: string
+          updated_at: string
+          visa_card_number_encrypted: string
+          visa_card_last_four: string
+          visa_card_holder_name: string
+        }[]
+      }
       award_points: {
         Args: {
           p_user_id: string
@@ -1031,6 +1024,23 @@ export type Database = {
       get_feedback_stats: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      get_my_profile: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          full_name: string
+          phone: string
+          avatar_url: string
+          suspended: boolean
+          suspension_reason: string
+          suspended_at: string
+          visa_card_verified: boolean
+          minimum_payout_amount: number
+          payout_method: string
+          payout_schedule: string
+          updated_at: string
+        }[]
       }
       get_provider_escrow_balance: {
         Args: { provider_user_id: string }
@@ -1143,6 +1153,14 @@ export type Database = {
       validate_payment_operation: {
         Args: { p_user_id: string; p_operation: string; p_amount?: number }
         Returns: boolean
+      }
+      validate_security_migration: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          check_name: string
+          status: string
+          details: string
+        }[]
       }
     }
     Enums: {
