@@ -6,6 +6,8 @@ export const useReactValidation = () => {
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development') return;
 
+    console.log('🔍 useReactValidation running...');
+
     try {
       // Check for multiple React instances
       const reactInstances = [];
@@ -22,10 +24,22 @@ export const useReactValidation = () => {
         console.warn('Check your imports and make sure you\'re using named imports from react');
       }
 
-      // Validate hooks are working
-      const testState = { current: 'test' };
-      if (!testState) {
-        console.error('❌ React state management appears broken');
+      // Enhanced validation that React hooks are working
+      try {
+        const testState = { current: 'test' };
+        if (!testState) {
+          console.error('❌ React state management appears broken');
+        }
+
+        // Test that we can access React internals properly
+        const React = require('react');
+        if (React && React.useState && React.useEffect) {
+          console.log('✅ React hooks validation successful');
+        } else {
+          console.error('❌ React hooks not properly accessible');
+        }
+      } catch (hookError) {
+        console.error('❌ React hook validation failed:', hookError);
       }
 
       console.log('✅ React validation passed');

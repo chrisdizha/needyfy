@@ -3,9 +3,11 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-// Runtime check for multiple React instances in development
+// Enhanced runtime check for multiple React instances in development
 if (typeof window !== 'undefined' && import.meta.env.DEV) {
   // Log React versions for debugging
+  console.log('🔍 React Hook Error Debug - Starting validation...');
+  
   try {
     const reactVersion = require('react/package.json')?.version;
     const reactDomVersion = require('react-dom/package.json')?.version;
@@ -16,19 +18,37 @@ if (typeof window !== 'undefined' && import.meta.env.DEV) {
 
   // Check for multiple React instances
   const reactInstances = [];
-  if (window.React) reactInstances.push('window.React');
-  if (globalThis.React) reactInstances.push('globalThis.React');
+  if ((window as any).React) reactInstances.push('window.React');
+  if ((globalThis as any).React) reactInstances.push('globalThis.React');
   
   if (reactInstances.length > 0) {
-    console.warn('⚠️ Multiple React instances detected:', reactInstances);
-    console.warn('This can cause "Cannot read properties of null" hook errors');
+    console.error('⚠️ Multiple React instances detected:', reactInstances);
+    console.error('This can cause "Cannot read properties of null" hook errors');
+    console.error('Attempting to clean up...');
+    
+    // Try to clean up multiple instances
+    try {
+      delete (window as any).React;
+      delete (globalThis as any).React;
+      console.log('✅ Cleaned up multiple React instances');
+    } catch (e) {
+      console.error('❌ Failed to cleanup React instances:', e);
+    }
   } else {
     console.log('✅ No multiple React instances detected');
   }
   
-  // Basic validation that React hooks are available
+  // Enhanced React hooks validation
   try {
     const React = require('react');
+    console.log('🔍 React object inspection:', {
+      hasUseState: !!React.useState,
+      hasUseEffect: !!React.useEffect,
+      hasCreateElement: !!React.createElement,
+      reactType: typeof React,
+      reactKeys: Object.keys(React).slice(0, 10) // Show first 10 keys
+    });
+    
     if (!React.useState || !React.useEffect) {
       console.error('❌ React hooks are not properly imported');
     } else {
@@ -48,8 +68,9 @@ if (!rootElement) {
 let root;
 try {
   root = createRoot(rootElement);
+  console.log('✅ React root created successfully');
 } catch (error) {
-  console.error('Failed to create React root:', error);
+  console.error('❌ Failed to create React root:', error);
   // Fallback error display
   rootElement.innerHTML = `
     <div style="padding: 20px; text-align: center; color: red;">
@@ -65,8 +86,9 @@ try {
 
 try {
   root.render(<App />);
+  console.log('✅ App rendered successfully');
 } catch (error) {
-  console.error('Failed to render App:', error);
+  console.error('❌ Failed to render App:', error);
   // Fallback error display
   rootElement.innerHTML = `
     <div style="padding: 20px; text-align: center; color: red;">

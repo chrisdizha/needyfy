@@ -65,24 +65,62 @@ const LoadingFallback = () => (
   </div>
 );
 
-// Optimized Home component
+// Optimized Home component with better error handling
 const Home = () => {
-  const { user, loading } = useAuth();
+  try {
+    const { user, loading } = useAuth();
 
-  if (loading) {
-    return <LoadingFallback />;
+    if (loading) {
+      return <LoadingFallback />;
+    }
+
+    return user ? <LazyAuthenticatedHome /> : <LazyPublicHome />;
+  } catch (error) {
+    console.error('❌ Error in Home component:', error);
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">Error Loading Home</h2>
+          <p className="text-gray-600 mb-4">There was an issue loading the home page.</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
   }
-
-  return user ? <LazyAuthenticatedHome /> : <LazyPublicHome />;
 };
 
-// App wrapper with React validation
+// App wrapper with React validation and error boundaries
 const AppWrapper = ({ children }: { children: React.ReactNode }) => {
-  useReactValidation();
-  return <>{children}</>;
+  try {
+    useReactValidation();
+    return <>{children}</>;
+  } catch (error) {
+    console.error('❌ Error in AppWrapper:', error);
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">React Validation Error</h2>
+          <p className="text-gray-600 mb-4">There was an issue with React validation.</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 };
 
 function App() {
+  console.log('🔍 App component rendering...');
+  
   return (
     <OptimizedErrorBoundary>
       <QueryClientProvider client={queryClient}>

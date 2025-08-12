@@ -38,7 +38,14 @@ class OptimizedErrorBoundary extends Component<Props, State> {
       error.message?.includes('useContext') ||
       error.message?.includes('useEffect') ||
       error.message?.includes('Cannot read properties of null') ||
-      error.message?.includes('hooks');
+      error.message?.includes('hooks') ||
+      error.message?.includes('Hook');
+
+    console.error('🚨 Error Boundary - getDerivedStateFromError:', {
+      message: error.message,
+      isReactHookError,
+      stack: error.stack?.split('\n').slice(0, 5) // First 5 lines of stack
+    });
 
     return {
       hasError: true,
@@ -70,6 +77,19 @@ class OptimizedErrorBoundary extends Component<Props, State> {
       } catch (e) {
         console.error('  - Could not determine React versions');
       }
+
+      // Enhanced debugging for hook errors
+      try {
+        const React = require('react');
+        console.error('  - React object at error time:', {
+          hasUseState: !!React.useState,
+          hasUseEffect: !!React.useEffect,
+          reactType: typeof React,
+          reactKeys: Object.keys(React).slice(0, 10)
+        });
+      } catch (e) {
+        console.error('  - Could not inspect React object:', e);
+      }
       
       if (error.message?.includes('Cannot read properties of null')) {
         console.error('  ❌ Null reference in React hooks - possible causes:');
@@ -90,6 +110,14 @@ class OptimizedErrorBoundary extends Component<Props, State> {
         
         if (reactOnWindow || reactOnGlobal) {
           console.error('⚠️ Multiple React instances detected! This causes hook errors.');
+          // Try to clean up
+          try {
+            delete (window as any).React;
+            delete (globalThis as any).React;
+            console.log('✅ Attempted cleanup of multiple React instances');
+          } catch (cleanupError) {
+            console.error('❌ Failed to cleanup React instances:', cleanupError);
+          }
         }
       }
       console.groupEnd();
@@ -141,6 +169,8 @@ class OptimizedErrorBoundary extends Component<Props, State> {
   handleRetry = () => {
     const { retryCount } = this.state;
     
+    console.log(`🔄 Retry attempt ${retryCount + 1}/3 for error ${this.state.errorId}`);
+    
     // For React hook errors, force page reload after first retry
     if (this.state.isReactHookError && retryCount >= 1) {
       console.log('React hook error - forcing page reload for recovery');
@@ -151,6 +181,7 @@ class OptimizedErrorBoundary extends Component<Props, State> {
     // Limit retries to prevent infinite loops
     if (retryCount >= 3) {
       // Force page reload as last resort
+      console.log('Max retries reached - forcing page reload');
       window.location.reload();
       return;
     }
@@ -176,6 +207,7 @@ class OptimizedErrorBoundary extends Component<Props, State> {
   };
 
   handleReload = () => {
+    console.log('🔄 Force reload requested');
     window.location.reload();
   };
 
