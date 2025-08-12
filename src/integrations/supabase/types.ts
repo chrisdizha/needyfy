@@ -961,22 +961,6 @@ export type Database = {
           suspended_at: string | null
           suspension_reason: string | null
         }
-        Insert: {
-          full_name?: string | null
-          id?: string | null
-          phone?: never
-          suspended?: boolean | null
-          suspended_at?: never
-          suspension_reason?: never
-        }
-        Update: {
-          full_name?: string | null
-          id?: string | null
-          phone?: never
-          suspended?: boolean | null
-          suspended_at?: never
-          suspension_reason?: never
-        }
         Relationships: []
       }
     }
@@ -1026,6 +1010,17 @@ export type Database = {
       get_referrer_by_code: {
         Args: { p_code: string }
         Returns: string
+      }
+      get_secure_user_profile_summary: {
+        Args: { target_user_id?: string }
+        Returns: {
+          id: string
+          full_name: string
+          phone: string
+          suspended: boolean
+          suspension_reason: string
+          suspended_at: string
+        }[]
       }
       get_unread_count: {
         Args: { p_user_id?: string }
