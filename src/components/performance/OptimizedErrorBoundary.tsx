@@ -62,6 +62,15 @@ class OptimizedErrorBoundary extends Component<Props, State> {
       console.error('🔍 React Hooks Error Detected - Detailed Analysis:');
       console.error('  - Error message:', error.message);
       
+      // Log React versions when hook error occurs
+      try {
+        const reactVersion = require('react/package.json')?.version;
+        const reactDomVersion = require('react-dom/package.json')?.version;
+        console.error('  - React versions at error time:', { react: reactVersion, reactDom: reactDomVersion });
+      } catch (e) {
+        console.error('  - Could not determine React versions');
+      }
+      
       if (error.message?.includes('Cannot read properties of null')) {
         console.error('  ❌ Null reference in React hooks - possible causes:');
         console.error('    • Multiple React instances loaded');

@@ -5,6 +5,15 @@ import './index.css'
 
 // Runtime check for multiple React instances in development
 if (typeof window !== 'undefined' && import.meta.env.DEV) {
+  // Log React versions for debugging
+  try {
+    const reactVersion = require('react/package.json')?.version;
+    const reactDomVersion = require('react-dom/package.json')?.version;
+    console.log('🔍 React versions detected:', { react: reactVersion, reactDom: reactDomVersion });
+  } catch (e) {
+    console.log('🔍 React version check: versions not accessible in dev mode');
+  }
+
   // Check for multiple React instances
   const reactInstances = [];
   if (window.React) reactInstances.push('window.React');
@@ -13,18 +22,20 @@ if (typeof window !== 'undefined' && import.meta.env.DEV) {
   if (reactInstances.length > 0) {
     console.warn('⚠️ Multiple React instances detected:', reactInstances);
     console.warn('This can cause "Cannot read properties of null" hook errors');
+  } else {
+    console.log('✅ No multiple React instances detected');
   }
   
-  // Check React internals
+  // Basic validation that React hooks are available
   try {
-    const { createElement, useState } = await import('react');
-    if (!createElement || !useState) {
+    const React = require('react');
+    if (!React.useState || !React.useEffect) {
       console.error('❌ React hooks are not properly imported');
     } else {
       console.log('✅ React hooks are properly available');
     }
   } catch (error) {
-    console.error('❌ Failed to import React hooks:', error);
+    console.error('❌ Failed to validate React hooks:', error);
   }
 }
 
