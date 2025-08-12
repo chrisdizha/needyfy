@@ -8,7 +8,16 @@ import { useReactValidation } from "@/hooks/useReactValidation";
 import {
   LazyPublicHome,
   LazyLogin,
+  LazyRegister,
   LazyNotFound,
+  LazyCategories,
+  LazyHowItWorks,
+  LazyPricing,
+  LazyBlog,
+  LazyRewards,
+  LazyListEquipment,
+  LazyEquipment,
+  LazyEquipmentDetails,
  } from "@/components/routing/LazyRoutes";
 
 // Optimized QueryClient with better cache configuration
@@ -56,6 +65,15 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<LazyLogin />} />
+                <Route path="/register" element={<LazyRegister />} />
+                <Route path="/categories" element={<LazyCategories />} />
+                <Route path="/how-it-works" element={<LazyHowItWorks />} />
+                <Route path="/pricing" element={<LazyPricing />} />
+                <Route path="/blog" element={<LazyBlog />} />
+                <Route path="/rewards" element={<LazyRewards />} />
+                <Route path="/list-equipment" element={<LazyListEquipment />} />
+                <Route path="/equipment" element={<LazyEquipment />} />
+                <Route path="/equipment/:id" element={<LazyEquipmentDetails />} />
                 <Route path="*" element={<LazyNotFound />} />
               </Routes>
             </Suspense>

@@ -31,3 +31,5 @@ export const LazyListEquipment = lazy(() => import('@/pages/ListEquipment'));
 export const LazyBlog = lazy(() => import('@/pages/Blog'));
 export const LazyPaymentTerms = lazy(() => import('@/pages/PaymentTerms'));
 export const LazyRewards = lazy(() => import('@/pages/Rewards'));
+export const LazyHowItWorks = lazy(() => import('@/pages/HowItWorks'));
+export const LazyPricing = lazy(() => import('@/pages/Pricing'));

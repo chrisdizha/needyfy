@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { SafeLink } from '@/components/navigation/SafeLink';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { Search, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Logo from './Logo';
 import { ThemeToggle } from './ThemeToggle';
+import { LanguageSelector } from './LanguageSelector';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -47,6 +47,7 @@ const Navbar = () => {
             <SafeLink to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium">
               List Equipment
             </SafeLink>
+            <LanguageSelector />
             <ThemeToggle />
             <SafeLink to="/login">
               <Button variant="outline" size="sm" className="mr-2">
