@@ -1,262 +1,206 @@
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useCallback, useMemo } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAdvancedCaching } from './useAdvancedCaching';
 
-// Optimized equipment query with better caching and batching
-export const useOptimizedEquipmentDatabase = () => {
-  const queryClient = useQueryClient();
+interface QueryOptions {
+  cacheKey?: string;
+  cacheTTL?: number;
+  enableRealtime?: boolean;
+  batchSize?: number;
+  retries?: number;
+}
 
-  // Batch multiple equipment queries together
-  const batchEquipmentQueries = useCallback(async (queries: Array<{ key: string; query: any }>) => {
-    const results = await Promise.allSettled(
-      queries.map(({ query }) => query)
-    );
-    
-    return results.map((result, index) => ({
-      key: queries[index].key,
-      data: result.status === 'fulfilled' ? result.value : null,
-      error: result.status === 'rejected' ? result.reason : null
-    }));
-  }, []);
+interface BatchOperation {
+  table: string;
+  operation: 'insert' | 'update' | 'delete';
+  data: any[];
+  conditions?: any;
+}
 
-  // Optimized equipment search with intelligent caching
-  const searchEquipment = useCallback(async (filters: any) => {
-    const cacheKey = JSON.stringify(filters);
-    
-    // Check if we have cached data first
-    const cached = queryClient.getQueryData(['equipment', 'search', cacheKey]);
-    if (cached) return cached;
+export const useOptimizedDatabase = () => {
+  const { getOrSet, invalidate } = useAdvancedCaching();
 
-    let query = supabase
-      .from('equipment_listings')
-      .select(`
-        id,
-        title,
-        category,
-        price,
-        price_unit,
-        location,
-        photos,
-        rating,
-        total_ratings,
-        is_verified,
-        created_at
-      `)
-      .eq('status', 'active')
-      .order('created_at', { ascending: false });
+  // Optimized query execution with caching
+  const executeQuery = useCallback(async <T>(
+    queryBuilder: () => Promise<{ data: T | null; error: any }>,
+    options: QueryOptions = {}
+  ): Promise<T | null> => {
+    const {
+      cacheKey,
+      cacheTTL = 5 * 60 * 1000, // 5 minutes default
+      retries = 3
+    } = options;
 
-    // Apply filters efficiently
-    if (filters.category) {
-      query = query.eq('category', filters.category);
-    }
-    if (filters.location) {
-      query = query.ilike('location', `%${filters.location}%`);
-    }
-    if (filters.minPrice) {
-      query = query.gte('price', filters.minPrice);
-    }
-    if (filters.maxPrice) {
-      query = query.lte('price', filters.maxPrice);
-    }
-
-    const { data, error } = await query.limit(filters.limit || 20);
-    
-    if (error) throw error;
-    return data;
-  }, [queryClient]);
-
-  // Prefetch related data
-  const prefetchRelatedData = useCallback(async (equipmentId: string) => {
-    // Prefetch reviews, owner profile, and related equipment in parallel
-    const prefetchPromises = [
-      queryClient.prefetchQuery({
-        queryKey: ['reviews', equipmentId],
-        queryFn: () => supabase
-          .from('reviews')
-          .select('*')
-          .eq('equipment_id', equipmentId)
-          .order('created_at', { ascending: false })
-          .limit(5),
-        staleTime: 10 * 60 * 1000 // 10 minutes
-      }),
-      queryClient.prefetchQuery({
-        queryKey: ['equipment', 'related', equipmentId],
-        queryFn: async () => {
-          const { data: equipment } = await supabase
-            .from('equipment_listings')
-            .select('category, owner_id')
-            .eq('id', equipmentId)
-            .single();
-            
-          if (!equipment) return [];
+    const executeWithRetry = async (attempt = 1): Promise<T | null> => {
+      try {
+        const { data, error } = await queryBuilder();
+        
+        if (error) {
+          console.error(`Database query error (attempt ${attempt}):`, error);
           
-          return supabase
-            .from('equipment_listings')
-            .select('id, title, price, photos, category')
-            .eq('category', equipment.category)
-            .neq('id', equipmentId)
-            .eq('status', 'active')
-            .limit(4);
-        },
-        staleTime: 15 * 60 * 1000 // 15 minutes
-      })
-    ];
-
-    await Promise.allSettled(prefetchPromises);
-  }, [queryClient]);
-
-  // Optimized user data fetching using the new secure patterns
-  const getUserData = useCallback(async (userId: string) => {
-    // Use the public_profiles view for non-sensitive data
-    const { data, error } = await supabase
-      .from('public_profiles')
-      .select('id, full_name, avatar_url')
-      .eq('id', userId)
-      .single();
-      
-    if (error) {
-      if (error.code === 'PGRST116') {
-        // No rows returned
-        return null;
+          if (attempt < retries) {
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+            return executeWithRetry(attempt + 1);
+          }
+          
+          throw error;
+        }
+        
+        return data;
+      } catch (error) {
+        if (attempt < retries) {
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+          return executeWithRetry(attempt + 1);
+        }
+        throw error;
       }
+    };
+
+    if (cacheKey) {
+      return getOrSet(cacheKey, executeWithRetry, cacheTTL);
+    }
+
+    return executeWithRetry();
+  }, [getOrSet]);
+
+  // Batch operations for better performance
+  const executeBatchOperations = useCallback(async (
+    operations: BatchOperation[]
+  ): Promise<void> => {
+    const transaction = supabase.rpc('begin_transaction');
+    
+    try {
+      for (const op of operations) {
+        switch (op.operation) {
+          case 'insert':
+            await supabase.from(op.table).insert(op.data);
+            break;
+          case 'update':
+            await supabase.from(op.table).update(op.data[0]).match(op.conditions);
+            break;
+          case 'delete':
+            await supabase.from(op.table).delete().match(op.conditions);
+            break;
+        }
+      }
+      
+      await supabase.rpc('commit_transaction');
+    } catch (error) {
+      await supabase.rpc('rollback_transaction');
       throw error;
     }
-    return data;
   }, []);
 
-  return {
-    batchEquipmentQueries,
-    searchEquipment,
-    prefetchRelatedData,
-    getUserData
-  };
-};
+  // Optimized pagination
+  const paginatedQuery = useCallback(async <T>(
+    tableName: string,
+    options: {
+      page: number;
+      pageSize: number;
+      filters?: any;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+      cacheKey?: string;
+    }
+  ): Promise<{ data: T[]; total: number; hasMore: boolean }> => {
+    const { page, pageSize, filters, sortBy, sortOrder = 'desc', cacheKey } = options;
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
 
-// Optimized booking queries
-export const useOptimizedBookingDatabase = () => {
-  const queryClient = useQueryClient();
+    const queryFn = async () => {
+      let query = supabase
+        .from(tableName)
+        .select('*', { count: 'exact' })
+        .range(from, to);
 
-  const getUserBookings = useCallback(async (userId: string, limit = 10) => {
-    const { data, error } = await supabase
-      .from('bookings')
-      .select(`
-        id,
-        equipment_id,
-        equipment_title,
-        start_date,
-        end_date,
-        total_price,
-        status,
-        created_at
-      `)
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(limit);
+      if (filters) {
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            query = query.eq(key, value);
+          }
+        });
+      }
+
+      if (sortBy) {
+        query = query.order(sortBy, { ascending: sortOrder === 'asc' });
+      }
+
+      const { data, error, count } = await query;
       
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+
+      return {
+        data: data || [],
+        total: count || 0,
+        hasMore: (count || 0) > to + 1
+      };
+    };
+
+    if (cacheKey) {
+      return getOrSet(`${cacheKey}_page_${page}`, queryFn);
+    }
+
+    return queryFn();
+  }, [getOrSet]);
+
+  // Real-time subscription management
+  const createOptimizedSubscription = useCallback((
+    tableName: string,
+    callback: (payload: any) => void,
+    filters?: any
+  ) => {
+    let subscription = supabase
+      .channel(`${tableName}_changes`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: tableName,
+        filter: filters
+      }, callback);
+
+    // Add connection management
+    subscription.subscribe((status) => {
+      console.log(`Subscription status for ${tableName}:`, status);
+    });
+
+    return {
+      unsubscribe: () => subscription.unsubscribe(),
+      subscription
+    };
   }, []);
 
-  const getProviderBookings = useCallback(async (ownerId: string, limit = 10) => {
-    const { data, error } = await supabase
-      .from('bookings')
-      .select(`
-        id,
-        equipment_id,
-        equipment_title,
-        start_date,
-        end_date,
-        total_price,
-        status,
-        created_at,
-        user_id
-      `)
-      .eq('owner_id', ownerId)
-      .order('created_at', { ascending: false })
-      .limit(limit);
-      
-    if (error) throw error;
-    return data;
-  }, []);
-
-  return {
-    getUserBookings,
-    getProviderBookings
-  };
-};
-
-// Optimized caching strategies
-export const useOptimizedCaching = () => {
-  const queryClient = useQueryClient();
-
-  // Intelligent cache invalidation
-  const invalidateRelatedQueries = useCallback((type: string, id?: string) => {
-    switch (type) {
+  // Cache invalidation strategies
+  const invalidateRelatedCache = useCallback((
+    tableName: string,
+    operation: 'insert' | 'update' | 'delete'
+  ) => {
+    // Invalidate table-specific caches
+    invalidate(`${tableName}_*`);
+    
+    // Invalidate related caches based on operation
+    switch (tableName) {
       case 'equipment':
-        queryClient.invalidateQueries({ queryKey: ['equipment'] });
-        if (id) {
-          queryClient.invalidateQueries({ queryKey: ['equipment', id] });
-          queryClient.invalidateQueries({ queryKey: ['reviews', id] });
-        }
+        invalidate('featured_equipment');
+        invalidate('equipment_list_*');
+        invalidate('categories_*');
         break;
-      case 'booking':
-        queryClient.invalidateQueries({ queryKey: ['bookings'] });
-        queryClient.invalidateQueries({ queryKey: ['provider-bookings'] });
+      case 'bookings':
+        invalidate('user_bookings_*');
+        invalidate('provider_bookings_*');
         break;
-      case 'user':
-        if (id) {
-          queryClient.invalidateQueries({ queryKey: ['user-profile', id] });
-          queryClient.invalidateQueries({ queryKey: ['public-profile', id] });
-          queryClient.invalidateQueries({ queryKey: ['bookings', id] });
-        }
+      case 'reviews':
+        invalidate('equipment_reviews_*');
+        invalidate('user_reviews_*');
         break;
     }
-  }, [queryClient]);
-
-  // Preload critical data using secure patterns
-  const preloadCriticalData = useCallback(async (userId?: string) => {
-    if (!userId) return;
-
-    const criticalQueries = [
-      // User's active bookings
-      queryClient.prefetchQuery({
-        queryKey: ['bookings', 'active', userId],
-        queryFn: () => supabase
-          .from('bookings')
-          .select('*')
-          .eq('user_id', userId)
-          .in('status', ['pending', 'confirmed'])
-          .limit(5),
-        staleTime: 2 * 60 * 1000 // 2 minutes
-      }),
-      // User's equipment listings
-      queryClient.prefetchQuery({
-        queryKey: ['equipment', 'user', userId],
-        queryFn: () => supabase
-          .from('equipment_listings')
-          .select('id, title, status, price')
-          .eq('owner_id', userId)
-          .limit(10),
-        staleTime: 5 * 60 * 1000 // 5 minutes
-      }),
-      // User's public profile
-      queryClient.prefetchQuery({
-        queryKey: ['public-profile', userId],
-        queryFn: () => supabase
-          .from('public_profiles')
-          .select('*')
-          .eq('id', userId)
-          .single(),
-        staleTime: 5 * 60 * 1000 // 5 minutes
-      })
-    ];
-
-    await Promise.allSettled(criticalQueries);
-  }, [queryClient]);
+  }, [invalidate]);
 
   return {
-    invalidateRelatedQueries,
-    preloadCriticalData
+    executeQuery,
+    executeBatchOperations,
+    paginatedQuery,
+    createOptimizedSubscription,
+    invalidateRelatedCache
   };
 };
