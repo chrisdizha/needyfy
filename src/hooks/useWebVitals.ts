@@ -1,6 +1,6 @@
 
 import { useEffect } from 'react';
-import { onCLS, onFID, onFCP, onLCP, onTTFB } from 'web-vitals';
+import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals';
 import { analytics } from '@/lib/analytics';
 
 interface VitalData {
@@ -35,9 +35,9 @@ export const useWebVitals = () => {
       }
     };
 
-    // Track all Core Web Vitals
+    // Track all Core Web Vitals (using onINP instead of onFID for web-vitals v4)
     onCLS(sendToAnalytics);
-    onFID(sendToAnalytics);
+    onINP(sendToAnalytics); // Replaces onFID in web-vitals v4
     onFCP(sendToAnalytics);
     onLCP(sendToAnalytics);
     onTTFB(sendToAnalytics);
