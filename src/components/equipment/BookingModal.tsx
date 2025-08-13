@@ -152,8 +152,8 @@ const BookingModal = ({ isOpen, onClose, equipment }: BookingModalProps) => {
             <PaymentForm
               equipmentId={equipment.id}
               equipmentTitle={equipment.title}
-              startDate={selectedDates.startDate!.toISOString()}
-              endDate={selectedDates.endDate!.toISOString()}
+              startDate={selectedDates.startDate?.toISOString() || ''}
+              endDate={selectedDates.endDate?.toISOString() || ''}
               totalPrice={totalPrice}
               onSuccess={() => {
                 toast.success('Booking request submitted successfully!');
