@@ -1,88 +1,80 @@
-import { useEffect, useRef, useCallback, useMemo } from 'react';
-import { useAnalytics } from '@/components/analytics/AnalyticsProvider';
+
+import { useEffect, useRef, useCallback } from 'react';
+import { analytics } from '@/lib/analytics';
 
 interface PerformanceMetrics {
-  renderTime: number;
-  memoryUsage: number;
   renderCount: number;
-  errorCount: number;
+  renderTime: number;
+  memoryUsage?: number;
 }
 
-// Memory usage tracking with throttling
-export const useMemoryTracking = (componentName: string) => {
-  const lastCheck = useRef(0);
-  const { trackEvent } = useAnalytics();
+export const useOptimizedPerformance = (componentName: string) => {
+  const renderCount = useRef(0);
+  const startTime = useRef<number>(0);
+  const metrics = useRef<PerformanceMetrics>({ renderCount: 0, renderTime: 0 });
 
-  const checkMemoryUsage = useCallback(() => {
-    const now = Date.now();
-    if (now - lastCheck.current < 30000) return; // Only check every 30 seconds
-    
-    lastCheck.current = now;
-    
-    if ('memory' in performance) {
-      const memory = (performance as any).memory;
-      const usedMB = memory.usedJSHeapSize / 1024 / 1024;
+  const trackMemoryUsage = useCallback(() => {
+    if (import.meta.env.DEV && (performance as any).memory) {
+      const memoryUsage = (performance as any).memory.usedJSHeapSize;
       
-      // Track if memory usage is high
-      if (usedMB > 100) {
-        trackEvent({
-          action: 'performance_warning',
+      // Only log memory issues in development
+      if (memoryUsage > 50 * 1024 * 1024) { // 50MB threshold
+        console.warn(`⚠️ High memory usage in ${componentName}: ${(memoryUsage / 1024 / 1024).toFixed(2)}MB`);
+        
+        analytics.trackUserAction('performance_memory_warning', 'performance', {
+          action: 'memory_warning',
           category: 'performance',
           label: componentName,
           metadata: {
-            memoryUsage: usedMB,
-            type: 'high_memory'
+            memoryUsage,
+            type: 'memory_warning'
           }
         });
       }
       
-      return usedMB;
+      return memoryUsage;
     }
-    return 0;
-  }, [componentName, trackEvent]);
+    return undefined;
+  }, [componentName]);
 
-  useEffect(() => {
-    const interval = setInterval(checkMemoryUsage, 30000);
-    return () => clearInterval(interval);
-  }, [checkMemoryUsage]);
-
-  return { checkMemoryUsage };
-};
-
-// Optimized render tracking
-export const useRenderTracking = (componentName: string) => {
-  const renderCount = useRef(0);
-  const startTime = useRef(0);
-  const { trackEvent } = useAnalytics();
-
-  const trackRender = useCallback(() => {
-    renderCount.current += 1;
-    
-    // Only track every 10th render to reduce overhead
-    if (renderCount.current % 10 === 0) {
-      trackEvent({
-        action: 'performance_metric',
-        category: 'performance',
-        label: componentName,
-        metadata: {
-          renderCount: renderCount.current,
-          type: 'render_frequency'
-        }
-      });
-    }
-  }, [componentName, trackEvent]);
-
-  const startRenderMeasurement = useCallback(() => {
+  const startRender = useCallback(() => {
     startTime.current = performance.now();
   }, []);
 
-  const endRenderMeasurement = useCallback(() => {
-    const renderTime = performance.now() - startTime.current;
+  const endRender = useCallback(() => {
+    const endTime = performance.now();
+    const renderTime = endTime - startTime.current;
     
-    // Only track slow renders
-    if (renderTime > 16) { // > 16ms (60fps threshold)
-      trackEvent({
-        action: 'performance_warning',
+    renderCount.current += 1;
+    const memoryUsage = trackMemoryUsage();
+    
+    metrics.current = {
+      renderCount: renderCount.current,
+      renderTime,
+      memoryUsage
+    };
+
+    // Track excessive re-renders
+    if (renderCount.current > 10 && renderCount.current % 5 === 0) {
+      console.warn(`⚠️ Component "${componentName}" has rendered ${renderCount.current} times`);
+      
+      analytics.trackUserAction('performance_render_warning', 'performance', {
+        action: 'excessive_renders',
+        category: 'performance', 
+        label: componentName,
+        metadata: {
+          renderCount: renderCount.current,
+          type: 'render_warning'
+        }
+      });
+    }
+
+    // Track slow renders
+    if (renderTime > 16 && import.meta.env.DEV) { // 16ms = 60fps threshold
+      console.warn(`⚠️ Slow render in ${componentName}: ${renderTime.toFixed(2)}ms`);
+      
+      analytics.trackUserAction('performance_slow_render', 'performance', {
+        action: 'slow_render',
         category: 'performance',
         label: componentName,
         metadata: {
@@ -91,109 +83,107 @@ export const useRenderTracking = (componentName: string) => {
         }
       });
     }
-  }, [componentName, trackEvent]);
+
+    // Log performance metrics in development (less frequently)
+    if (import.meta.env.DEV && renderCount.current % 20 === 0) {
+      console.log(`🔍 Performance - ${componentName}:`, {
+        renders: renderCount.current,
+        lastRenderTime: `${renderTime.toFixed(2)}ms`,
+        avgRenderTime: `${(metrics.current.renderTime).toFixed(2)}ms`,
+        memoryUsage: memoryUsage ? 
+          `${(memoryUsage / 1024 / 1024).toFixed(2)}MB` : 
+          'N/A'
+      });
+    }
+  }, [componentName, trackMemoryUsage]);
 
   useEffect(() => {
-    trackRender();
+    startRender();
+    return endRender;
   });
 
-  return { startRenderMeasurement, endRenderMeasurement };
+  return metrics.current;
 };
 
-// Bundle size and loading performance
-export const useBundlePerformance = () => {
-  const { trackEvent } = useAnalytics();
-  const tracked = useRef(false);
+export const useWebVitals = () => {
+  const vitalsReported = useRef(false);
 
   useEffect(() => {
-    if (tracked.current) return;
-    tracked.current = true;
-
-    // Track initial load performance
-    if ('performance' in window) {
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      
-      const metrics = {
-        domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
-        loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
-        firstContentfulPaint: 0,
-        largestContentfulPaint: 0
-      };
-
-      // Get paint metrics if available
-      const paintEntries = performance.getEntriesByType('paint');
-      paintEntries.forEach(entry => {
-        if (entry.name === 'first-contentful-paint') {
-          metrics.firstContentfulPaint = entry.startTime;
-        }
-      });
-
-      // Track LCP if available
-      if ('PerformanceObserver' in window) {
-        const observer = new PerformanceObserver((list) => {
-          const entries = list.getEntries();
-          entries.forEach(entry => {
-            if (entry.entryType === 'largest-contentful-paint') {
-              metrics.largestContentfulPaint = entry.startTime;
+    if (vitalsReported.current || !('PerformanceObserver' in window)) return;
+    
+    // Track Core Web Vitals
+    const trackWebVitals = () => {
+      try {
+        // LCP - Largest Contentful Paint
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            const lcp = entry.startTime;
+            if (lcp > 2500) { // Poor LCP threshold
+              console.warn(`⚠️ Poor LCP: ${lcp.toFixed(2)}ms`);
             }
-          });
-          
-          trackEvent({
-            action: 'performance_metric',
-            category: 'performance',
-            label: 'page_load',
-            metadata: metrics
-          });
-        });
+            
+            analytics.trackUserAction('web_vitals_lcp', 'performance', {
+              action: 'lcp_measured',
+              category: 'performance',
+              label: 'core_web_vitals',
+              metadata: {
+                domContentLoaded: performance.timing.domContentLoaded,
+                loadComplete: performance.timing.loadEventEnd,
+                firstContentfulPaint: performance.getEntriesByType('paint').find(p => p.name === 'first-contentful-paint')?.startTime || 0,
+                largestContentfulPaint: lcp
+              }
+            });
+          }
+        }).observe({ entryTypes: ['largest-contentful-paint'] });
 
-        try {
-          observer.observe({ entryTypes: ['largest-contentful-paint'] });
-        } catch (e) {
-          // LCP not supported
-        }
+        // CLS - Cumulative Layout Shift
+        new PerformanceObserver((list) => {
+          let cls = 0;
+          for (const entry of list.getEntries()) {
+            if (!entry.hadRecentInput) {
+              cls += entry.value;
+            }
+          }
+          if (cls > 0.1) { // Poor CLS threshold
+            console.warn(`⚠️ Poor CLS: ${cls.toFixed(3)}`);
+            
+            analytics.trackUserAction('web_vitals_cls', 'performance', {
+              action: 'cls_measured',
+              category: 'performance',
+              label: 'core_web_vitals',
+              metadata: {
+                domContentLoaded: performance.timing.domContentLoaded,
+                loadComplete: performance.timing.loadEventEnd,
+                firstContentfulPaint: performance.getEntriesByType('paint').find(p => p.name === 'first-contentful-paint')?.startTime || 0,
+                largestContentfulPaint: performance.getEntriesByType('largest-contentful-paint')[0]?.startTime || 0
+              }
+            });
+          }
+        }).observe({ entryTypes: ['layout-shift'] });
+
+        vitalsReported.current = true;
+      } catch (error) {
+        console.error('Error setting up web vitals tracking:', error);
+        analytics.trackError(error instanceof Error ? error.message : 'Unknown web vitals error');
       }
+    };
 
-      // Track basic metrics immediately
-      setTimeout(() => {
-        trackEvent({
-          action: 'performance_metric',
-          category: 'performance',
-          label: 'page_load',
-          metadata: metrics
-        });
-      }, 1000);
+    // Delay tracking to avoid affecting initial load
+    setTimeout(trackWebVitals, 1000);
+  }, []);
+};
+
+export const useRenderOptimization = () => {
+  const componentRefs = useRef(new Map<string, number>());
+
+  const trackRender = useCallback((componentName: string) => {
+    const current = componentRefs.current.get(componentName) || 0;
+    componentRefs.current.set(componentName, current + 1);
+    
+    if (import.meta.env.DEV && current > 0 && current % 5 === 0) {
+      console.warn(`⚠️  Component "${componentName}" has rendered ${current} times. Consider optimization.`);
     }
-  }, [trackEvent]);
-};
+  }, []);
 
-// Error boundary performance tracking
-export const useErrorTracking = (componentName: string) => {
-  const { trackError } = useAnalytics();
-
-  const trackComponentError = useCallback((error: Error, errorInfo?: any) => {
-    trackError(error, {
-      component: componentName,
-      errorInfo
-    });
-  }, [componentName, trackError]);
-
-  return { trackComponentError };
-};
-
-// Composite hook for complete performance monitoring
-export const useOptimizedPerformance = (componentName: string) => {
-  const { checkMemoryUsage } = useMemoryTracking(componentName);
-  const { startRenderMeasurement, endRenderMeasurement } = useRenderTracking(componentName);
-  const { trackComponentError } = useErrorTracking(componentName);
-  
-  useBundlePerformance();
-
-  const performanceAPI = useMemo(() => ({
-    checkMemoryUsage,
-    startRenderMeasurement,
-    endRenderMeasurement,
-    trackComponentError
-  }), [checkMemoryUsage, startRenderMeasurement, endRenderMeasurement, trackComponentError]);
-
-  return performanceAPI;
+  return { trackRender };
 };

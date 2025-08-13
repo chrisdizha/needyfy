@@ -1,4 +1,5 @@
-import React, { memo, useState, useCallback } from 'react';
+
+import { memo, useState, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -168,11 +169,14 @@ const OptimizedEquipmentCard = memo(({
 
       {isBookingModalOpen && (
         <BookingModal
-          equipmentId={id}
-          equipmentTitle={title}
-          pricePerDay={price}
           isOpen={isBookingModalOpen}
           onClose={closeBookingModal}
+          equipment={{
+            id,
+            title,
+            price,
+            owner_id: 'placeholder' // This should be passed as a prop in real implementation
+          }}
         />
       )}
     </>

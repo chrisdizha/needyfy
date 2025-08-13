@@ -78,6 +78,18 @@ const BookingModal = ({ isOpen, onClose, equipment }: BookingModalProps) => {
     setCurrentStep('payment');
   };
 
+  const calculateDays = () => {
+    if (!selectedDates.startDate || !selectedDates.endDate) return 0;
+    return Math.ceil((selectedDates.endDate.getTime() - selectedDates.startDate.getTime()) / (1000 * 60 * 60 * 24));
+  };
+
+  const calculatePriceBreakdown = () => {
+    const days = calculateDays();
+    const basePrice = equipment.price * days;
+    const serviceFee = Math.round(basePrice * 0.1);
+    return { basePrice, serviceFee, days };
+  };
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 'dates':
@@ -90,6 +102,7 @@ const BookingModal = ({ isOpen, onClose, equipment }: BookingModalProps) => {
         );
       
       case 'policies':
+        const { basePrice, serviceFee, days } = calculatePriceBreakdown();
         return (
           <div className="space-y-6">
             <PolicyCards
@@ -100,10 +113,11 @@ const BookingModal = ({ isOpen, onClose, equipment }: BookingModalProps) => {
               damagePolicy="Renter is responsible for any damage beyond normal wear and tear. Repairs will be deducted from the security deposit."
             />
             <PriceBreakdown
-              basePrice={equipment.price}
-              startDate={selectedDates.startDate}
-              endDate={selectedDates.endDate}
+              basePrice={basePrice}
+              renterFee={serviceFee}
               totalPrice={totalPrice}
+              days={days}
+              pricePerDay={equipment.price}
             />
             <div className="flex gap-3">
               <Button 
@@ -125,13 +139,15 @@ const BookingModal = ({ isOpen, onClose, equipment }: BookingModalProps) => {
         );
       
       case 'payment':
+        const priceBreakdown = calculatePriceBreakdown();
         return (
           <div className="space-y-6">
             <PriceBreakdown
-              basePrice={equipment.price}
-              startDate={selectedDates.startDate}
-              endDate={selectedDates.endDate}
+              basePrice={priceBreakdown.basePrice}
+              renterFee={priceBreakdown.serviceFee}
               totalPrice={totalPrice}
+              days={priceBreakdown.days}
+              pricePerDay={equipment.price}
             />
             <PaymentForm
               equipmentId={equipment.id}
