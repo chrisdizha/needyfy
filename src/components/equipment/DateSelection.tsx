@@ -1,75 +1,90 @@
+
 import { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 
 interface DateSelectionProps {
-  startDate?: Date;
-  endDate?: Date;
-  pricePerDay: number;
-  bookedDates?: Date[];
-  onDateSelect: (date: Date | undefined) => void;
-  onProceedToPayment: () => void;
-  onCancel: () => void;
+  onDateSelect: (dates: { startDate: Date | null; endDate: Date | null }) => void;
+  selectedDates: {
+    startDate: Date | null;
+    endDate: Date | null;
+  };
+  equipmentId: string;
 }
 
 const DateSelection = ({
-  startDate,
-  endDate,
-  pricePerDay,
-  bookedDates = [],
   onDateSelect,
-  onProceedToPayment,
-  onCancel
+  selectedDates,
+  equipmentId
 }: DateSelectionProps) => {
-  const totalPrice = startDate && endDate 
-    ? Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) * pricePerDay + pricePerDay
-    : 0;
+  const [selectingStart, setSelectingStart] = useState(true);
 
-  const totalDays = startDate && endDate 
-    ? Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1
-    : 0;
+  const handleDateClick = (date: Date | undefined) => {
+    if (!date) return;
 
-  const isDateBooked = (date: Date) => {
-    return bookedDates.some(
-      bookedDate => format(bookedDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
-    );
+    if (selectingStart || !selectedDates.startDate) {
+      onDateSelect({ startDate: date, endDate: null });
+      setSelectingStart(false);
+    } else {
+      if (date < selectedDates.startDate) {
+        onDateSelect({ startDate: date, endDate: selectedDates.startDate });
+      } else {
+        onDateSelect({ startDate: selectedDates.startDate, endDate: date });
+      }
+      setSelectingStart(true);
+    }
+  };
+
+  const clearDates = () => {
+    onDateSelect({ startDate: null, endDate: null });
+    setSelectingStart(true);
   };
 
   return (
-    <div className="py-4">
-      <div className="mb-4">
-        <h4 className="text-sm font-medium mb-2">Selected Dates:</h4>
-        <p className="text-sm text-muted-foreground">
-          {startDate && `From: ${format(startDate, 'PPP')}`}
-          {endDate && ` - To: ${format(endDate, 'PPP')}`}
+    <div className="space-y-4">
+      <div>
+        <h4 className="text-sm font-medium mb-2">Select your rental dates</h4>
+        <p className="text-sm text-muted-foreground mb-4">
+          {selectingStart ? 'Choose your start date' : 'Choose your end date'}
         </p>
+        
+        {selectedDates.startDate && (
+          <div className="mb-4 p-3 bg-muted rounded-lg">
+            <p className="text-sm">
+              <strong>Start:</strong> {format(selectedDates.startDate, 'PPP')}
+            </p>
+            {selectedDates.endDate && (
+              <p className="text-sm">
+                <strong>End:</strong> {format(selectedDates.endDate, 'PPP')}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       <Calendar
         mode="single"
-        selected={startDate}
-        onSelect={onDateSelect}
-        disabled={(date) => date < new Date() || isDateBooked(date)}
+        selected={selectingStart ? selectedDates.startDate || undefined : selectedDates.endDate || undefined}
+        onSelect={handleDateClick}
+        disabled={(date) => date < new Date()}
         className="rounded-md border"
       />
 
-      {totalPrice > 0 && (
-        <div className="mt-4 p-4 bg-muted rounded-lg">
-          <p className="font-medium">Total Price: ${totalPrice}</p>
-          <p className="text-sm text-muted-foreground">
-            ${pricePerDay} x {totalDays} days
-          </p>
-        </div>
-      )}
-
-      <div className="flex justify-end gap-4 mt-4">
-        <Button variant="outline" onClick={onCancel}>Cancel</Button>
+      <div className="flex gap-2">
         <Button 
-          onClick={onProceedToPayment}
-          disabled={!startDate || !endDate}
+          variant="outline" 
+          onClick={clearDates}
+          size="sm"
         >
-          Proceed to Payment
+          Clear Dates
+        </Button>
+        <Button 
+          onClick={() => selectedDates.startDate && selectedDates.endDate && onDateSelect(selectedDates)}
+          disabled={!selectedDates.startDate || !selectedDates.endDate}
+          size="sm"
+        >
+          Confirm Dates
         </Button>
       </div>
     </div>
