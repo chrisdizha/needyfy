@@ -851,6 +851,33 @@ export type Database = {
           },
         ]
       }
+      security_config: {
+        Row: {
+          config_key: string
+          config_value: Json
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          config_key: string
+          config_value: Json
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          config_key?: string
+          config_value?: Json
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       security_events: {
         Row: {
           created_at: string | null
@@ -1013,6 +1040,15 @@ export type Database = {
         }
         Returns: Json
       }
+      check_enhanced_rate_limit: {
+        Args: {
+          p_identifier: string
+          p_max_requests?: number
+          p_window_minutes?: number
+          p_action_type?: string
+        }
+        Returns: Json
+      }
       create_automatic_payout: {
         Args: { provider_user_id: string }
         Returns: string
@@ -1127,6 +1163,18 @@ export type Database = {
         }
         Returns: string
       }
+      log_security_event_enhanced: {
+        Args: {
+          p_user_id: string
+          p_event_type: string
+          p_event_details?: Json
+          p_ip_address?: unknown
+          p_user_agent?: string
+          p_risk_level?: string
+          p_session_id?: string
+        }
+        Returns: string
+      }
       mark_notification_read: {
         Args: { p_notification_id: string }
         Returns: undefined
@@ -1161,6 +1209,14 @@ export type Database = {
           status: string
           details: string
         }[]
+      }
+      validate_session_security: {
+        Args: {
+          p_user_id?: string
+          p_device_fingerprint?: string
+          p_ip_address?: unknown
+        }
+        Returns: Json
       }
     }
     Enums: {
