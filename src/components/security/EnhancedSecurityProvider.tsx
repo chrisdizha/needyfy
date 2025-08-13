@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/OptimizedAuthContext';
 import { useCSRFProtection } from '@/hooks/useCSRFProtection';

@@ -1,3 +1,4 @@
+
 import React, { ReactNode, useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useAuth } from '@/contexts/OptimizedAuthContext';
 import { SessionTimeout } from '@/components/admin/SessionTimeout';
