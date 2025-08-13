@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
@@ -8,6 +7,7 @@ import { useReactValidation } from "@/hooks/useReactValidation";
 import { OptimizedAuthProvider } from "@/contexts/OptimizedAuthContext";
 import OptimizedErrorBoundary from "@/components/performance/OptimizedErrorBoundary";
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
+import SkipToContent from "@/components/accessibility/SkipToContent";
 import {
   LazyPublicHome,
   LazyLogin,
@@ -66,29 +66,32 @@ function App() {
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <OptimizedAuthProvider>
             <AppWrapper>
+              <SkipToContent />
               <Router>
                 <Suspense fallback={<LoadingFallback />}>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/login" element={<LazyLogin />} />
-                    <Route path="/register" element={<LazyRegister />} />
-                    <Route path="/categories" element={<LazyCategories />} />
-                    <Route path="/how-it-works" element={<LazyHowItWorks />} />
-                    <Route path="/pricing" element={<LazyPricing />} />
-                    <Route path="/blog" element={<LazyBlog />} />
-                    <Route 
-                      path="/rewards" 
-                      element={
-                        <ProtectedRoute>
-                          <LazyRewards />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route path="/list-equipment" element={<LazyListEquipment />} />
-                    <Route path="/equipment" element={<LazyEquipment />} />
-                    <Route path="/equipment/:id" element={<LazyEquipmentDetails />} />
-                    <Route path="*" element={<LazyNotFound />} />
-                  </Routes>
+                  <main id="main-content">
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/login" element={<LazyLogin />} />
+                      <Route path="/register" element={<LazyRegister />} />
+                      <Route path="/categories" element={<LazyCategories />} />
+                      <Route path="/how-it-works" element={<LazyHowItWorks />} />
+                      <Route path="/pricing" element={<LazyPricing />} />
+                      <Route path="/blog" element={<LazyBlog />} />
+                      <Route 
+                        path="/rewards" 
+                        element={
+                          <ProtectedRoute>
+                            <LazyRewards />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route path="/list-equipment" element={<LazyListEquipment />} />
+                      <Route path="/equipment" element={<LazyEquipment />} />
+                      <Route path="/equipment/:id" element={<LazyEquipmentDetails />} />
+                      <Route path="*" element={<LazyNotFound />} />
+                    </Routes>
+                  </main>
                 </Suspense>
               </Router>
               <Toaster />

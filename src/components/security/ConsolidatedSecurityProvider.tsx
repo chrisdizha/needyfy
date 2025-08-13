@@ -105,7 +105,7 @@ const useOptimizedBrowserSecurity = (user: any, logSecurityEvent: any) => {
   const lastLogRef = useRef(0);
 
   useEffect(() => {
-    if (!user || process.env.NODE_ENV !== 'production') return;
+    if (!user || import.meta.env.DEV) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const suspiciousKeys = [

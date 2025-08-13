@@ -1,212 +1,187 @@
-import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { eachDayOfInterval } from 'date-fns';
+
+import { useState } from 'react';
+import { useAuth } from '@/contexts/OptimizedAuthContext';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import DateSelection from './DateSelection';
+import PriceBreakdown from './PriceBreakdown';
 import PaymentForm from './PaymentForm';
-import BookingConfirmation from './BookingConfirmation';
-import EquipmentPolicyInfo from './EquipmentPolicyInfo';
+import PolicyCards from '@/components/booking/PolicyCards';
+import { toast } from 'sonner';
 
 interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  equipmentTitle: string;
-  equipmentId: string;
-  pricePerDay: number;
+  equipment: {
+    id: string;
+    title: string;
+    price: number;
+    owner_id: string;
+  };
 }
 
-const BookingModal = ({
-  isOpen, 
-  onClose, 
-  equipmentTitle, 
-  equipmentId,
-  pricePerDay 
-}: BookingModalProps) => {
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
+const BookingModal = ({ isOpen, onClose, equipment }: BookingModalProps) => {
+  const { user } = useAuth();
+  const [currentStep, setCurrentStep] = useState<'dates' | 'policies' | 'payment'>('dates');
+  const [selectedDates, setSelectedDates] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
+    startDate: null,
+    endDate: null,
+  });
   const [totalPrice, setTotalPrice] = useState(0);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [step, setStep] = useState<'dates' | 'payment' | 'confirmation'>('dates');
-  const [bookedDates, setBookedDates] = useState<Date[]>([]);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [policiesAccepted, setPoliciesAccepted] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      const fetchBookedDates = async () => {
-        const { data, error } = await supabase
-          .from('bookings')
-          .select('start_date, end_date')
-          .eq('equipment_id', equipmentId)
-          .in('status', ['confirmed', 'pending']); // consider pending as booked too
+  // Check if user is trying to book their own equipment
+  if (user?.id === equipment.owner_id) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cannot Book Your Own Equipment</DialogTitle>
+          </DialogHeader>
+          <p className="text-muted-foreground">
+            You cannot book your own equipment. This listing belongs to you.
+          </p>
+          <Button onClick={onClose} className="mt-4">
+            Close
+          </Button>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
-        if (error) {
-          toast.error('Could not fetch booked dates.');
-          return;
-        }
-        
-        const disabledDates = data.flatMap(booking => 
-          eachDayOfInterval({
-            start: new Date(booking.start_date),
-            end: new Date(booking.end_date)
-          })
-        );
-        setBookedDates(disabledDates);
-      };
-      fetchBookedDates();
-    }
-  }, [isOpen, equipmentId]);
-
-  const handleDateSelect = (date: Date | undefined) => {
-    if (!startDate) {
-      setStartDate(date);
-      setEndDate(undefined);
-    } else if (!endDate && date && date > startDate) {
-      setEndDate(date);
-      // Calculate total days and price with new fee structure
-      const days = Math.ceil((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-      const basePrice = days * pricePerDay;
-      const renterFee = Math.round(basePrice * 0.1); // 10% renter fee
-      setTotalPrice(basePrice + renterFee); // Total amount renter pays
-    } else {
-      setStartDate(date);
-      setEndDate(undefined);
-      setTotalPrice(0);
-    }
-  };
-
-  const handleProceedToPayment = () => {
-    if (!startDate || !endDate) {
+  const handleDateConfirm = (dates: { startDate: Date | null; endDate: Date | null }) => {
+    if (!dates.startDate || !dates.endDate) {
       toast.error('Please select both start and end dates');
       return;
     }
-    setStep('payment');
+
+    setSelectedDates(dates);
+    
+    // Calculate total price (basic calculation)
+    const days = Math.ceil((dates.endDate.getTime() - dates.startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const basePrice = equipment.price * days;
+    const serviceFee = Math.round(basePrice * 0.1); // 10% service fee
+    setTotalPrice(basePrice + serviceFee);
+    
+    setCurrentStep('policies');
   };
 
-  const handlePayment = async (paymentMethod: 'stripe' | 'paypal') => {
-    if (!startDate || !endDate) return;
-    
-    setIsProcessing(true);
-    
-    try {
-      // Use new Stripe Connect escrow checkout for Stripe payments
-      const functionName = paymentMethod === 'paypal' ? 'create-paypal-payment' : 'create-stripe-connect-checkout';
-      
-      // Calculate price breakdown for backend
-      const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-      const basePrice = days * pricePerDay;
-      const renterFee = Math.round(basePrice * 0.1);
-      const providerFee = Math.round(basePrice * 0.15);
-      
-      const { data, error } = await supabase.functions.invoke(functionName, {
-        body: {
-          equipmentId,
-          equipmentTitle,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
-          totalPrice: totalPrice * 100, // Convert to cents for Stripe
-          basePrice: basePrice * 100, // Base price in cents
-          renterFee: renterFee * 100, // Renter fee in cents
-          providerFee: providerFee * 100, // Provider fee in cents
-        },
-      });
+  const handlePoliciesAccepted = () => {
+    if (!policiesAccepted) {
+      toast.error('Please accept the rental policies to continue');
+      return;
+    }
+    setCurrentStep('payment');
+  };
 
-      if (error) throw error;
-
-      const redirectUrl = paymentMethod === 'paypal' ? data.approvalUrl : data.url;
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 'dates':
+        return (
+          <DateSelection
+            onDateSelect={handleDateConfirm}
+            selectedDates={selectedDates}
+            equipmentId={equipment.id}
+          />
+        );
       
-      if (redirectUrl) {
-        // Open payment in new tab for better UX
-        window.open(redirectUrl, '_blank');
-        setStep('confirmation');
-        setIsProcessing(false);
-      } else {
-        toast.error('Could not initiate payment. Please try again.');
-        setIsProcessing(false);
-      }
-    } catch (error: any) {
-      toast.error(error.message || 'An error occurred during payment.');
-      setIsProcessing(false);
+      case 'policies':
+        return (
+          <div className="space-y-6">
+            <PolicyCards
+              onPolicyAccepted={setPoliciesAccepted}
+              cancellationPolicy="moderate"
+              depositAmount={Math.round(equipment.price * 0.3)} // 30% of daily rate as deposit
+              lateFeePolicy="Late returns incur a fee of 25% of the daily rate for each day or partial day late."
+              damagePolicy="Renter is responsible for any damage beyond normal wear and tear. Repairs will be deducted from the security deposit."
+            />
+            <PriceBreakdown
+              basePrice={equipment.price}
+              startDate={selectedDates.startDate}
+              endDate={selectedDates.endDate}
+              totalPrice={totalPrice}
+            />
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep('dates')}
+                className="flex-1"
+              >
+                Back to Dates
+              </Button>
+              <Button 
+                onClick={handlePoliciesAccepted}
+                disabled={!policiesAccepted}
+                className="flex-1"
+              >
+                Continue to Payment
+              </Button>
+            </div>
+          </div>
+        );
+      
+      case 'payment':
+        return (
+          <div className="space-y-6">
+            <PriceBreakdown
+              basePrice={equipment.price}
+              startDate={selectedDates.startDate}
+              endDate={selectedDates.endDate}
+              totalPrice={totalPrice}
+            />
+            <PaymentForm
+              equipmentId={equipment.id}
+              equipmentTitle={equipment.title}
+              startDate={selectedDates.startDate!.toISOString()}
+              endDate={selectedDates.endDate!.toISOString()}
+              totalPrice={totalPrice}
+              onSuccess={() => {
+                toast.success('Booking request submitted successfully!');
+                onClose();
+              }}
+              onError={(error) => {
+                toast.error(error);
+              }}
+            />
+            <Button 
+              variant="outline" 
+              onClick={() => setCurrentStep('policies')}
+              className="w-full"
+            >
+              Back to Policies
+            </Button>
+          </div>
+        );
+      
+      default:
+        return null;
     }
   };
 
-  const handleClose = () => {
-    setStartDate(undefined);
-    setEndDate(undefined);
-    setTotalPrice(0);
-    setStep('dates');
-    setAgreedToTerms(false);
-    onClose();
-  };
-
-  const resetBooking = () => {
-    setStartDate(undefined);
-    setEndDate(undefined);
-    setTotalPrice(0);
-    setStep('dates');
-    setAgreedToTerms(false);
-  };
-
-  const getDialogDescription = () => {
-    switch (step) {
+  const getStepTitle = () => {
+    switch (currentStep) {
       case 'dates':
-        return 'Select your rental dates. The total price will be calculated automatically.';
+        return `Book ${equipment.title}`;
+      case 'policies':
+        return 'Review Policies & Pricing';
       case 'payment':
-        return 'Review your booking details and proceed with payment.';
-      case 'confirmation':
-        return 'Your booking has been confirmed!';
+        return 'Complete Payment';
       default:
-        return '';
+        return 'Book Equipment';
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Book {equipmentTitle}</DialogTitle>
-          <DialogDescription>
-            {getDialogDescription()}
-          </DialogDescription>
+          <DialogTitle>{getStepTitle()}</DialogTitle>
         </DialogHeader>
-        <EquipmentPolicyInfo />
-        {step === 'dates' && (
-          <DateSelection
-            startDate={startDate}
-            endDate={endDate}
-            pricePerDay={pricePerDay}
-            bookedDates={bookedDates}
-            onDateSelect={handleDateSelect}
-            onProceedToPayment={handleProceedToPayment}
-            onCancel={handleClose}
-          />
-        )}
-
-        {step === 'payment' && startDate && endDate && (
-          <PaymentForm
-            equipmentTitle={equipmentTitle}
-            startDate={startDate}
-            endDate={endDate}
-            totalPrice={totalPrice}
-            isProcessing={isProcessing}
-            agreedToTerms={agreedToTerms}
-            onAgreeToTermsChange={setAgreedToTerms}
-            onPayment={handlePayment}
-            onBack={() => setStep('dates')}
-            pricePerDay={pricePerDay}
-          />
-        )}
-
-        {step === 'confirmation' && startDate && endDate && (
-          <BookingConfirmation
-            equipmentTitle={equipmentTitle}
-            startDate={startDate}
-            endDate={endDate}
-            totalPrice={totalPrice}
-            onClose={handleClose}
-            onBookAnother={resetBooking}
-          />
-        )}
+        {renderStepContent()}
       </DialogContent>
     </Dialog>
   );

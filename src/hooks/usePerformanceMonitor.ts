@@ -28,7 +28,7 @@ export const usePerformanceMonitor = (componentName: string) => {
     };
 
     // Log performance metrics in development
-    if (process.env.NODE_ENV === 'development' && renderCount.current % 10 === 0) {
+    if (import.meta.env.DEV && renderCount.current % 10 === 0) {
       console.log(`🔍 Performance - ${componentName}:`, {
         renders: renderCount.current,
         lastRenderTime: `${renderTime.toFixed(2)}ms`,
@@ -54,7 +54,7 @@ export const useRenderOptimization = () => {
     const current = componentRefs.current.get(componentName) || 0;
     componentRefs.current.set(componentName, current + 1);
     
-    if (process.env.NODE_ENV === 'development' && current > 0 && current % 5 === 0) {
+    if (import.meta.env.DEV && current > 0 && current % 5 === 0) {
       console.warn(`⚠️  Component "${componentName}" has rendered ${current} times. Consider optimization.`);
     }
   }, []);

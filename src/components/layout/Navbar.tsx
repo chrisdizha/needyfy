@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { SafeLink } from '@/components/navigation/SafeLink';
 import { Button } from '@/components/ui/button';
@@ -19,12 +20,16 @@ const Navbar = () => {
 
           <div className="hidden md:flex flex-1 max-w-md mx-4">
             <div className="relative w-full">
+              <label htmlFor="search-equipment" className="sr-only">
+                Search for equipment
+              </label>
               <Input 
+                id="search-equipment"
                 type="text" 
                 placeholder="Search for equipment..." 
                 className="pr-10 w-full" 
               />
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" aria-hidden="true" />
             </div>
           </div>
 
@@ -62,7 +67,10 @@ const Navbar = () => {
           <div className="md:hidden flex items-center">
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-muted-foreground focus:outline-none"
+              className="text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md p-1"
+              aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
             >
               {isMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -75,19 +83,26 @@ const Navbar = () => {
 
         <div className="mt-3 md:hidden">
           <div className="relative">
+            <label htmlFor="search-equipment-mobile" className="sr-only">
+              Search for equipment
+            </label>
             <Input 
+              id="search-equipment-mobile"
               type="text" 
               placeholder="Search for equipment..." 
               className="pr-10 w-full" 
             />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" aria-hidden="true" />
           </div>
         </div>
 
-        <div className={cn(
-          "md:hidden absolute left-0 right-0 bg-background shadow-md transition-all duration-300 ease-in-out z-40 border-b",
-          isMenuOpen ? "max-h-64 py-4" : "max-h-0 py-0 overflow-hidden"
-        )}>
+        <div 
+          id="mobile-menu"
+          className={cn(
+            "md:hidden absolute left-0 right-0 bg-background shadow-md transition-all duration-300 ease-in-out z-40 border-b",
+            isMenuOpen ? "max-h-64 py-4" : "max-h-0 py-0 overflow-hidden"
+          )}
+        >
           <div className="container mx-auto px-4 flex flex-col space-y-3">
             <SafeLink to="/categories" className="text-muted-foreground hover:text-primary font-medium py-2">
               Categories
