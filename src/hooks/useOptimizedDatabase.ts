@@ -1,5 +1,5 @@
 
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdvancedCaching } from './useAdvancedCaching';
 
@@ -64,36 +64,35 @@ export const useOptimizedDatabase = () => {
     return executeWithRetry();
   }, [getOrSet]);
 
-  // Batch operations for better performance
+  // Simplified batch operations
   const executeBatchOperations = useCallback(async (
     operations: BatchOperation[]
   ): Promise<void> => {
-    const transaction = supabase.rpc('begin_transaction');
-    
     try {
       for (const op of operations) {
         switch (op.operation) {
           case 'insert':
-            await supabase.from(op.table).insert(op.data);
+            const { error: insertError } = await supabase.from(op.table as any).insert(op.data);
+            if (insertError) throw insertError;
             break;
           case 'update':
-            await supabase.from(op.table).update(op.data[0]).match(op.conditions);
+            const { error: updateError } = await supabase.from(op.table as any).update(op.data[0]).match(op.conditions);
+            if (updateError) throw updateError;
             break;
           case 'delete':
-            await supabase.from(op.table).delete().match(op.conditions);
+            const { error: deleteError } = await supabase.from(op.table as any).delete().match(op.conditions);
+            if (deleteError) throw deleteError;
             break;
         }
       }
-      
-      await supabase.rpc('commit_transaction');
     } catch (error) {
-      await supabase.rpc('rollback_transaction');
+      console.error('Batch operation failed:', error);
       throw error;
     }
   }, []);
 
   // Optimized pagination
-  const paginatedQuery = useCallback(async <T>(
+  const paginatedQuery = useCallback(async (
     tableName: string,
     options: {
       page: number;
@@ -103,14 +102,14 @@ export const useOptimizedDatabase = () => {
       sortOrder?: 'asc' | 'desc';
       cacheKey?: string;
     }
-  ): Promise<{ data: T[]; total: number; hasMore: boolean }> => {
+  ): Promise<{ data: any[]; total: number; hasMore: boolean }> => {
     const { page, pageSize, filters, sortBy, sortOrder = 'desc', cacheKey } = options;
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
     const queryFn = async () => {
       let query = supabase
-        .from(tableName)
+        .from(tableName as any)
         .select('*', { count: 'exact' })
         .range(from, to);
 
@@ -180,7 +179,7 @@ export const useOptimizedDatabase = () => {
     
     // Invalidate related caches based on operation
     switch (tableName) {
-      case 'equipment':
+      case 'equipment_listings':
         invalidate('featured_equipment');
         invalidate('equipment_list_*');
         invalidate('categories_*');

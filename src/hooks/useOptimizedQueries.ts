@@ -12,20 +12,15 @@ export const useOptimizedQueries = () => {
     return useQuery({
       queryKey: ['equipment', 'list', filters],
       queryFn: () => executeQuery(
-        () => {
+        async () => {
           let query = supabase
-            .from('equipment')
+            .from('equipment_listings')
             .select(`
               *,
               profiles:owner_id (
-                first_name,
-                last_name,
-                avatar_url
-              ),
-              equipment_images (
                 id,
-                image_url,
-                is_primary
+                full_name,
+                avatar_url
               )
             `);
 
@@ -37,12 +32,15 @@ export const useOptimizedQueries = () => {
             query = query.ilike('location', `%${filters.location}%`);
           }
           
-          if (filters.available_from && filters.available_to) {
-            query = query.gte('available_from', filters.available_from)
-                         .lte('available_to', filters.available_to);
+          if (filters.minPrice) {
+            query = query.gte('price', filters.minPrice);
+          }
+          
+          if (filters.maxPrice) {
+            query = query.lte('price', filters.maxPrice);
           }
 
-          return query.eq('is_available', true);
+          return query.eq('status', 'active');
         },
         {
           cacheKey: `equipment_list_${JSON.stringify(filters)}`,
@@ -59,7 +57,7 @@ export const useOptimizedQueries = () => {
     return useInfiniteQuery({
       queryKey: ['equipment', 'infinite', filters],
       queryFn: async ({ pageParam = 1 }) => {
-        return paginatedQuery('equipment', {
+        return paginatedQuery('equipment_listings', {
           page: pageParam,
           pageSize: 12,
           filters,
@@ -80,30 +78,23 @@ export const useOptimizedQueries = () => {
     return useQuery({
       queryKey: ['equipment', 'details', id],
       queryFn: () => executeQuery(
-        () => supabase
-          .from('equipment')
+        async () => supabase
+          .from('equipment_listings')
           .select(`
             *,
             profiles:owner_id (
               id,
-              first_name,
-              last_name,
-              avatar_url,
-              verification_status
-            ),
-            equipment_images (
-              id,
-              image_url,
-              is_primary
+              full_name,
+              avatar_url
             ),
             reviews (
               id,
               rating,
-              comment,
+              title,
+              content,
               created_at,
-              profiles:reviewer_id (
-                first_name,
-                last_name,
+              profiles:user_id (
+                full_name,
                 avatar_url
               )
             )
@@ -125,7 +116,7 @@ export const useOptimizedQueries = () => {
     return useMutation({
       mutationFn: async (equipmentData: any) => {
         const { data, error } = await supabase
-          .from('equipment')
+          .from('equipment_listings')
           .insert(equipmentData)
           .select()
           .single();
@@ -136,7 +127,7 @@ export const useOptimizedQueries = () => {
       onSuccess: (data) => {
         // Invalidate related queries
         queryClient.invalidateQueries({ queryKey: ['equipment'] });
-        invalidateRelatedCache('equipment', 'insert');
+        invalidateRelatedCache('equipment_listings', 'insert');
         
         // Optimistically update cache
         queryClient.setQueryData(['equipment', 'details', data.id], data);
@@ -149,21 +140,18 @@ export const useOptimizedQueries = () => {
     return useQuery({
       queryKey: ['bookings', 'user', userId],
       queryFn: () => executeQuery(
-        () => supabase
+        async () => supabase
           .from('bookings')
           .select(`
             *,
-            equipment (
+            equipment_listings!equipment_id (
               id,
               title,
-              daily_rate,
-              equipment_images (
-                image_url,
-                is_primary
-              )
+              price,
+              photos
             )
           `)
-          .eq('renter_id', userId)
+          .eq('user_id', userId)
           .order('created_at', { ascending: false }),
         {
           cacheKey: `user_bookings_${userId}`,
@@ -182,4 +170,10 @@ export const useOptimizedQueries = () => {
     useOptimizedEquipmentMutation,
     useOptimizedUserBookings
   };
+};
+
+// Export individual hooks for convenience
+export const useOptimizedEquipmentQuery = (limit: number = 20, filters: any = {}) => {
+  const { useOptimizedEquipmentList } = useOptimizedQueries();
+  return useOptimizedEquipmentList(filters);
 };
