@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "next-themes";
 import { Suspense } from "react";
 import { useReactValidation } from "@/hooks/useReactValidation";
+import { OptimizedAuthProvider } from "@/contexts/OptimizedAuthContext";
+import OptimizedErrorBoundary from "@/components/performance/OptimizedErrorBoundary";
 import {
   LazyPublicHome,
   LazyLogin,
@@ -44,6 +46,7 @@ const LoadingFallback = () => (
 
 // Simple Home component
 const Home = () => {
+  console.log('🏠 Home component rendering...');
   return <LazyPublicHome />;
 };
 
@@ -57,31 +60,35 @@ function App() {
   console.log('🔍 App component rendering...');
   
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-        <AppWrapper>
-          <Router>
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<LazyLogin />} />
-                <Route path="/register" element={<LazyRegister />} />
-                <Route path="/categories" element={<LazyCategories />} />
-                <Route path="/how-it-works" element={<LazyHowItWorks />} />
-                <Route path="/pricing" element={<LazyPricing />} />
-                <Route path="/blog" element={<LazyBlog />} />
-                <Route path="/rewards" element={<LazyRewards />} />
-                <Route path="/list-equipment" element={<LazyListEquipment />} />
-                <Route path="/equipment" element={<LazyEquipment />} />
-                <Route path="/equipment/:id" element={<LazyEquipmentDetails />} />
-                <Route path="*" element={<LazyNotFound />} />
-              </Routes>
-            </Suspense>
-          </Router>
-          <Toaster />
-        </AppWrapper>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <OptimizedErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <OptimizedAuthProvider>
+            <AppWrapper>
+              <Router>
+                <Suspense fallback={<LoadingFallback />}>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<LazyLogin />} />
+                    <Route path="/register" element={<LazyRegister />} />
+                    <Route path="/categories" element={<LazyCategories />} />
+                    <Route path="/how-it-works" element={<LazyHowItWorks />} />
+                    <Route path="/pricing" element={<LazyPricing />} />
+                    <Route path="/blog" element={<LazyBlog />} />
+                    <Route path="/rewards" element={<LazyRewards />} />
+                    <Route path="/list-equipment" element={<LazyListEquipment />} />
+                    <Route path="/equipment" element={<LazyEquipment />} />
+                    <Route path="/equipment/:id" element={<LazyEquipmentDetails />} />
+                    <Route path="*" element={<LazyNotFound />} />
+                  </Routes>
+                </Suspense>
+              </Router>
+              <Toaster />
+            </AppWrapper>
+          </OptimizedAuthProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </OptimizedErrorBoundary>
   );
 }
 
