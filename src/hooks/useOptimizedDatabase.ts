@@ -58,7 +58,7 @@ export const useOptimizedDatabase = () => {
     };
 
     if (cacheKey) {
-      return getOrSet(cacheKey, executeWithRetry, cacheTTL);
+      return getOrSet(cacheKey, executeWithRetry, cacheTTL) as Promise<T | null>;
     }
 
     return executeWithRetry();
@@ -147,7 +147,7 @@ export const useOptimizedDatabase = () => {
     };
 
     if (cacheKey) {
-      return getOrSet(`${cacheKey}_page_${page}`, queryFn);
+      return getOrSet(`${cacheKey}_page_${page}`, queryFn) as Promise<{ data: T[]; total: number; hasMore: boolean }>;
     }
 
     return queryFn();
