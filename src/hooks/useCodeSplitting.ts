@@ -9,7 +9,7 @@ interface CodeSplitOptions {
 }
 
 export const useCodeSplitting = () => {
-  const { getOrSet } = useAdvancedCaching<ComponentType<any>>();
+  const { getOrSet } = useAdvancedCaching<{ default: ComponentType<any> }>();
 
   const createLazyComponent = (
     importFunction: () => Promise<{ default: ComponentType<any> }>,
@@ -36,7 +36,7 @@ export const useCodeSplitting = () => {
     // Preload if requested
     if (preload) {
       // Cache the component for faster subsequent loads
-      getOrSet(componentName, retryImport);
+      getOrSet(componentName, () => retryImport());
     }
 
     return LazyComponent;
