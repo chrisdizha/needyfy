@@ -91,8 +91,8 @@ export const useOptimizedDatabase = () => {
     }
   }, []);
 
-  // Optimized pagination
-  const paginatedQuery = useCallback(async (
+  // Optimized pagination with proper typing
+  const paginatedQuery = useCallback(async <T = any>(
     tableName: string,
     options: {
       page: number;
@@ -102,38 +102,48 @@ export const useOptimizedDatabase = () => {
       sortOrder?: 'asc' | 'desc';
       cacheKey?: string;
     }
-  ): Promise<{ data: any[]; total: number; hasMore: boolean }> => {
+  ): Promise<{ data: T[]; total: number; hasMore: boolean }> => {
     const { page, pageSize, filters, sortBy, sortOrder = 'desc', cacheKey } = options;
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    const queryFn = async () => {
-      let query = supabase
-        .from(tableName as any)
-        .select('*', { count: 'exact' })
-        .range(from, to);
+    const queryFn = async (): Promise<{ data: T[]; total: number; hasMore: boolean }> => {
+      try {
+        let query = supabase
+          .from(tableName as any)
+          .select('*', { count: 'exact' })
+          .range(from, to);
 
-      if (filters) {
-        Object.entries(filters).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            query = query.eq(key, value);
-          }
-        });
+        if (filters) {
+          Object.entries(filters).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+              query = query.eq(key, value);
+            }
+          });
+        }
+
+        if (sortBy) {
+          query = query.order(sortBy, { ascending: sortOrder === 'asc' });
+        }
+
+        const { data, error, count } = await query;
+        
+        if (error) throw error;
+
+        return {
+          data: (data as T[]) || [],
+          total: count || 0,
+          hasMore: (count || 0) > to + 1
+        };
+      } catch (error) {
+        console.error('Paginated query error:', error);
+        // Return empty result instead of throwing
+        return {
+          data: [],
+          total: 0,
+          hasMore: false
+        };
       }
-
-      if (sortBy) {
-        query = query.order(sortBy, { ascending: sortOrder === 'asc' });
-      }
-
-      const { data, error, count } = await query;
-      
-      if (error) throw error;
-
-      return {
-        data: data || [],
-        total: count || 0,
-        hasMore: (count || 0) > to + 1
-      };
     };
 
     if (cacheKey) {
