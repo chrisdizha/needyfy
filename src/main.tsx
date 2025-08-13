@@ -6,6 +6,16 @@ import './lib/i18n'
 
 console.log('🚀 Starting application initialization...');
 
+// React duplication guard for development
+if (import.meta.env.DEV) {
+  const ReactVersion = (window as any).React?.version;
+  if (ReactVersion) {
+    console.warn('⚠️ Multiple React instances detected! This can cause hook errors.');
+    console.warn('React version found on window:', ReactVersion);
+    console.warn('Consider running: rm -rf node_modules && npm install');
+  }
+}
+
 // Enhanced error handling for root creation
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -55,65 +65,65 @@ try {
   throw error;
 }
 
-// Enhanced service worker registration with timeout handling and background sync
+// Service worker registration - PRODUCTION ONLY to prevent dev cache issues
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    console.log('🔧 Registering service worker...');
-    
-    // Set a timeout for service worker registration
-    const registrationTimeout = setTimeout(() => {
-      console.warn('⚠️ Service worker registration timed out');
-    }, 10000); // 10 second timeout
+    if (import.meta.env.PROD) {
+      console.log('🔧 Registering service worker for production...');
+      
+      // Set a timeout for service worker registration
+      const registrationTimeout = setTimeout(() => {
+        console.warn('⚠️ Service worker registration timed out');
+      }, 10000); // 10 second timeout
 
-    navigator.serviceWorker.register('/sw.js')
-      .then((registration) => {
-        clearTimeout(registrationTimeout);
-        console.log('✅ SW registered: ', registration);
-        
-        // Request persistent storage
-        if ('storage' in navigator && 'persist' in navigator.storage) {
-          navigator.storage.persist().then((persistent) => {
-            console.log('💾 Persistent storage:', persistent);
-          });
-        }
-
-        // Register for background sync with proper type handling
-        if ('sync' in registration) {
-          (registration as any).sync.register('background-sync').then(() => {
-            console.log('🔄 Background sync registered');
-          }).catch((err: any) => {
-            console.log('❌ Background sync registration failed:', err);
-          });
-        }
-
-        // Register for periodic sync (if supported)
-        if ('periodicSync' in registration) {
-          (registration as any).periodicSync.register('periodic-content-sync', {
-            minInterval: 24 * 60 * 60 * 1000, // 24 hours
-          }).then(() => {
-            console.log('⏰ Periodic sync registered');
-          }).catch((err: any) => {
-            console.log('❌ Periodic sync registration failed:', err);
-          });
-        }
-
-        // Listen for updates
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New content available, notify user
-                console.log('🆕 New content available');
-              }
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          clearTimeout(registrationTimeout);
+          console.log('✅ SW registered: ', registration);
+          
+          // Request persistent storage
+          if ('storage' in navigator && 'persist' in navigator.storage) {
+            navigator.storage.persist().then((persistent) => {
+              console.log('💾 Persistent storage:', persistent);
             });
           }
+
+          // Register for background sync with proper type handling
+          if ('sync' in registration) {
+            (registration as any).sync.register('background-sync').then(() => {
+              console.log('🔄 Background sync registered');
+            }).catch((err: any) => {
+              console.log('❌ Background sync registration failed:', err);
+            });
+          }
+
+          // Listen for updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  console.log('🆕 New content available');
+                }
+              });
+            }
+          });
+        })
+        .catch((registrationError) => {
+          clearTimeout(registrationTimeout);
+          console.log('❌ SW registration failed: ', registrationError);
         });
-      })
-      .catch((registrationError) => {
-        clearTimeout(registrationTimeout);
-        console.log('❌ SW registration failed: ', registrationError);
+    } else {
+      // Development: unregister any existing service worker to prevent stale cache issues
+      console.log('🧹 Development mode: cleaning up any existing service worker...');
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        registrations.forEach((registration) => {
+          registration.unregister().then(() => {
+            console.log('🧹 Unregistered stale service worker');
+          });
+        });
       });
+    }
   });
 } else {
   console.log('ℹ️ Service worker not supported');

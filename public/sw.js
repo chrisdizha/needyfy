@@ -1,11 +1,8 @@
-
-const CACHE_NAME = 'needyfy-v1.4';
-const RUNTIME_CACHE = 'needyfy-runtime-v1.4';
+const CACHE_NAME = 'needyfy-v2.0';
+const RUNTIME_CACHE = 'needyfy-runtime-v2.0';
 const urlsToCache = [
   '/',
   '/offline.html',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
   '/manifest.json',
   '/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png',
   '/lovable-uploads/b10588a4-3d99-4756-afca-c2bcf51374e2.png',
@@ -62,13 +59,13 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Handle navigation requests (HTML pages)
+  // Handle navigation requests (HTML pages) - avoid aggressive caching in dev
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
         .then(response => {
-          // Cache successful navigation responses
-          if (response.status === 200) {
+          // Only cache successful navigation responses in production builds
+          if (response.status === 200 && url.pathname !== '/') {
             const responseClone = response.clone();
             caches.open(RUNTIME_CACHE).then(cache => {
               cache.put(request, responseClone);

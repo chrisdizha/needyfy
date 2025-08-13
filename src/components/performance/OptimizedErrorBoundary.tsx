@@ -212,7 +212,7 @@ class OptimizedErrorBoundary extends Component<Props, State> {
               </Button>
             </div>
             
-            {process.env.NODE_ENV === 'development' && (
+            {import.meta.env.DEV && (
               <details className="mt-4 p-3 bg-muted rounded-md text-sm">
                 <summary className="cursor-pointer font-medium">Error Details</summary>
                 <div className="mt-2 space-y-2">
