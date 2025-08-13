@@ -1,9 +1,11 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "next-themes";
 import { Suspense } from "react";
 import { useReactValidation } from "@/hooks/useReactValidation";
+import { useWebVitals } from "@/hooks/useWebVitals";
 import { OptimizedAuthProvider } from "@/contexts/OptimizedAuthContext";
 import OptimizedErrorBoundary from "@/components/performance/OptimizedErrorBoundary";
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
@@ -38,10 +40,13 @@ const queryClient = new QueryClient({
   },
 });
 
-// Loading fallback component
+// Loading fallback component with better UX
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    <div className="text-center space-y-4">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+      <p className="text-sm text-muted-foreground">Loading...</p>
+    </div>
   </div>
 );
 
@@ -51,9 +56,10 @@ const Home = () => {
   return <LazyPublicHome />;
 };
 
-// App wrapper with React validation
+// App wrapper with React validation and Web Vitals
 const AppWrapper = ({ children }: { children: React.ReactNode }) => {
   useReactValidation();
+  useWebVitals();
   return <>{children}</>;
 };
 

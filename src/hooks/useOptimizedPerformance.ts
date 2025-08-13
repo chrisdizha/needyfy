@@ -127,7 +127,6 @@ export const useWebVitals = () => {
               category: 'performance',
               label: 'core_web_vitals',
               metadata: {
-                domContentLoaded: performance.timing.domContentLoaded,
                 loadComplete: performance.timing.loadEventEnd,
                 firstContentfulPaint: performance.getEntriesByType('paint').find(p => p.name === 'first-contentful-paint')?.startTime || 0,
                 largestContentfulPaint: lcp
@@ -140,8 +139,10 @@ export const useWebVitals = () => {
         new PerformanceObserver((list) => {
           let cls = 0;
           for (const entry of list.getEntries()) {
-            if (!entry.hadRecentInput) {
-              cls += entry.value;
+            // Type assertion for layout shift entries
+            const layoutEntry = entry as any;
+            if (!layoutEntry.hadRecentInput) {
+              cls += layoutEntry.value;
             }
           }
           if (cls > 0.1) { // Poor CLS threshold
@@ -152,10 +153,10 @@ export const useWebVitals = () => {
               category: 'performance',
               label: 'core_web_vitals',
               metadata: {
-                domContentLoaded: performance.timing.domContentLoaded,
                 loadComplete: performance.timing.loadEventEnd,
                 firstContentfulPaint: performance.getEntriesByType('paint').find(p => p.name === 'first-contentful-paint')?.startTime || 0,
-                largestContentfulPaint: performance.getEntriesByType('largest-contentful-paint')[0]?.startTime || 0
+                largestContentfulPaint: performance.getEntriesByType('largest-contentful-paint')[0]?.startTime || 0,
+                cls
               }
             });
           }
