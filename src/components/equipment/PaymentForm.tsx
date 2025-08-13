@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -6,18 +7,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CreditCard, DollarSign } from 'lucide-react';
 import PriceBreakdown from './PriceBreakdown';
 
-
 interface PaymentFormProps {
   equipmentTitle: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   totalPrice: number;
   isProcessing: boolean;
   agreedToTerms: boolean;
   onAgreeToTermsChange: (agreed: boolean) => void;
   onPayment: (paymentMethod: 'stripe' | 'paypal') => void;
   onBack: () => void;
-  pricePerDay?: number; // Optional for price breakdown
+  pricePerDay?: number;
 }
 
 const PaymentForm = ({
@@ -32,10 +32,15 @@ const PaymentForm = ({
   onBack,
   pricePerDay
 }: PaymentFormProps) => {
+  // Convert string dates to Date objects for calculations
+  const startDateObj = new Date(startDate);
+  const endDateObj = new Date(endDate);
+  
   // Calculate price breakdown
-  const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  const days = Math.ceil((endDateObj.getTime() - startDateObj.getTime()) / (1000 * 60 * 60 * 24)) + 1;
   const basePrice = Math.round(totalPrice / 1.1); // Remove 10% renter fee to get base
   const renterFee = totalPrice - basePrice;
+  
   return (
     <div className="py-4">
       <div className="space-y-4">
@@ -46,9 +51,9 @@ const PaymentForm = ({
               <p className="text-sm text-muted-foreground">Equipment:</p>
               <p className="text-sm">{equipmentTitle}</p>
               <p className="text-sm text-muted-foreground">Start Date:</p>
-              <p className="text-sm">{format(startDate, 'PPP')}</p>
+              <p className="text-sm">{format(startDateObj, 'PPP')}</p>
               <p className="text-sm text-muted-foreground">End Date:</p>
-              <p className="text-sm">{format(endDate, 'PPP')}</p>
+              <p className="text-sm">{format(endDateObj, 'PPP')}</p>
             </div>
           </div>
           

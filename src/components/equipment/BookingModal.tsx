@@ -33,6 +33,7 @@ const BookingModal = ({ isOpen, onClose, equipment }: BookingModalProps) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [policiesAccepted, setPoliciesAccepted] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   // Check if user is trying to book their own equipment
   if (user?.id === equipment.owner_id) {
@@ -76,6 +77,35 @@ const BookingModal = ({ isOpen, onClose, equipment }: BookingModalProps) => {
       return;
     }
     setCurrentStep('payment');
+  };
+
+  const handlePayment = async (paymentMethod: 'stripe' | 'paypal') => {
+    if (!selectedDates.startDate || !selectedDates.endDate) {
+      toast.error('Invalid booking dates');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // This would integrate with your payment processing logic
+      console.log('Processing payment:', {
+        method: paymentMethod,
+        equipmentId: equipment.id,
+        startDate: selectedDates.startDate.toISOString(),
+        endDate: selectedDates.endDate.toISOString(),
+        totalPrice
+      });
+      
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast.success('Booking request submitted successfully!');
+      onClose();
+    } catch (error) {
+      toast.error('Payment failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const calculateDays = () => {
@@ -139,37 +169,22 @@ const BookingModal = ({ isOpen, onClose, equipment }: BookingModalProps) => {
         );
       
       case 'payment':
-        const priceBreakdown = calculatePriceBreakdown();
+        if (!selectedDates.startDate || !selectedDates.endDate) return null;
+        
         return (
           <div className="space-y-6">
-            <PriceBreakdown
-              basePrice={priceBreakdown.basePrice}
-              renterFee={priceBreakdown.serviceFee}
+            <PaymentForm
+              equipmentTitle={equipment.title}
+              startDate={selectedDates.startDate.toISOString()}
+              endDate={selectedDates.endDate.toISOString()}
               totalPrice={totalPrice}
-              days={priceBreakdown.days}
+              isProcessing={isLoading}
+              agreedToTerms={agreedToTerms}
+              onAgreeToTermsChange={setAgreedToTerms}
+              onPayment={handlePayment}
+              onBack={() => setCurrentStep('policies')}
               pricePerDay={equipment.price}
             />
-            <PaymentForm
-              equipmentId={equipment.id}
-              equipmentTitle={equipment.title}
-              startDate={selectedDates.startDate?.toISOString() || ''}
-              endDate={selectedDates.endDate?.toISOString() || ''}
-              totalPrice={totalPrice}
-              onSuccess={() => {
-                toast.success('Booking request submitted successfully!');
-                onClose();
-              }}
-              onError={(error) => {
-                toast.error(error);
-              }}
-            />
-            <Button 
-              variant="outline" 
-              onClick={() => setCurrentStep('policies')}
-              className="w-full"
-            >
-              Back to Policies
-            </Button>
           </div>
         );
       
