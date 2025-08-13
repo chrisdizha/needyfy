@@ -1,24 +1,59 @@
+
 import React, { useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { useSEO } from '@/hooks/useSEO';
 
 const Blog: React.FC = () => {
-  useEffect(() => {
-    document.title = 'Equipment Rental Tips & Resources | Needyfy Blog';
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (!metaDesc) {
-      const m = document.createElement('meta');
-      m.setAttribute('name', 'description');
-      m.setAttribute('content', 'Needyfy blog with safety tips, maintenance advice, and best practices for renting and listing equipment.');
-      document.head.appendChild(m);
-    } else {
-      metaDesc.setAttribute('content', 'Needyfy blog with safety tips, maintenance advice, and best practices for renting and listing equipment.');
+  useSEO({
+    title: 'Equipment Rental Tips & Resources | Needyfy Blog - Expert Guides',
+    description: 'Expert tips for equipment rental success. Learn safety practices, maintenance advice, verification guides, and best practices for renting and listing equipment on Needyfy.',
+    keywords: [
+      'equipment rental tips',
+      'rental safety',
+      'equipment maintenance',
+      'verification guide',
+      'rental best practices',
+      'equipment care',
+      'needyfy blog',
+      'rental resources'
+    ],
+    ogTitle: 'Needyfy Blog - Equipment Rental Tips & Resources',
+    ogDescription: 'Expert guides for safe renting, equipment care, and getting the most from Needyfy platform.',
+    canonical: `${window.location.origin}/blog`,
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "Needyfy Equipment Rental Blog",
+      "description": "Tips, guides, and best practices for equipment rental",
+      "url": window.location.href,
+      "publisher": {
+        "@type": "Organization",
+        "name": "Needyfy",
+        "logo": {
+          "@type": "ImageObject",
+          "url": `${window.location.origin}/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png`
+        }
+      },
+      "mainEntity": [
+        {
+          "@type": "Article",
+          "headline": "Safety Checklist for Renters",
+          "description": "Essential safety tips for equipment renters"
+        },
+        {
+          "@type": "Article", 
+          "headline": "Maintenance Tips for Providers",
+          "description": "Keep your equipment in top condition"
+        },
+        {
+          "@type": "Article",
+          "headline": "How to Get ID-Verified", 
+          "description": "Build trust with verification"
+        }
+      ]
     }
-    const canonical = document.querySelector('link[rel="canonical"]') || document.createElement('link');
-    canonical.setAttribute('rel', 'canonical');
-    canonical.setAttribute('href', window.location.origin + '/blog');
-    if (!canonical.parentNode) document.head.appendChild(canonical);
-  }, []);
+  });
 
   return (
     <div className="min-h-screen flex flex-col">

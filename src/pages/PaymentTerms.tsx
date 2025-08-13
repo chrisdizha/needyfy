@@ -1,24 +1,39 @@
+
 import React, { useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { useSEO } from '@/hooks/useSEO';
 
 const PaymentTerms: React.FC = () => {
-  useEffect(() => {
-    document.title = 'Payment Terms of Service | Needyfy';
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (!metaDesc) {
-      const m = document.createElement('meta');
-      m.setAttribute('name', 'description');
-      m.setAttribute('content', 'Needyfy Payment Terms: fees, payouts, refunds, escrow, and dispute resolution for equipment rentals.');
-      document.head.appendChild(m);
-    } else {
-      metaDesc.setAttribute('content', 'Needyfy Payment Terms: fees, payouts, refunds, escrow, and dispute resolution for equipment rentals.');
+  useSEO({
+    title: 'Payment Terms of Service | Needyfy - Secure Equipment Rental Payments',
+    description: 'Needyfy Payment Terms: Learn about our secure payment processing, fees, payouts, refunds, escrow services, and dispute resolution for equipment rentals.',
+    keywords: [
+      'payment terms',
+      'payment policy',
+      'rental payments',
+      'escrow',
+      'refunds',
+      'fees',
+      'secure payments',
+      'needyfy'
+    ],
+    ogTitle: 'Needyfy Payment Terms - Secure Rental Payments',
+    ogDescription: 'Comprehensive payment terms covering fees, payouts, refunds, and secure escrow services for equipment rentals.',
+    canonical: `${window.location.origin}/payment-terms`,
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Payment Terms of Service",
+      "description": "Payment terms and conditions for Needyfy equipment rental platform",
+      "url": window.location.href,
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Needyfy",
+        "url": window.location.origin
+      }
     }
-    const canonical = document.querySelector('link[rel="canonical"]') || document.createElement('link');
-    canonical.setAttribute('rel', 'canonical');
-    canonical.setAttribute('href', window.location.origin + '/payment-terms');
-    if (!canonical.parentNode) document.head.appendChild(canonical);
-  }, []);
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -34,13 +49,13 @@ const PaymentTerms: React.FC = () => {
         <section className="container mx-auto px-4 py-10 space-y-6">
           <article className="prose prose-sm max-w-none">
             <h2>1. Payments & Escrow</h2>
-            <p>Payments are processed via trusted third parties (e.g., Stripe, PayPal). Funds for provider earnings may be held in escrow until rental completion according to your booking’s release schedule.</p>
+            <p>Payments are processed via trusted third parties (e.g., Stripe, PayPal). Funds for provider earnings may be held in escrow until rental completion according to your booking's release schedule.</p>
 
             <h2>2. Fees</h2>
             <p>Platform service fees apply to both renters and providers and are disclosed at checkout. Fees help cover secure payments, insurance, and platform operations.</p>
 
             <h2>3. Refunds & Cancellations</h2>
-            <p>Refund eligibility depends on booking status, cancellation timing, and the equipment’s condition. Certain fees may be non-refundable.</p>
+            <p>Refund eligibility depends on booking status, cancellation timing, and the equipment's condition. Certain fees may be non-refundable.</p>
 
             <h2>4. Chargebacks & Disputes</h2>
             <p>If a chargeback is filed, we may suspend payouts while the matter is investigated. Use in-app <strong>Disputes</strong> and <strong>Messages</strong> for faster resolution.</p>
