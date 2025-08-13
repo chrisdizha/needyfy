@@ -20,6 +20,7 @@ import { NotificationCenter } from "@/components/layout/NotificationCenter";
 import { useEnhancedAuth } from '@/hooks/useEnhancedAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import Logo from './Logo';
+import Navbar from './Navbar';
 
 const AuthenticatedNavbar = () => {
   const { user } = useAuth();
@@ -27,6 +28,11 @@ const AuthenticatedNavbar = () => {
   const { getUserDisplayName, getUserAvatar } = useUserProfile();
   
   const { enhancedSignOut, isSigningOut } = useEnhancedAuth();
+
+  // Safety guard: if no user is authenticated, render public navbar instead
+  if (!user) {
+    return <Navbar />;
+  }
 
   const handleSignOut = async () => {
     await enhancedSignOut();

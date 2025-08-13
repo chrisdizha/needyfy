@@ -1,6 +1,7 @@
+
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/contexts/OptimizedAuthContext';
-import AuthenticatedNavbar from '@/components/layout/AuthenticatedNavbar';
+import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -119,7 +120,7 @@ const Rewards = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AuthenticatedNavbar />
+      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card className="lg:col-span-2">
@@ -138,7 +139,7 @@ const Rewards = () => {
               </div>
 
               <div className="space-y-2 pt-2">
-                <div className="text-sm text-muted-foreground">Have a friend’s code?</div>
+                <div className="text-sm text-muted-foreground">Have a friend's code?</div>
                 <div className="flex gap-2">
                   <Input placeholder="Enter referral code" value={claimCode} onChange={(e) => setClaimCode(e.target.value)} />
                   <Button onClick={claimReferral}>Claim</Button>

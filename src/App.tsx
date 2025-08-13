@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { useReactValidation } from "@/hooks/useReactValidation";
 import { OptimizedAuthProvider } from "@/contexts/OptimizedAuthContext";
 import OptimizedErrorBoundary from "@/components/performance/OptimizedErrorBoundary";
+import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 import {
   LazyPublicHome,
   LazyLogin,
@@ -75,7 +76,14 @@ function App() {
                     <Route path="/how-it-works" element={<LazyHowItWorks />} />
                     <Route path="/pricing" element={<LazyPricing />} />
                     <Route path="/blog" element={<LazyBlog />} />
-                    <Route path="/rewards" element={<LazyRewards />} />
+                    <Route 
+                      path="/rewards" 
+                      element={
+                        <ProtectedRoute>
+                          <LazyRewards />
+                        </ProtectedRoute>
+                      } 
+                    />
                     <Route path="/list-equipment" element={<LazyListEquipment />} />
                     <Route path="/equipment" element={<LazyEquipment />} />
                     <Route path="/equipment/:id" element={<LazyEquipmentDetails />} />
