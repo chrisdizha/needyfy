@@ -47,7 +47,7 @@ export const useOptimizedDatabase = () => {
           throw error;
         }
         
-        return data;
+        return data as T | null;
       } catch (error) {
         if (attempt < retries) {
           await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
@@ -137,9 +137,9 @@ export const useOptimizedDatabase = () => {
         };
       } catch (error) {
         console.error('Paginated query error:', error);
-        // Return empty result instead of throwing
+        // Return properly typed empty result instead of throwing
         return {
-          data: [],
+          data: [] as T[],
           total: 0,
           hasMore: false
         };
