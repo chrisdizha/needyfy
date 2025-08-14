@@ -13,10 +13,7 @@ export const usePublicProfiles = () => {
   const { data: profiles, isLoading, error } = useQuery({
     queryKey: ['public-profiles'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('public_profiles')
-        .select('*')
-        .order('updated_at', { ascending: false });
+      const { data, error } = await supabase.rpc('get_public_profiles');
 
       if (error) {
         console.error('Error fetching public profiles:', error);
@@ -42,9 +39,11 @@ export const usePublicProfile = (userId: string) => {
       if (!userId) return null;
       
       const { data, error } = await supabase
-        .from('public_profiles')
-        .select('*')
+        .from('profiles')
+        .select('id, full_name, avatar_url, updated_at')
         .eq('id', userId)
+        .eq('suspended', false)
+        .not('full_name', 'is', null)
         .single();
 
       if (error) {
