@@ -1,6 +1,4 @@
 
-import AuthenticatedNavbar from '@/components/layout/AuthenticatedNavbar';
-import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/home/HeroSection';
 import CategorySection from '@/components/home/CategorySection';
 import FeaturedEquipment from '@/components/home/FeaturedEquipment';
@@ -31,21 +29,17 @@ const Index = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <AuthenticatedNavbar />
-      <main className="flex-grow">
-        <HeroSection />
-        <CategorySection />
-        <FeaturedEquipment />
-        <HowItWorks />
-        <UserFeatures />
-        <ProviderFeatures />
-        <Testimonials />
-        <AppAnnouncementBanner />
-        <CallToAction />
-      </main>
-      <Footer />
-    </div>
+    <main className="flex-grow">
+      <HeroSection />
+      <CategorySection />
+      <FeaturedEquipment />
+      <HowItWorks />
+      <UserFeatures />
+      <ProviderFeatures />
+      <Testimonials />
+      <AppAnnouncementBanner />
+      <CallToAction />
+    </main>
   );
 };
 
