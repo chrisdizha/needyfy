@@ -26,10 +26,7 @@ const EnhancedSocialAuth = () => {
       const { error: signInError } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo,
-          data: {
-            device_fingerprint: deviceFingerprint
-          }
+          redirectTo
         }
       });
 

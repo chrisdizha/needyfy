@@ -33,9 +33,16 @@ export const SecureLoginForm = ({ onForgotPassword }: SecureLoginFormProps) => {
 
     try {
       // Check rate limit
-      const rateLimitResult = await checkRateLimit('login', 5, 15);
+      const rateLimitResult = await checkRateLimit({
+        maxRequests: 5,
+        windowSeconds: 900, // 15 minutes
+        identifier: `login_${email}`,
+        progressiveDelay: true
+      });
+      
       if (!rateLimitResult.allowed) {
-        setError(`Too many login attempts. Please try again in ${Math.ceil((rateLimitResult.reset_time - new Date()) / 60000)} minutes.`);
+        const remainingTime = Math.ceil((rateLimitResult.resetTime - Date.now()) / 60000);
+        setError(`Too many login attempts. Please try again in ${remainingTime} minutes.`);
         setIsLoading(false);
         return;
       }
@@ -44,12 +51,7 @@ export const SecureLoginForm = ({ onForgotPassword }: SecureLoginFormProps) => {
       
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
-        password,
-        options: {
-          data: {
-            device_fingerprint: deviceFingerprint
-          }
-        }
+        password
       });
 
       if (signInError) {
