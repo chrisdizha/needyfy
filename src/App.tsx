@@ -10,27 +10,20 @@ import Footer from '@/components/layout/Footer'
 import { AdminRoute } from '@/components/auth/AdminRoute'
 import { SecureRoute } from '@/components/auth/SecureRoute'
 import Index from '@/pages/Index'
-import CategoryPage from '@/pages/CategoryPage'
-import ListEquipmentPage from '@/pages/ListEquipmentPage'
-import SearchPage from '@/pages/SearchPage'
-import AuthPage from '@/pages/AuthPage'
-import DashboardPage from '@/pages/DashboardPage'
-import EquipmentDetailsPage from '@/pages/EquipmentDetailsPage'
-import BookingConfirmationPage from '@/pages/BookingConfirmationPage'
-import MyEquipmentPage from '@/pages/MyEquipmentPage'
-import EditEquipmentPage from '@/pages/EditEquipmentPage'
-import MyBookingsPage from '@/pages/MyBookingsPage'
-import MessagesPage from '@/pages/MessagesPage'
-import ProfilePage from '@/pages/ProfilePage'
-import AdminPage from '@/pages/AdminPage'
-import HelpPage from '@/pages/HelpPage'
-import TermsPage from '@/pages/TermsPage'
-import PrivacyPage from '@/pages/PrivacyPage'
-import SecurityPage from '@/pages/SecurityPage'
-import EarningsPage from '@/pages/EarningsPage'
-import ReportsPage from '@/pages/ReportsPage'
-import DisputesPage from '@/pages/DisputesPage'
-import NotFoundPage from '@/pages/NotFoundPage'
+import Categories from '@/pages/Categories'
+import ListEquipment from '@/pages/ListEquipment'
+import PublicHome from '@/pages/PublicHome'
+import Login from '@/pages/Login'
+import Dashboard from '@/pages/Dashboard'
+import EquipmentDetails from '@/pages/EquipmentDetails'
+import BookingSuccess from '@/pages/BookingSuccess'
+import Equipment from '@/pages/Equipment'
+import EditEquipment from '@/pages/EditEquipment'
+import Profile from '@/pages/Profile'
+import Admin from '@/pages/Admin'
+import Terms from '@/pages/Terms'
+import Privacy from '@/pages/Privacy'
+import NotFound from '@/pages/NotFound'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,33 +47,33 @@ function App() {
                 <main className="flex-1">
                   <Routes>
                     <Route path="/" element={<Index />} />
-                    <Route path="/category/:category" element={<CategoryPage />} />
-                    <Route path="/search" element={<SearchPage />} />
-                    <Route path="/auth" element={<AuthPage />} />
-                    <Route path="/equipment/:id" element={<EquipmentDetailsPage />} />
-                    <Route path="/booking-confirmation/:sessionId" element={<BookingConfirmationPage />} />
-                    <Route path="/help" element={<HelpPage />} />
-                    <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/privacy" element={<PrivacyPage />} />
+                    <Route path="/category/:category" element={<Categories />} />
+                    <Route path="/search" element={<PublicHome />} />
+                    <Route path="/auth" element={<Login />} />
+                    <Route path="/equipment/:id" element={<EquipmentDetails />} />
+                    <Route path="/booking-confirmation/:sessionId" element={<BookingSuccess />} />
+                    <Route path="/help" element={<Terms />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/privacy" element={<Privacy />} />
                     
                     {/* Protected Routes */}
-                    <Route path="/dashboard" element={<SecureRoute><DashboardPage /></SecureRoute>} />
-                    <Route path="/list-equipment" element={<SecureRoute><ListEquipmentPage /></SecureRoute>} />
-                    <Route path="/my-equipment" element={<SecureRoute><MyEquipmentPage /></SecureRoute>} />
-                    <Route path="/edit-equipment/:id" element={<SecureRoute><EditEquipmentPage /></SecureRoute>} />
-                    <Route path="/my-bookings" element={<SecureRoute><MyBookingsPage /></SecureRoute>} />
-                    <Route path="/messages" element={<SecureRoute><MessagesPage /></SecureRoute>} />
-                    <Route path="/profile" element={<SecureRoute><ProfilePage /></SecureRoute>} />
-                    <Route path="/earnings" element={<SecureRoute><EarningsPage /></SecureRoute>} />
-                    <Route path="/reports" element={<SecureRoute><ReportsPage /></SecureRoute>} />
-                    <Route path="/disputes" element={<SecureRoute><DisputesPage /></SecureRoute>} />
-                    <Route path="/security" element={<SecureRoute><SecurityPage /></SecureRoute>} />
+                    <Route path="/dashboard" element={<SecureRoute><Dashboard /></SecureRoute>} />
+                    <Route path="/list-equipment" element={<SecureRoute><ListEquipment /></SecureRoute>} />
+                    <Route path="/my-equipment" element={<SecureRoute><Equipment /></SecureRoute>} />
+                    <Route path="/edit-equipment/:id" element={<SecureRoute><EditEquipment /></SecureRoute>} />
+                    <Route path="/my-bookings" element={<SecureRoute><Dashboard /></SecureRoute>} />
+                    <Route path="/messages" element={<SecureRoute><Dashboard /></SecureRoute>} />
+                    <Route path="/profile" element={<SecureRoute><Profile /></SecureRoute>} />
+                    <Route path="/earnings" element={<SecureRoute><Dashboard /></SecureRoute>} />
+                    <Route path="/reports" element={<SecureRoute><Dashboard /></SecureRoute>} />
+                    <Route path="/disputes" element={<SecureRoute><Dashboard /></SecureRoute>} />
+                    <Route path="/security" element={<SecureRoute><Profile /></SecureRoute>} />
                     
                     {/* Admin Routes */}
-                    <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
+                    <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
                     
                     {/* Catch all */}
-                    <Route path="*" element={<NotFoundPage />} />
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>
                 <Footer />
