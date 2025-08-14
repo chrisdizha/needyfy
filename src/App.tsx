@@ -1,10 +1,13 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { OptimizedAuthProvider } from '@/contexts/OptimizedAuthContext'
 import { SecurityProvider } from '@/components/security/SecurityProvider'
 import { Toaster } from '@/components/ui/sonner'
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider'
+import { InstallPrompt } from '@/components/pwa/InstallPrompt'
+import { PWAStatus } from '@/components/pwa/PWAStatus'
+import { UpdateNotification } from '@/components/pwa/UpdateNotification'
+import AddToHomePrompt from '@/components/pwa/AddToHomePrompt'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { AdminRoute } from '@/components/auth/AdminRoute'
@@ -39,6 +42,7 @@ import ProviderResources from '@/pages/ProviderResources'
 import ProviderGuidelines from '@/pages/ProviderGuidelines'
 import ProviderFAQ from '@/pages/ProviderFAQ'
 import SuccessStories from '@/pages/SuccessStories'
+import EquipmentShare from '@/pages/EquipmentShare'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -93,6 +97,9 @@ function App() {
                     <Route path="/provider-faq" element={<ProviderFAQ />} />
                     <Route path="/success-stories" element={<SuccessStories />} />
                     
+                    {/* PWA Share Target */}
+                    <Route path="/equipment/share" element={<EquipmentShare />} />
+                    
                     {/* Protected Routes */}
                     <Route path="/dashboard" element={<SecureRoute><Dashboard /></SecureRoute>} />
                     <Route path="/list-equipment" element={<SecureRoute><ListEquipment /></SecureRoute>} />
@@ -115,6 +122,12 @@ function App() {
                 </main>
                 <Footer />
                 <Toaster />
+                
+                {/* PWA Components */}
+                <InstallPrompt />
+                <AddToHomePrompt />
+                <UpdateNotification />
+                <PWAStatus />
               </div>
             </Router>
           </AnalyticsProvider>

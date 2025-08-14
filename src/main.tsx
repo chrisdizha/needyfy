@@ -1,4 +1,3 @@
-
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -55,16 +54,15 @@ try {
   throw error;
 }
 
-// Service worker registration - PRODUCTION ONLY to prevent dev cache issues
+// Enhanced service worker registration with update handling
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     if (import.meta.env.PROD) {
       console.log('🔧 Registering service worker for production...');
       
-      // Set a timeout for service worker registration
       const registrationTimeout = setTimeout(() => {
         console.warn('⚠️ Service worker registration timed out');
-      }, 10000); // 10 second timeout
+      }, 10000);
 
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
@@ -78,7 +76,20 @@ if ('serviceWorker' in navigator) {
             });
           }
 
-          // Register for background sync with proper type handling
+          // Handle service worker updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            if (newWorker) {
+              console.log('🔄 Service worker update found');
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  console.log('🆕 New service worker installed, ready to activate');
+                }
+              });
+            }
+          });
+
+          // Register for background sync
           if ('sync' in registration) {
             (registration as any).sync.register('background-sync').then(() => {
               console.log('🔄 Background sync registered');
@@ -87,15 +98,21 @@ if ('serviceWorker' in navigator) {
             });
           }
 
-          // Listen for updates
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  console.log('🆕 New content available');
-                }
-              });
+          // Register for periodic sync
+          if ('periodicSync' in registration) {
+            (registration as any).periodicSync.register('periodic-content-sync', {
+              minInterval: 24 * 60 * 60 * 1000, // 24 hours
+            }).then(() => {
+              console.log('⏰ Periodic sync registered');
+            }).catch((err: any) => {
+              console.log('❌ Periodic sync registration failed:', err);
+            });
+          }
+
+          // Listen for messages from service worker
+          navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'SKIP_WAITING') {
+              registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
             }
           });
         })
@@ -104,7 +121,6 @@ if ('serviceWorker' in navigator) {
           console.log('❌ SW registration failed: ', registrationError);
         });
     } else {
-      // Development: unregister any existing service worker to prevent stale cache issues
       console.log('🧹 Development mode: cleaning up any existing service worker...');
       navigator.serviceWorker.getRegistrations().then((registrations) => {
         registrations.forEach((registration) => {

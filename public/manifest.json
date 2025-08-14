@@ -1,3 +1,4 @@
+
 {
   "name": "Needyfy - Hire & Rent Anything",
   "short_name": "Needyfy",
@@ -17,6 +18,36 @@
   },
   "icons": [
     {
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
       "sizes": "192x192",
       "type": "image/png",
@@ -27,6 +58,12 @@
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/lovable-uploads/b10588a4-3d99-4756-afca-c2bcf51374e2.png",
@@ -41,24 +78,6 @@
       "purpose": "maskable"
     }
   ],
-  "related_applications": [
-    {
-      "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=com.needyfy.app",
-      "id": "com.needyfy.app"
-    },
-    {
-      "platform": "itunes",
-      "url": "https://apps.apple.com/app/needyfy/id123456789",
-      "id": "123456789"
-    },
-    {
-      "platform": "windows",
-      "url": "https://www.microsoft.com/store/apps/9NBLGGH12345",
-      "id": "9NBLGGH12345"
-    }
-  ],
-  "prefer_related_applications": false,
   "shortcuts": [
     {
       "name": "Browse Equipment",
@@ -77,18 +96,6 @@
       "short_name": "List",
       "description": "Turn your idle equipment into income - list your items",
       "url": "/list-equipment",
-      "icons": [
-        {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Popular Categories",
-      "short_name": "Categories",
-      "description": "Explore trucks, construction equipment, electronics, and more",
-      "url": "/categories",
       "icons": [
         {
           "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
@@ -123,86 +130,6 @@
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Popular Equipment Categories"
-    },
-    {
-      "src": "/lovable-uploads/ea754658-c32e-4149-a5ac-2a906d4d031c.png",
-      "sizes": "862x1522",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Construction Equipment and Event Supplies"
-    },
-    {
-      "src": "/lovable-uploads/31e5ee59-6e78-4ce6-bb12-c045bad04558.png",
-      "sizes": "862x1522",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Easy Booking and Secure Payments"
-    },
-    {
-      "src": "/lovable-uploads/2e78ef83-a8b0-44af-a9b3-f691e46d14a1.png",
-      "sizes": "862x1522",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Equipment Listings and Search"
-    },
-    {
-      "src": "/lovable-uploads/49fb9ab1-3945-4c06-8d58-a45f786e28fd.png",
-      "sizes": "862x1522",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Equipment Details and Reviews"
-    },
-    {
-      "src": "/lovable-uploads/4bda1892-294b-4f88-b51a-cc6d5cad44c6.png",
-      "sizes": "862x1522",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "User Dashboard and Bookings"
-    },
-    {
-      "src": "/lovable-uploads/e541a522-5621-43ff-b544-3e118a24a424.png",
-      "sizes": "862x1522",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Provider Tools and Analytics"
-    },
-    {
-      "src": "/lovable-uploads/fa6c0da4-be4d-4f57-9de8-cb1b0214f84f.png",
-      "sizes": "862x1522",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Mobile-First Design and Navigation"
-    },
-    {
-      "src": "/lovable-uploads/f8c35258-6e1f-4caf-8eda-778b9f232b46.png",
-      "sizes": "862x1522",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Brand and User Experience"
-    }
-  ],
-  "iarc_rating_id": "e84b072d-71de-5b85-bcbc-38761d0fcec5",
-  "prefer_related_applications": false,
-  "scope_extensions": [
-    {
-      "origin": "https://needyfy.com"
-    }
-  ],
-  "display_override": ["window-controls-overlay", "standalone"],
-  "handle_links": "preferred",
-  "file_handlers": [
-    {
-      "action": "/equipment/upload",
-      "accept": {
-        "image/*": [".jpg", ".jpeg", ".png", ".webp"],
-        "application/pdf": [".pdf"]
-      }
-    }
-  ],
-  "protocol_handlers": [
-    {
-      "protocol": "web+needyfy",
-      "url": "/equipment/%s"
     }
   ],
   "share_target": {
@@ -221,109 +148,19 @@
       ]
     }
   },
-  "edge_side_panel": {
-    "preferred_width": 412
-  },
-  "widgets": [
+  "file_handlers": [
     {
-      "name": "quick-search",
-      "short_name": "Search",
-      "description": "Quick search for equipment rentals - trucks, construction tools, electronics",
-      "tag": "search",
-      "template": "search-widget",
-      "ms_ac_template": "search-widget",
-      "data": "/api/widget-data",
-      "type": "application/json",
-      "screenshots": [
-        {
-          "src": "/lovable-uploads/419946dc-6259-4b45-a550-0e82ccb00e9d.png",
-          "sizes": "320x240",
-          "label": "Quick Search Widget"
-        }
-      ],
-      "icons": [
-        {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
-          "sizes": "192x192"
-        }
-      ],
-      "auth": false,
-      "update": 3600
-    },
+      "action": "/equipment/upload",
+      "accept": {
+        "image/*": [".jpg", ".jpeg", ".png", ".webp"],
+        "application/pdf": [".pdf"]
+      }
+    }
+  ],
+  "protocol_handlers": [
     {
-      "name": "featured-equipment",
-      "short_name": "Featured",
-      "description": "Featured equipment: trucks, construction tools, party supplies, electronics",
-      "tag": "featured",
-      "template": "featured-widget",
-      "ms_ac_template": "featured-widget",
-      "data": "/api/featured-equipment",
-      "type": "application/json",
-      "screenshots": [
-        {
-          "src": "/lovable-uploads/7e1e05a1-5b15-448e-b3e1-5e2e0b8da666.png",
-          "sizes": "320x240",
-          "label": "Featured Equipment Widget"
-        }
-      ],
-      "icons": [
-        {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
-          "sizes": "192x192"
-        }
-      ],
-      "auth": false,
-      "update": 1800
-    },
-    {
-      "name": "user-dashboard",
-      "short_name": "Dashboard",
-      "description": "Your rental dashboard: bookings, earnings, performance analytics",
-      "tag": "dashboard",
-      "template": "dashboard-widget",
-      "ms_ac_template": "dashboard-widget",
-      "data": "/api/user-dashboard",
-      "type": "application/json",
-      "screenshots": [
-        {
-          "src": "/lovable-uploads/f5f1b5bf-41c8-42aa-acad-1f72b02b5319.png",
-          "sizes": "320x240",
-          "label": "User Dashboard Widget"
-        }
-      ],
-      "icons": [
-        {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
-          "sizes": "192x192"
-        }
-      ],
-      "auth": true,
-      "update": 900
-    },
-    {
-      "name": "categories-widget",
-      "short_name": "Categories",
-      "description": "Browse popular categories: trucks & trailers, construction, electronics, events",
-      "tag": "categories",
-      "template": "categories-widget",
-      "ms_ac_template": "categories-widget",
-      "data": "/api/categories",
-      "type": "application/json",
-      "screenshots": [
-        {
-          "src": "/lovable-uploads/4fe721dd-68db-496d-b1a3-ba8fb8d518da.png",
-          "sizes": "320x240",
-          "label": "Categories Widget"
-        }
-      ],
-      "icons": [
-        {
-          "src": "/lovable-uploads/c8a8c731-f261-4752-9811-ed5a532dd2bf.png",
-          "sizes": "192x192"
-        }
-      ],
-      "auth": false,
-      "update": 7200
+      "protocol": "web+needyfy",
+      "url": "/equipment/%s"
     }
   ]
 }
