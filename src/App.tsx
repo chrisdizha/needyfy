@@ -30,6 +30,14 @@ import Pricing from '@/pages/Pricing'
 import Rewards from '@/pages/Rewards'
 import ResetPassword from '@/pages/ResetPassword'
 import NotFound from '@/pages/NotFound'
+import Contact from '@/pages/Contact'
+import RenterSafety from '@/pages/RenterSafety'
+import BookingHelp from '@/pages/BookingHelp'
+import RenterFAQ from '@/pages/RenterFAQ'
+import ProviderResources from '@/pages/ProviderResources'
+import ProviderGuidelines from '@/pages/ProviderGuidelines'
+import ProviderFAQ from '@/pages/ProviderFAQ'
+import SuccessStories from '@/pages/SuccessStories'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,6 +64,7 @@ function App() {
                     <Route path="/categories" element={<Categories />} />
                     <Route path="/category/:category" element={<Categories />} />
                     <Route path="/search" element={<PublicHome />} />
+                    <Route path="/equipment" element={<PublicHome />} />
                     <Route path="/auth" element={<Login />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
@@ -69,6 +78,18 @@ function App() {
                     <Route path="/how-it-works" element={<HowItWorks />} />
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/rewards" element={<Rewards />} />
+                    <Route path="/contact" element={<Contact />} />
+                    
+                    {/* For Renters Pages */}
+                    <Route path="/renter-safety" element={<RenterSafety />} />
+                    <Route path="/booking-help" element={<BookingHelp />} />
+                    <Route path="/renter-faq" element={<RenterFAQ />} />
+                    
+                    {/* For Providers Pages */}
+                    <Route path="/provider-resources" element={<ProviderResources />} />
+                    <Route path="/provider-guidelines" element={<ProviderGuidelines />} />
+                    <Route path="/provider-faq" element={<ProviderFAQ />} />
+                    <Route path="/success-stories" element={<SuccessStories />} />
                     
                     {/* Protected Routes */}
                     <Route path="/dashboard" element={<SecureRoute><Dashboard /></SecureRoute>} />
