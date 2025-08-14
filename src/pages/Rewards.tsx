@@ -1,193 +1,163 @@
 
-import { useEffect, useMemo, useState } from 'react';
-import { useAuth } from '@/contexts/OptimizedAuthContext';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { Copy, Gift, Share2, Trophy } from 'lucide-react';
+import { Gift, Star, Trophy, Coins } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useSEO } from '@/hooks/useSEO';
+import { useI18n } from '@/hooks/useI18n';
 
 const Rewards = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [refCode, setRefCode] = useState<string>('');
-  const [claimCode, setClaimCode] = useState('');
-  const [totalPoints, setTotalPoints] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
-  const [transactions, setTransactions] = useState<Array<{ id: string; points: number; reason: string; created_at: string }>>([]);
+  const { t } = useI18n();
+  
+  useSEO({
+    title: 'Rewards Program - Earn Points & Get Benefits | Needyfy',
+    description: 'Join Needyfy rewards program and earn points for every rental. Get exclusive discounts, early access to new equipment, and special benefits.',
+    keywords: ['rewards program', 'loyalty points', 'rental discounts', 'member benefits'],
+    canonical: `${window.location.origin}/rewards`
+  });
 
-  const myReferralLink = useMemo(() => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    return refCode ? `${origin}/register?ref=${refCode}` : '';
-  }, [refCode]);
-
-  useEffect(() => {
-    const bootstrap = async () => {
-      if (!user) return;
-      setLoading(true);
-
-      // Ensure referral code exists
-      const { data: existing } = await supabase
-        .from('referral_codes')
-        .select('code')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (existing?.code) {
-        setRefCode(existing.code);
-      } else {
-        // Simple deterministic code: first 8 chars of user id + random 3
-        const newCode = `${user.id.replace(/-/g, '').slice(0, 8)}${Math.random().toString(36).slice(2, 5)}`.toUpperCase();
-        const { error: upsertErr } = await supabase
-          .from('referral_codes')
-          .insert({ user_id: user.id, code: newCode });
-        if (!upsertErr) setRefCode(newCode);
-      }
-
-      // Load points total
-      const { data: pointsTotal } = await supabase.rpc('get_user_points_total');
-      if (typeof pointsTotal === 'number') setTotalPoints(pointsTotal);
-
-      // Load recent transactions
-      const { data: tx } = await supabase
-        .from('points_transactions')
-        .select('id, points, reason, created_at')
-        .order('created_at', { ascending: false })
-        .limit(10);
-      setTransactions(tx || []);
-
-      setLoading(false);
-    };
-
-    bootstrap();
-  }, [user]);
-
-  const copyLink = async () => {
-    if (!myReferralLink) return;
-    await navigator.clipboard.writeText(myReferralLink);
-    toast({ title: 'Copied', description: 'Referral link copied to clipboard.' });
-  };
-
-  const shareLink = async () => {
-    if (!myReferralLink) return;
-    try {
-      // @ts-ignore - Web Share API may not exist in all browsers
-      if (navigator.share) {
-        // @ts-ignore
-        await navigator.share({ title: 'Join me on Needyfy', text: 'Get started with Needyfy!', url: myReferralLink });
-      } else {
-        await copyLink();
-      }
-    } catch (_) {
-      await copyLink();
+  const rewardTiers = [
+    {
+      name: 'Bronze',
+      points: '0-999',
+      color: 'bg-orange-500',
+      benefits: ['5% cashback on rentals', 'Basic customer support', 'Monthly newsletter']
+    },
+    {
+      name: 'Silver',
+      points: '1000-4999',
+      color: 'bg-gray-400',
+      benefits: ['10% cashback on rentals', 'Priority customer support', 'Early access to new equipment', 'Free equipment insurance']
+    },
+    {
+      name: 'Gold',
+      points: '5000-9999',
+      color: 'bg-yellow-500',
+      benefits: ['15% cashback on rentals', 'Dedicated account manager', 'VIP early access', 'Free delivery on orders over $100', 'Exclusive member events']
+    },
+    {
+      name: 'Platinum',
+      points: '10000+',
+      color: 'bg-purple-500',
+      benefits: ['20% cashback on rentals', '24/7 premium support', 'First access to limited equipment', 'Free delivery on all orders', 'Annual rewards bonus', 'Personal equipment concierge']
     }
-  };
+  ];
 
-  const claimReferral = async () => {
-    if (!claimCode.trim() || !user) return;
-    try {
-      const { data: referrerId } = await supabase.rpc('get_referrer_by_code', { p_code: claimCode.trim() });
-      if (!referrerId) {
-        toast({ title: 'Invalid code', description: 'Please check the referral code and try again.', variant: 'destructive' });
-        return;
-      }
-      if (referrerId === user.id) {
-        toast({ title: 'Not allowed', description: 'You cannot refer yourself.', variant: 'destructive' });
-        return;
-      }
-
-      const { error } = await supabase.from('referrals').insert({ referrer_id: referrerId, referred_id: user.id });
-      if (error) {
-        toast({ title: 'Already claimed?', description: 'You may have already claimed a referral.', variant: 'destructive' });
-      } else {
-        toast({ title: 'Referral recorded', description: 'Thanks! Your referral has been recorded.' });
-      }
-    } catch (e) {
-      toast({ title: 'Error', description: 'Could not claim referral. Try again later.', variant: 'destructive' });
+  const howToEarn = [
+    {
+      icon: <Gift className="h-8 w-8 text-primary" />,
+      title: 'Complete Rentals',
+      description: 'Earn 1 point for every $1 spent on equipment rentals',
+      points: '1 point per $1'
+    },
+    {
+      icon: <Star className="h-8 w-8 text-primary" />,
+      title: 'Leave Reviews',
+      description: 'Get bonus points for leaving detailed reviews after rentals',
+      points: '50 points'
+    },
+    {
+      icon: <Trophy className="h-8 w-8 text-primary" />,
+      title: 'Refer Friends',
+      description: 'Earn points when friends sign up and complete their first rental',
+      points: '500 points'
+    },
+    {
+      icon: <Coins className="h-8 w-8 text-primary" />,
+      title: 'List Equipment',
+      description: 'Get points for listing your own equipment on the platform',
+      points: '100 points'
     }
-  };
-
-  const badges = useMemo(() => {
-    const items: { label: string; icon: JSX.Element }[] = [];
-    if (totalPoints >= 1000) items.push({ label: 'Top Lister', icon: <Trophy className="h-4 w-4" /> });
-    if (totalPoints >= 200) items.push({ label: 'Trusted Renter', icon: <Trophy className="h-4 w-4" /> });
-    return items;
-  }, [totalPoints]);
+  ];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Gift className="h-5 w-5" /> Referral Program</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="text-sm text-muted-foreground">Your referral link</div>
-                <div className="flex gap-2">
-                  <Input readOnly value={myReferralLink} />
-                  <Button variant="outline" onClick={copyLink}><Copy className="h-4 w-4 mr-1" /> Copy</Button>
-                  <Button onClick={shareLink}><Share2 className="h-4 w-4 mr-1" /> Share</Button>
-                </div>
-                <div className="text-xs text-muted-foreground">Invite friends. When they join and rent, you both earn points.</div>
-              </div>
-
-              <div className="space-y-2 pt-2">
-                <div className="text-sm text-muted-foreground">Have a friend's code?</div>
-                <div className="flex gap-2">
-                  <Input placeholder="Enter referral code" value={claimCode} onChange={(e) => setClaimCode(e.target.value)} />
-                  <Button onClick={claimReferral}>Claim</Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5" /> Your Points & Badges</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-3xl font-bold">{totalPoints}</div>
-              <div className="flex flex-wrap gap-2">
-                {badges.length === 0 ? (
-                  <span className="text-sm text-muted-foreground">No badges yet — keep renting and inviting!</span>
-                ) : badges.map((b, i) => (
-                  <Badge key={i} variant="secondary" className="flex items-center gap-1">{b.icon}{b.label}</Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="lg:col-span-3">
-            <CardHeader>
-              <CardTitle>Recent Points</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {transactions.length === 0 ? (
-                <div className="text-sm text-muted-foreground">No activity yet.</div>
-              ) : (
-                <div className="space-y-2">
-                  {transactions.map(tx => (
-                    <div key={tx.id} className="flex items-center justify-between border rounded-md p-3">
-                      <div className="text-sm font-medium capitalize">{tx.reason}</div>
-                      <div className="text-sm text-muted-foreground">{new Date(tx.created_at).toLocaleString()}</div>
-                      <div className="text-sm font-semibold">+{tx.points}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+    <main className="flex-grow">
+      {/* Hero Section */}
+      <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">Needyfy Rewards</h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Earn points with every rental and unlock exclusive benefits. The more you rent, the more you save!
+            </p>
+          </div>
         </div>
-      </main>
-      <Footer />
-    </div>
+      </section>
+
+      {/* How to Earn Points */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12 text-foreground">How to Earn Points</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {howToEarn.map((item, index) => (
+              <Card key={index} className="text-center border-2 border-border/20 hover:border-primary/20 transition-colors">
+                <CardHeader>
+                  <div className="flex justify-center mb-4">{item.icon}</div>
+                  <CardTitle className="text-xl text-foreground">{item.title}</CardTitle>
+                  <CardDescription className="text-muted-foreground">{item.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Badge variant="secondary" className="text-lg font-bold">
+                    {item.points}
+                  </Badge>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Reward Tiers */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12 text-foreground">Reward Tiers</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {rewardTiers.map((tier, index) => (
+              <Card key={index} className="border-2 border-border/20 hover:border-primary/20 transition-colors">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`w-4 h-4 rounded-full ${tier.color}`}></div>
+                    <CardTitle className="text-xl text-foreground">{tier.name}</CardTitle>
+                  </div>
+                  <CardDescription className="text-muted-foreground font-medium">
+                    {tier.points} points
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {tier.benefits.map((benefit, benefitIndex) => (
+                      <li key={benefitIndex} className="text-sm text-muted-foreground flex items-start">
+                        <span className="text-primary mr-2">•</span>
+                        {benefit}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4 text-foreground">Start Earning Rewards Today</h2>
+          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Join thousands of members who are already saving money and getting exclusive benefits.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" asChild>
+              <Link to="/register">Join Rewards Program</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link to="/equipment">Start Renting</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 };
 

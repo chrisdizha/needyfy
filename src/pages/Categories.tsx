@@ -18,8 +18,6 @@ import {
   GraduationCap
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import { useSEO } from '@/hooks/useSEO';
 
 const Categories = () => {
@@ -142,88 +140,84 @@ const Categories = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">Equipment Categories</h1>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Discover thousands of tools and equipment available for rent across various categories. 
-                Find exactly what you need for your next project.
-              </p>
-            </div>
+    <main className="flex-grow">
+      {/* Hero Section */}
+      <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">Equipment Categories</h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Discover thousands of tools and equipment available for rent across various categories. 
+              Find exactly what you need for your next project.
+            </p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Categories Grid */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {categories.map((category) => (
-                <Card key={category.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
-                  <div className="relative h-48 overflow-hidden">
-                    <img 
-                      src={category.image} 
-                      alt={category.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute top-4 right-4">
-                      <Badge variant="secondary" className="bg-white/90 text-foreground">
-                        {category.count} items
-                      </Badge>
-                    </div>
-                    <div className="absolute bottom-4 left-4">
-                      <div className={`p-3 rounded-full ${category.color} text-white`}>
-                        {category.icon}
-                      </div>
+      {/* Categories Grid */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {categories.map((category) => (
+              <Card key={category.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <div className="relative h-48 overflow-hidden">
+                  <img 
+                    src={category.image} 
+                    alt={category.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute top-4 right-4">
+                    <Badge variant="secondary" className="bg-white/90 text-foreground">
+                      {category.count} items
+                    </Badge>
+                  </div>
+                  <div className="absolute bottom-4 left-4">
+                    <div className={`p-3 rounded-full ${category.color} text-white`}>
+                      {category.icon}
                     </div>
                   </div>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-xl text-foreground group-hover:text-primary transition-colors">
-                      {category.name}
-                    </CardTitle>
-                    <CardDescription className="text-muted-foreground">
-                      {category.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <Button asChild className="w-full">
-                      <Link to={`/equipment?category=${category.id}`}>
-                        Browse {category.name}
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                </div>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-xl text-foreground group-hover:text-primary transition-colors">
+                    {category.name}
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    {category.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Button asChild className="w-full">
+                    <Link to={`/equipment?category=${category.id}`}>
+                      Browse {category.name}
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Call to Action */}
-        <section className="py-16 bg-muted/30">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-4 text-foreground">Can't Find What You Need?</h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              We're constantly adding new categories and equipment. If you have something specific in mind, 
-              let us know and we'll help you find it.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild>
-                <Link to="/contact">Request Equipment</Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link to="/list-equipment">List Your Equipment</Link>
-              </Button>
-            </div>
+      {/* Call to Action */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4 text-foreground">Can't Find What You Need?</h2>
+          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+            We're constantly adding new categories and equipment. If you have something specific in mind, 
+            let us know and we'll help you find it.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" asChild>
+              <Link to="/contact">Request Equipment</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link to="/list-equipment">List Your Equipment</Link>
+            </Button>
           </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
+        </div>
+      </section>
+    </main>
   );
 };
 

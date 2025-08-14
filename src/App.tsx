@@ -53,6 +53,7 @@ function App() {
                 <main className="flex-1">
                   <Routes>
                     <Route path="/" element={<Index />} />
+                    <Route path="/categories" element={<Categories />} />
                     <Route path="/category/:category" element={<Categories />} />
                     <Route path="/search" element={<PublicHome />} />
                     <Route path="/auth" element={<Login />} />
