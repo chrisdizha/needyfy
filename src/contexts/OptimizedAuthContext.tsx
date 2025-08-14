@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState, ReactNode, useMemo, useCallback } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/integrations/supabase/client'
@@ -36,8 +37,6 @@ export const OptimizedAuthProvider = ({ children }: AuthProviderProps) => {
   const [userRoles, setUserRoles] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
 
-  console.log('AuthProvider state - user:', user, 'loading:', loading);
-
   const verifyAdminStatus = useCallback(async (): Promise<boolean> => {
     try {
       const { data, error } = await supabase.functions.invoke('admin-verify', {
@@ -74,7 +73,6 @@ export const OptimizedAuthProvider = ({ children }: AuthProviderProps) => {
   }, [])
 
   const refreshAuthState = useCallback(async () => {
-    console.log('Refreshing auth state...');
     try {
       const { data: { session }, error } = await supabase.auth.getSession()
       
@@ -87,7 +85,6 @@ export const OptimizedAuthProvider = ({ children }: AuthProviderProps) => {
         return
       }
 
-      console.log('Auth session:', session);
       setSession(session)
       setUser(session?.user || null)
 
@@ -124,7 +121,6 @@ export const OptimizedAuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error) {
       console.error('Failed to refresh auth state:', error)
     } finally {
-      console.log('Setting loading to false');
       setLoading(false)
     }
   }, [fetchUserRoles, verifyAdminStatus])
@@ -154,8 +150,6 @@ export const OptimizedAuthProvider = ({ children }: AuthProviderProps) => {
   }, [])
 
   useEffect(() => {
-    console.log('AuthProvider useEffect initializing...');
-    
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, 'session:', session)
