@@ -1,107 +1,191 @@
 
 import React from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent } from '@/components/ui/card';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin, MessageSquare } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import BackButton from '@/components/layout/BackButton';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import { useSEO } from '@/hooks/useSEO';
 
 const Contact = () => {
+  useSEO({
+    title: 'Contact Sales - Custom Enterprise Solutions | Needyfy',
+    description: 'Get in touch with our sales team for custom enterprise equipment rental solutions, bulk pricing, and dedicated support.',
+    keywords: ['contact sales', 'enterprise solutions', 'bulk pricing', 'custom rates', 'business rental'],
+    canonical: `${window.location.origin}/contact`
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    console.log('Contact form submitted');
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-12">
-          <h1 className="text-3xl font-bold mb-2">Contact Us</h1>
-          <p className="text-gray-600 mb-8 max-w-2xl">
-            Have questions about Needyfy? We're here to help you with any inquiries about renting or listing equipment.
-          </p>
+          <BackButton to="/pricing" label="Back to Pricing" />
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <Card className="col-span-1 lg:col-span-2">
-              <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-6">Send us a message</h2>
-                <form className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium mb-1">Name</label>
-                      <Input id="name" placeholder="Your name" />
-                    </div>
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
-                      <Input id="email" type="email" placeholder="Your email" />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="subject" className="block text-sm font-medium mb-1">Subject</label>
-                    <Input id="subject" placeholder="How can we help you?" />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium mb-1">Message</label>
-                    <Textarea 
-                      id="message" 
-                      placeholder="Tell us more about your inquiry..." 
-                      rows={6} 
-                    />
-                  </div>
-                  
-                  <Button className="bg-needyfy-blue hover:bg-blue-600 w-full md:w-auto">
-                    Send Message
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-            
-            <div className="space-y-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h1 className="text-4xl font-bold mb-4 text-foreground">Contact Our Sales Team</h1>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Ready to discuss custom rates for your business? We'd love to help you find the perfect equipment rental solution.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Contact Form */}
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <Mail className="h-5 w-5 text-needyfy-blue mt-1" />
-                    <div>
-                      <h3 className="font-medium">Email Us</h3>
-                      <p className="text-gray-600 text-sm mt-1">Our team will respond within 24 hours</p>
-                      <a href="mailto:support@needyfy.com" className="text-needyfy-blue hover:underline mt-1 block">
-                        support@needyfy.com
-                      </a>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5" />
+                    Send Us a Message
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="firstName" className="block text-sm font-medium mb-1">
+                          First Name
+                        </label>
+                        <Input id="firstName" type="text" required />
+                      </div>
+                      <div>
+                        <label htmlFor="lastName" className="block text-sm font-medium mb-1">
+                          Last Name
+                        </label>
+                        <Input id="lastName" type="text" required />
+                      </div>
                     </div>
-                  </div>
+                    
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium mb-1">
+                        Business Email
+                      </label>
+                      <Input id="email" type="email" required />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="company" className="block text-sm font-medium mb-1">
+                        Company Name
+                      </label>
+                      <Input id="company" type="text" required />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="phone" className="block text-sm font-medium mb-1">
+                        Phone Number
+                      </label>
+                      <Input id="phone" type="tel" />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="message" className="block text-sm font-medium mb-1">
+                        Tell us about your needs
+                      </label>
+                      <Textarea 
+                        id="message" 
+                        rows={4} 
+                        placeholder="What type of equipment do you need? How many rentals per month? Any specific requirements?"
+                        required 
+                      />
+                    </div>
+                    
+                    <Button type="submit" className="w-full">
+                      Send Message
+                    </Button>
+                  </form>
                 </CardContent>
               </Card>
-              
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <Phone className="h-5 w-5 text-needyfy-blue mt-1" />
-                    <div>
-                      <h3 className="font-medium">Call Us</h3>
-                      <p className="text-gray-600 text-sm mt-1">Mon-Fri from 8am to 5pm</p>
-                      <a href="tel:+26773343501" className="text-needyfy-blue hover:underline mt-1 block">
-                        +267-73343501/74402828
-                      </a>
+
+              {/* Contact Information */}
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Get In Touch</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <Mail className="h-5 w-5 text-primary" />
+                      <div>
+                        <p className="font-medium">Email</p>
+                        <p className="text-muted-foreground">sales@needyfy.com</p>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <MapPin className="h-5 w-5 text-needyfy-blue mt-1" />
-                    <div>
-                      <h3 className="font-medium">Visit Us</h3>
-                      <p className="text-gray-600 text-sm mt-1">Our headquarters</p>
-                      <address className="not-italic text-sm mt-1">
-                        Plot 163/164, Unit 15, Gaborone International<br />
-                        Commerce Park, GICP, Gaborone. Botswana
-                      </address>
+                    
+                    <div className="flex items-center gap-3">
+                      <Phone className="h-5 w-5 text-primary" />
+                      <div>
+                        <p className="font-medium">Phone</p>
+                        <p className="text-muted-foreground">1-800-NEEDYFY</p>
+                      </div>
                     </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <MapPin className="h-5 w-5 text-primary" />
+                      <div>
+                        <p className="font-medium">Address</p>
+                        <p className="text-muted-foreground">
+                          123 Business Ave<br />
+                          San Francisco, CA 94105
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>What We Can Help With</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex items-start gap-2">
+                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                        <span>Custom volume pricing for 50+ rentals/month</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                        <span>Dedicated account management</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                        <span>Priority customer support</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                        <span>Integration with your existing systems</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                        <span>Custom reporting and analytics</span>
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+
+                <div className="text-center">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Not ready to talk? Check out our resources first.
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    <Button asChild variant="outline">
+                      <Link to="/how-it-works">How It Works</Link>
+                    </Button>
+                    <Button asChild variant="outline">
+                      <Link to="/blog">Blog & Resources</Link>
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
         </div>

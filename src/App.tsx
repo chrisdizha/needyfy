@@ -23,6 +23,7 @@ import {
   LazyListEquipment,
   LazyEquipment,
   LazyEquipmentDetails,
+  LazyContact,
  } from "@/components/routing/LazyRoutes";
 
 // Optimized QueryClient with better cache configuration
@@ -84,6 +85,7 @@ function App() {
                       <Route path="/how-it-works" element={<LazyHowItWorks />} />
                       <Route path="/pricing" element={<LazyPricing />} />
                       <Route path="/blog" element={<LazyBlog />} />
+                      <Route path="/contact" element={<LazyContact />} />
                       <Route 
                         path="/rewards" 
                         element={
