@@ -6,16 +6,6 @@ import './lib/i18n'
 
 console.log('🚀 Starting application initialization...');
 
-// React duplication guard for development
-if (import.meta.env.DEV) {
-  const ReactVersion = (window as any).React?.version;
-  if (ReactVersion) {
-    console.warn('⚠️ Multiple React instances detected! This can cause hook errors.');
-    console.warn('React version found on window:', ReactVersion);
-    console.warn('Consider running: rm -rf node_modules && npm install');
-  }
-}
-
 // Enhanced error handling for root creation
 const rootElement = document.getElementById("root");
 if (!rootElement) {

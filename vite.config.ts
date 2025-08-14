@@ -2,31 +2,37 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   server: {
     host: "::",
     port: 8080,
   },
-  plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
-  ].filter(Boolean),
-  optimizeDeps: {
-    include: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
-  },
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    // Prevent duplicate React copies causing hooks to break
-    dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
+    // Ensure only one React instance
+    dedupe: ['react', 'react-dom'],
+  },
+  optimizeDeps: {
+    // Force pre-bundling of React to prevent duplicates
+    include: ['react', 'react-dom'],
+    force: true
+  },
+  build: {
+    rollupOptions: {
+      // Ensure React is properly externalized and deduplicated
+      external: [],
+      output: {
+        globals: {}
+      }
+    }
   },
   define: {
-    // Add runtime check for multiple React instances in development
-    __DEV_REACT_CHECK__: JSON.stringify(mode === 'development'),
-  },
-}));
+    // Ensure consistent React version in development
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+  }
+});
