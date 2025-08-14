@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -1005,47 +1005,47 @@ export type Database = {
       admin_get_profile: {
         Args: { target_user_id: string }
         Returns: {
-          id: string
-          full_name: string
-          phone: string
           avatar_url: string
-          suspended: boolean
-          suspension_reason: string
-          suspended_at: string
-          visa_card_verified: boolean
+          full_name: string
+          id: string
           minimum_payout_amount: number
           payout_method: string
           payout_schedule: string
+          phone: string
+          suspended: boolean
+          suspended_at: string
+          suspension_reason: string
           updated_at: string
-          visa_card_number_encrypted: string
-          visa_card_last_four: string
           visa_card_holder_name: string
+          visa_card_last_four: string
+          visa_card_number_encrypted: string
+          visa_card_verified: boolean
         }[]
       }
       award_points: {
         Args: {
-          p_user_id: string
           p_points: number
           p_reason: string
           p_source?: string
+          p_user_id: string
         }
         Returns: string
       }
       calculate_escrow_schedule: {
         Args: {
           p_booking_id: string
-          p_total_amount: number
-          p_start_date: string
           p_end_date: string
+          p_start_date: string
+          p_total_amount: number
         }
         Returns: Json
       }
       check_enhanced_rate_limit: {
         Args: {
+          p_action_type?: string
           p_identifier: string
           p_max_requests?: number
           p_window_minutes?: number
-          p_action_type?: string
         }
         Returns: Json
       }
@@ -1064,26 +1064,26 @@ export type Database = {
       get_my_profile: {
         Args: Record<PropertyKey, never>
         Returns: {
-          id: string
-          full_name: string
-          phone: string
           avatar_url: string
-          suspended: boolean
-          suspension_reason: string
-          suspended_at: string
-          visa_card_verified: boolean
+          full_name: string
+          id: string
           minimum_payout_amount: number
           payout_method: string
           payout_schedule: string
+          phone: string
+          suspended: boolean
+          suspended_at: string
+          suspension_reason: string
           updated_at: string
+          visa_card_verified: boolean
         }[]
       }
       get_provider_escrow_balance: {
         Args: { provider_user_id: string }
         Returns: {
-          total_held: number
-          pending_releases: number
           available_for_payout: number
+          pending_releases: number
+          total_held: number
         }[]
       }
       get_provider_pending_earnings: {
@@ -1097,12 +1097,12 @@ export type Database = {
       get_secure_user_profile_summary: {
         Args: { target_user_id?: string }
         Returns: {
-          id: string
           full_name: string
+          id: string
           phone: string
           suspended: boolean
-          suspension_reason: string
           suspended_at: string
+          suspension_reason: string
         }[]
       }
       get_unread_count: {
@@ -1119,8 +1119,8 @@ export type Database = {
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
@@ -1131,47 +1131,47 @@ export type Database = {
       log_admin_action: {
         Args: {
           p_action: string
-          p_table_name?: string
-          p_record_id?: string
-          p_old_values?: Json
           p_new_values?: Json
+          p_old_values?: Json
+          p_record_id?: string
+          p_table_name?: string
         }
         Returns: undefined
       }
       log_payment_action: {
         Args: {
-          p_user_id: string
-          p_booking_id: string
           p_action: string
           p_amount?: number
+          p_booking_id: string
+          p_ip_address?: unknown
+          p_metadata?: Json
           p_payment_method?: string
           p_stripe_session_id?: string
-          p_metadata?: Json
-          p_ip_address?: unknown
           p_user_agent?: string
+          p_user_id: string
         }
         Returns: string
       }
       log_security_event: {
         Args: {
-          p_user_id: string
-          p_event_type: string
           p_event_details?: Json
+          p_event_type: string
           p_ip_address?: unknown
-          p_user_agent?: string
           p_risk_level?: string
+          p_user_agent?: string
+          p_user_id: string
         }
         Returns: string
       }
       log_security_event_enhanced: {
         Args: {
-          p_user_id: string
-          p_event_type: string
           p_event_details?: Json
+          p_event_type: string
           p_ip_address?: unknown
-          p_user_agent?: string
           p_risk_level?: string
           p_session_id?: string
+          p_user_agent?: string
+          p_user_id: string
         }
         Returns: string
       }
@@ -1181,12 +1181,12 @@ export type Database = {
       }
       send_notification: {
         Args: {
-          p_user_id: string
-          p_title: string
-          p_message: string
-          p_type?: string
           p_data?: Json
           p_expires_at?: string
+          p_message: string
+          p_title: string
+          p_type?: string
+          p_user_id: string
         }
         Returns: string
       }
@@ -1199,22 +1199,22 @@ export type Database = {
         Returns: boolean
       }
       validate_payment_operation: {
-        Args: { p_user_id: string; p_operation: string; p_amount?: number }
+        Args: { p_amount?: number; p_operation: string; p_user_id: string }
         Returns: boolean
       }
       validate_security_migration: {
         Args: Record<PropertyKey, never>
         Returns: {
           check_name: string
-          status: string
           details: string
+          status: string
         }[]
       }
       validate_session_security: {
         Args: {
-          p_user_id?: string
           p_device_fingerprint?: string
           p_ip_address?: unknown
+          p_user_id?: string
         }
         Returns: Json
       }
