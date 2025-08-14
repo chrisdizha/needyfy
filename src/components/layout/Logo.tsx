@@ -39,7 +39,7 @@ const Logo = ({ className = "", showText = true, size = 'md' }: LogoProps) => {
           <span className={`font-bold ${textSizeClasses[size]} text-primary`}>
             Needyfy
           </span>
-          <div className="text-xs text-muted-foreground font-medium -mt-1">Equipment Rental</div>
+          <div className="text-xs text-muted-foreground font-medium -mt-1">Hire Anything, Anytime!</div>
         </div>
       )}
     </SafeLink>
