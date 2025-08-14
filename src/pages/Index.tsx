@@ -1,46 +1,36 @@
 
-import HeroSection from '@/components/home/HeroSection';
-import CategorySection from '@/components/home/CategorySection';
-import FeaturedEquipment from '@/components/home/FeaturedEquipment';
-import HowItWorks from '@/components/home/HowItWorks';
-import Testimonials from '@/components/home/Testimonials';
-import CallToAction from '@/components/home/CallToAction';
-import UserFeatures from '@/components/home/UserFeatures';
-import ProviderFeatures from '@/components/home/ProviderFeatures';
-import AppAnnouncementBanner from '@/components/home/AppAnnouncementBanner';
-import { useSEO, generateOrganizationStructuredData } from '@/hooks/useSEO';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/OptimizedAuthContext';
+import PublicHome from './PublicHome';
 
 const Index = () => {
-  // SEO optimization for authenticated homepage
-  useSEO({
-    title: 'Dashboard - Needyfy | Your Equipment Rental Hub',
-    description: 'Welcome to your Needyfy dashboard. Manage your rentals, bookings, and discover new equipment near you.',
-    keywords: [
-      'dashboard',
-      'equipment rental',
-      'my rentals',
-      'bookings',
-      'needyfy'
-    ],
-    ogTitle: 'Needyfy Dashboard',
-    ogDescription: 'Your personal equipment rental hub',
-    canonical: `${window.location.origin}/`,
-    structuredData: generateOrganizationStructuredData()
-  });
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
 
-  return (
-    <main className="flex-grow">
-      <HeroSection />
-      <CategorySection />
-      <FeaturedEquipment />
-      <HowItWorks />
-      <UserFeatures />
-      <ProviderFeatures />
-      <Testimonials />
-      <AppAnnouncementBanner />
-      <CallToAction />
-    </main>
-  );
+  useEffect(() => {
+    // Redirect authenticated users to dashboard
+    if (!loading && user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, loading, navigate]);
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Show public home for non-authenticated users
+  if (!user) {
+    return <PublicHome />;
+  }
+
+  // This shouldn't render due to the useEffect redirect, but just in case
+  return null;
 };
 
 export default Index;
