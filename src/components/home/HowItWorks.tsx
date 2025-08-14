@@ -87,7 +87,7 @@ const HowItWorks = () => {
             title={t('howItWorks.step4Title')} 
             description={t('howItWorks.step4Desc')}
             icon={<Package className="w-5 h-5" />}
-            image="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=200&q=80"
+            image="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=200&q=80"
             isLast={true}
           />
         </div>
