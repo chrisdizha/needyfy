@@ -45,7 +45,7 @@ const HowItWorks = () => {
       icon: <RotateCcw className="h-12 w-12 text-primary" />,
       title: t('howItWorks.step4Title'),
       description: t('howItWorks.step4Desc'),
-      image: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=600&q=80',
+      image: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=600&q=80',
       step: '04'
     }
   ];

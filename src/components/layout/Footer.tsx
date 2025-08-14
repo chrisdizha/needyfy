@@ -1,9 +1,11 @@
+
 import { useState } from 'react';
 import { SafeLink } from '@/components/navigation/SafeLink';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { List, FileText, Award, HelpCircle } from 'lucide-react';
+import { List, FileText, Award, HelpCircle, Search, Shield, Calendar, Users } from 'lucide-react';
 import { toast } from 'sonner';
+import Logo from './Logo';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
@@ -41,23 +43,11 @@ const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand info with updated logo */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+          {/* Brand info with logo */}
           <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="relative">
-                <img 
-                  src="/lovable-uploads/f8c35258-6e1f-4caf-8eda-778b9f232b46.png"
-                  alt="Needyfy Logo"
-                  className="h-12 w-auto object-contain"
-                />
-              </div>
-              <div>
-                <span className="font-bold text-xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                  Needyfy
-                </span>
-                <div className="text-xs text-gray-400 font-medium">Equipment Rental</div>
-              </div>
+            <div className="mb-4">
+              <Logo showText={true} size="md" className="text-white [&_span]:text-white [&_div]:text-gray-300" />
             </div>
             <p className="text-gray-400 mb-4">
               The all-in-one equipment rental marketplace. Rent anything, anytime, anywhere.
@@ -90,6 +80,43 @@ const Footer = () => {
               <li><SafeLink to="/how-it-works" className="text-gray-400 hover:text-white">How It Works</SafeLink></li>
               <li><SafeLink to="/pricing" className="text-gray-400 hover:text-white">Pricing</SafeLink></li>
               <li><SafeLink to="/contact" className="text-gray-400 hover:text-white">Contact Us</SafeLink></li>
+            </ul>
+          </div>
+
+          {/* For Renters */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">For Renters</h3>
+            <ul className="space-y-2">
+              <li>
+                <SafeLink to="/equipment" className="text-gray-400 hover:text-white flex items-center gap-2">
+                  <Search className="h-4 w-4" />
+                  <span>Browse Equipment</span>
+                </SafeLink>
+              </li>
+              <li>
+                <SafeLink to="/how-it-works" className="text-gray-400 hover:text-white flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  <span>How It Works</span>
+                </SafeLink>
+              </li>
+              <li>
+                <SafeLink to="/renter-safety" className="text-gray-400 hover:text-white flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  <span>Safety Guidelines</span>
+                </SafeLink>
+              </li>
+              <li>
+                <SafeLink to="/booking-help" className="text-gray-400 hover:text-white flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  <span>Booking Help</span>
+                </SafeLink>
+              </li>
+              <li>
+                <SafeLink to="/renter-faq" className="text-gray-400 hover:text-white flex items-center gap-2">
+                  <HelpCircle className="h-4 w-4" />
+                  <span>Renter FAQ</span>
+                </SafeLink>
+              </li>
             </ul>
           </div>
           

@@ -35,3 +35,6 @@ export const LazyPricing = lazy(() => import('@/pages/Pricing'));
 export const LazyProviderResources = lazy(() => import('@/pages/ProviderResources'));
 export const LazyProviderGuidelines = lazy(() => import('@/pages/ProviderGuidelines'));
 export const LazyProviderFAQ = lazy(() => import('@/pages/ProviderFAQ'));
+export const LazyRenterSafety = lazy(() => import('@/pages/RenterSafety'));
+export const LazyBookingHelp = lazy(() => import('@/pages/BookingHelp'));
+export const LazyRenterFAQ = lazy(() => import('@/pages/RenterFAQ'));
