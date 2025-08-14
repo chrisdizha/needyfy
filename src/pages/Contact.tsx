@@ -125,7 +125,7 @@ const Contact = () => {
                       <Phone className="h-5 w-5 text-primary" />
                       <div>
                         <p className="font-medium">Phone</p>
-                        <p className="text-muted-foreground">1-800-NEEDYFY</p>
+                        <p className="text-muted-foreground">Call/WhatsApp +267-73343501 for urgent support</p>
                       </div>
                     </div>
                     
@@ -134,8 +134,10 @@ const Contact = () => {
                       <div>
                         <p className="font-medium">Address</p>
                         <p className="text-muted-foreground">
-                          123 Business Ave<br />
-                          San Francisco, CA 94105
+                          Plot 163/164, Unit 15<br />
+                          Gaborone International Commerce Park, GICP<br />
+                          Gaborone, Botswana<br />
+                          Africa Union (AU) Member State
                         </p>
                       </div>
                     </div>

@@ -1,213 +1,230 @@
 
-import { cn } from '@/lib/utils';
-import { Car, CreditCard, Package, User, Shield, Clock, MapPin, Star } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import BackButton from '@/components/layout/BackButton';
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle, Clock, Shield, Star, Truck, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 import { useSEO } from '@/hooks/useSEO';
 
-interface StepProps {
-  number: number;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  image?: string;
-  isLast?: boolean;
-}
-
-const Step = ({ number, title, description, icon, image, isLast = false }: StepProps) => (
-  <div className="flex flex-col items-center text-center md:text-left md:flex-row group mb-16">
-    <div className="flex-shrink-0 relative">
-      {image && (
-        <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden mb-6 md:mb-0 shadow-lg">
-          <img 
-            src={image} 
-            alt={title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        </div>
-      )}
-      <div className="absolute -bottom-2 -right-2 md:bottom-2 md:right-2 flex items-center justify-center w-16 h-16 bg-primary rounded-full text-primary-foreground shadow-lg border-4 border-background">
-        {icon}
-      </div>
-    </div>
-    
-    <div className={cn(
-      "md:ml-12 md:flex-1",
-      !isLast && "pb-16 md:pb-0 md:pr-12 relative after:hidden md:after:block after:absolute after:top-40 md:after:top-20 after:bottom-0 md:after:bottom-auto after:left-1/2 md:after:left-auto after:-translate-x-1/2 md:after:translate-x-0 md:after:right-0 after:w-px after:h-full md:after:h-px md:after:w-full after:bg-gradient-to-r md:after:bg-gradient-to-r after:from-border after:via-primary/20 after:to-border after:opacity-40"
-    )}>
-      <div className="flex items-center mb-4 justify-center md:justify-start">
-        <span className="flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full text-primary font-bold mr-4 text-lg border-2 border-primary/20">
-          {number}
-        </span>
-        <h3 className="font-bold text-2xl md:text-3xl text-foreground">{title}</h3>
-      </div>
-      <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-2xl mx-auto md:mx-0">{description}</p>
-    </div>
-  </div>
-);
-
-const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => (
-  <Card className="h-full border-border hover:shadow-xl transition-all duration-300 hover:scale-105 bg-gradient-to-br from-card to-card/80">
-    <CardContent className="p-8 text-center">
-      <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/20 rounded-full text-primary mb-6 mx-auto shadow-lg border border-primary/10">
-        {icon}
-      </div>
-      <h3 className="font-semibold text-xl mb-3 text-foreground">{title}</h3>
-      <p className="text-muted-foreground leading-relaxed">{description}</p>
-    </CardContent>
-  </Card>
-);
-
 const HowItWorks = () => {
-  // Enhanced SEO for How It Works page
   useSEO({
-    title: 'How Needyfy Works - Simple Equipment Rental Process',
-    description: 'Learn how easy it is to rent equipment on Needyfy. From creating an account to returning equipment, our 4-step process makes equipment rental simple and secure.',
-    keywords: [
-      'how it works',
-      'equipment rental process',
-      'rent equipment steps',
-      'needyfy tutorial',
-      'equipment booking guide'
-    ],
-    canonical: `${window.location.origin}/how-it-works`,
-    structuredData: {
-      "@context": "https://schema.org",
-      "@type": "HowTo",
-      "name": "How to Rent Equipment on Needyfy",
-      "description": "Step-by-step guide to renting equipment on Needyfy",
-      "step": [
-        {
-          "@type": "HowToStep",
-          "name": "Create an Account",
-          "text": "Sign up on Needyfy to access thousands of equipment options from verified providers"
-        },
-        {
-          "@type": "HowToStep",
-          "name": "Find & Book Equipment",
-          "text": "Browse categories, compare prices and ratings, check availability, and book equipment"
-        },
-        {
-          "@type": "HowToStep",
-          "name": "Pay Securely",
-          "text": "Complete your reservation using our secure payment system"
-        },
-        {
-          "@type": "HowToStep",
-          "name": "Pick Up & Return",
-          "text": "Coordinate pickup details, use equipment, and return when done"
-        }
-      ]
-    }
+    title: 'How It Works - Easy Equipment Rental Process | Needyfy',
+    description: 'Learn how to rent equipment easily with Needyfy. Simple 4-step process: Browse, Book, Use, Return. Safe, verified equipment rentals.',
+    keywords: ['how it works', 'equipment rental process', 'rent equipment', 'booking process', 'equipment sharing'],
+    canonical: `${window.location.origin}/how-it-works`
   });
 
+  const steps = [
+    {
+      number: 1,
+      title: "Browse & Discover",
+      description: "Search through thousands of verified equipment listings in your area. Filter by category, price, and availability.",
+      icon: <Users className="h-6 w-6" />,
+      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=300&q=80"
+    },
+    {
+      number: 2,
+      title: "Book & Pay Securely",
+      description: "Select your dates, review the terms, and make a secure payment. All transactions are protected by our guarantee.",
+      icon: <Shield className="h-6 w-6" />,
+      image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=300&q=80"
+    },
+    {
+      number: 3,
+      title: "Pick Up & Use",
+      description: "Coordinate with the owner for pickup or delivery. Get a brief orientation and start using the equipment safely.",
+      icon: <Truck className="h-6 w-6" />,
+      image: "https://images.unsplash.com/photo-1586947122744-a62a777efed9?auto=format&fit=crop&w=300&q=80"
+    },
+    {
+      number: 4,
+      title: "Return & Review",
+      description: "Return the equipment in good condition and leave a review. Build your reputation in the community.",
+      icon: <Star className="h-6 w-6" />,
+      image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=300&q=80"
+    }
+  ];
+
+  const benefits = [
+    {
+      title: "Save Money",
+      description: "Rent only when you need it instead of buying expensive equipment that sits unused.",
+      icon: <CheckCircle className="h-8 w-8 text-green-500" />
+    },
+    {
+      title: "Verified Equipment",
+      description: "All equipment goes through our verification process to ensure quality and safety.",
+      icon: <Shield className="h-8 w-8 text-blue-500" />
+    },
+    {
+      title: "Local Community",
+      description: "Connect with equipment owners in your area and build lasting relationships.",
+      icon: <Users className="h-8 w-8 text-purple-500" />
+    },
+    {
+      title: "Flexible Rentals",
+      description: "From hourly to monthly rentals, choose the duration that works for your project.",
+      icon: <Clock className="h-8 w-8 text-orange-500" />
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
-      <div className="container mx-auto px-4 py-12">
-        <BackButton to="/" label="Back to Home" />
-        
-        <div className="text-center mb-20">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
-            How Needyfy Works
-          </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Renting equipment has never been easier. Our streamlined process connects you with the equipment you need, exactly when you need it.
-          </p>
-        </div>
-        
-        <div className="max-w-6xl mx-auto mb-24">
-          <Step 
-            number={1} 
-            title="Create an Account" 
-            description="Sign up on Needyfy in minutes to access thousands of equipment options from verified providers in your area. Complete your profile to get personalized recommendations and unlock exclusive deals."
-            icon={<User className="w-8 h-8" />}
-            image="https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=400&q=80"
-          />
-          
-          <Step 
-            number={2} 
-            title="Find & Book Equipment" 
-            description="Browse our extensive categories, compare prices and ratings, check real-time availability, and book the perfect equipment for your project with just a few clicks. Use our smart filters to find exactly what you need."
-            icon={<Car className="w-8 h-8" />}
-            image="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=400&q=80"
-          />
-          
-          <Step 
-            number={3} 
-            title="Pay Securely" 
-            description="Complete your reservation using our secure payment system with multiple payment options including credit cards, PayPal, and digital wallets. Your transaction is protected with industry-leading security measures and fraud protection."
-            icon={<CreditCard className="w-8 h-8" />}
-            image="https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=400&q=80"
-          />
-          
-          <Step 
-            number={4} 
-            title="Pick Up & Return" 
-            description="Coordinate pickup details with the provider, collect your equipment at the agreed time and location, use it for your project, then return it in good condition when done. Rate your experience to help the community."
-            icon={<Package className="w-8 h-8" />}
-            image="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=400&q=80"
-            isLast={true}
-          />
-        </div>
-
-        {/* Enhanced Why Choose Needyfy Section */}
-        <div className="mb-20">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">Why Choose Needyfy?</h2>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              We make equipment rental simple, secure, and reliable for everyone in the community.
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-grow">
+        {/* Hero Section */}
+        <section className="py-20 bg-gradient-to-br from-primary/5 to-secondary/5">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
+              How <span className="text-primary">Needyfy</span> Works
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+              Renting equipment has never been easier. Follow our simple 4-step process to get the tools you need, when you need them.
             </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" asChild>
+                <Link to="/equipment">Start Browsing</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link to="/list-equipment">List Your Equipment</Link>
+              </Button>
+            </div>
           </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <FeatureCard
-              icon={<Shield className="w-10 h-10" />}
-              title="Secure & Safe"
-              description="All transactions are protected with bank-level security and equipment providers are thoroughly verified for your peace of mind."
-            />
-            
-            <FeatureCard
-              icon={<Clock className="w-10 h-10" />}
-              title="Available 24/7"
-              description="Browse and book equipment anytime, anywhere with our always-available platform and instant booking confirmations."
-            />
-            
-            <FeatureCard
-              icon={<MapPin className="w-10 h-10" />}
-              title="Local Providers"
-              description="Find equipment from verified providers in your area for convenient pickup, delivery options, and reduced transportation costs."
-            />
-            
-            <FeatureCard
-              icon={<Star className="w-10 h-10" />}
-              title="Quality Guaranteed"
-              description="All equipment is maintained to high standards with comprehensive ratings, reviews, and quality assurance from real users."
-            />
-          </div>
-        </div>
+        </section>
 
-        {/* Additional Trust Signals */}
-        <div className="text-center bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-2xl p-12">
-          <h3 className="text-2xl font-bold text-foreground mb-4">Join Thousands of Happy Users</h3>
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Over 50,000 successful rentals completed with 98% customer satisfaction rate
-          </p>
-          <div className="flex justify-center items-center space-x-8 text-sm text-muted-foreground">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">50K+</div>
-              <div>Rentals Completed</div>
+        {/* Steps Section */}
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">Simple 4-Step Process</h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                From discovery to return, we've made equipment rental straightforward and secure.
+              </p>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">98%</div>
-              <div>Satisfaction Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">24/7</div>
-              <div>Support Available</div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {steps.map((step, index) => (
+                <Card key={step.number} className="text-center hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="relative mx-auto mb-4">
+                      <img 
+                        src={step.image} 
+                        alt={step.title}
+                        className="w-20 h-20 rounded-full object-cover mx-auto"
+                      />
+                      <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold">
+                        {step.icon}
+                      </div>
+                    </div>
+                    <Badge variant="secondary" className="w-8 h-8 rounded-full p-0 flex items-center justify-center mx-auto mb-2">
+                      {step.number}
+                    </Badge>
+                    <CardTitle className="text-xl">{step.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-base">{step.description}</CardDescription>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+
+        {/* Benefits Section */}
+        <section className="py-20 bg-muted/30">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">Why Choose Needyfy?</h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                We're more than just a rental platform - we're building a community of makers, builders, and creators.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {benefits.map((benefit, index) => (
+                <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow">
+                  <div className="flex justify-center mb-4">
+                    {benefit.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 text-foreground">{benefit.title}</h3>
+                  <p className="text-muted-foreground">{benefit.description}</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Safety Section */}
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">Safety & Trust First</h2>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-foreground">Identity Verification</h3>
+                      <p className="text-muted-foreground">All users go through identity verification to ensure a safe community.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-foreground">Equipment Inspection</h3>
+                      <p className="text-muted-foreground">Owners provide detailed condition reports and safety information.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-foreground">Secure Payments</h3>
+                      <p className="text-muted-foreground">All payments are processed securely with fraud protection.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-foreground">24/7 Support</h3>
+                      <p className="text-muted-foreground">Our support team is available around the clock to help resolve any issues.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="relative">
+                <img 
+                  src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=600&q=80" 
+                  alt="Safe equipment rental"
+                  className="w-full rounded-lg shadow-lg"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-20 bg-primary text-primary-foreground">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Get Started?</h2>
+            <p className="text-xl mb-8 text-primary-foreground/90 max-w-2xl mx-auto">
+              Join thousands of users who are already saving money and building projects with Needyfy.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" variant="secondary" asChild>
+                <Link to="/register">Create Account</Link>
+              </Button>
+              <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary" asChild>
+                <Link to="/equipment">Browse Equipment</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
     </div>
   );
 };

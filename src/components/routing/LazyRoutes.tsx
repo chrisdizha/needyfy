@@ -1,4 +1,3 @@
-
 import { lazy } from 'react';
 
 // Lazy load all page components
@@ -33,3 +32,6 @@ export const LazyPaymentTerms = lazy(() => import('@/pages/PaymentTerms'));
 export const LazyRewards = lazy(() => import('@/pages/Rewards'));
 export const LazyHowItWorks = lazy(() => import('@/pages/HowItWorks'));
 export const LazyPricing = lazy(() => import('@/pages/Pricing'));
+export const LazyProviderResources = lazy(() => import('@/pages/ProviderResources'));
+export const LazyProviderGuidelines = lazy(() => import('@/pages/ProviderGuidelines'));
+export const LazyProviderFAQ = lazy(() => import('@/pages/ProviderFAQ'));

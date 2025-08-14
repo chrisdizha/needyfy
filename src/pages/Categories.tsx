@@ -1,259 +1,226 @@
 
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { DateRange } from 'react-day-picker';
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Hammer, 
+  Camera, 
+  Home, 
+  Zap, 
+  Car, 
+  Wrench,
+  Gamepad2,
+  Music,
+  ChefHat,
+  Briefcase,
+  Heart,
+  GraduationCap
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Search, MapPin, Loader2 } from 'lucide-react';
-import { DateRangePicker } from '@/components/ui/date-range-picker';
-import { toast } from 'sonner';
+import { useSEO } from '@/hooks/useSEO';
 
 const Categories = () => {
-  const [searchParams] = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [location, setLocation] = useState(searchParams.get('location') || '');
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  useSEO({
+    title: 'Equipment Categories - Find Tools & Equipment to Rent | Needyfy',
+    description: 'Browse our comprehensive categories of rental equipment including construction tools, photography gear, home & garden, electronics, and more.',
+    keywords: ['equipment categories', 'tool rental', 'construction equipment', 'photography gear', 'home improvement'],
+    canonical: `${window.location.origin}/categories`
+  });
 
   const categories = [
-    'Construction', 
-    'Gardening', 
-    'Vehicles', 
-    'Electronics', 
-    'Painting', 
-    'Cleaning', 
-    'Moving', 
-    'Event Equipment',
-    'Home & Garden',
-    'Photography'
+    {
+      id: 'construction',
+      name: 'Construction',
+      description: 'Heavy machinery, power tools, and construction equipment',
+      icon: <Hammer className="h-8 w-8" />,
+      count: 245,
+      image: 'https://images.unsplash.com/photo-1504307651254-35680f356ddc?auto=format&fit=crop&w=400&q=80',
+      color: 'bg-orange-500'
+    },
+    {
+      id: 'photography',
+      name: 'Photography',
+      description: 'Cameras, lenses, lighting, and video equipment',
+      icon: <Camera className="h-8 w-8" />,
+      count: 189,
+      image: 'https://images.unsplash.com/photo-1606983340126-99ab4feaa64b?auto=format&fit=crop&w=400&q=80',
+      color: 'bg-purple-500'
+    },
+    {
+      id: 'home-garden',
+      name: 'Home & Garden',
+      description: 'Lawn care, cleaning, and home improvement tools',
+      icon: <Home className="h-8 w-8" />,
+      count: 312,
+      image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=400&q=80',
+      color: 'bg-green-500'
+    },
+    {
+      id: 'electronics',
+      name: 'Electronics',
+      description: 'Audio equipment, projectors, and tech gadgets',
+      icon: <Zap className="h-8 w-8" />,
+      count: 156,
+      image: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80',
+      color: 'bg-blue-500'
+    },
+    {
+      id: 'automotive',
+      name: 'Automotive',
+      description: 'Car tools, diagnostic equipment, and garage tools',
+      icon: <Car className="h-8 w-8" />,
+      count: 98,
+      image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=400&q=80',
+      color: 'bg-red-500'
+    },
+    {
+      id: 'industrial',
+      name: 'Industrial',
+      description: 'Specialized industrial and manufacturing equipment',
+      icon: <Wrench className="h-8 w-8" />,
+      count: 87,
+      image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=400&q=80',
+      color: 'bg-gray-500'
+    },
+    {
+      id: 'entertainment',
+      name: 'Entertainment',
+      description: 'Party supplies, gaming equipment, and event gear',
+      icon: <Gamepad2 className="h-8 w-8" />,
+      count: 134,
+      image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=400&q=80',
+      color: 'bg-pink-500'
+    },
+    {
+      id: 'music',
+      name: 'Music',
+      description: 'Instruments, sound systems, and recording equipment',
+      icon: <Music className="h-8 w-8" />,
+      count: 76,
+      image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=400&q=80',
+      color: 'bg-indigo-500'
+    },
+    {
+      id: 'food-beverage',
+      name: 'Food & Beverage',
+      description: 'Commercial kitchen equipment and catering supplies',
+      icon: <ChefHat className="h-8 w-8" />,
+      count: 65,
+      image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=400&q=80',
+      color: 'bg-yellow-500'
+    },
+    {
+      id: 'office-business',
+      name: 'Office & Business',
+      description: 'Office equipment, printers, and business tools',
+      icon: <Briefcase className="h-8 w-8" />,
+      count: 92,
+      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=400&q=80',
+      color: 'bg-slate-500'
+    },
+    {
+      id: 'health-fitness',
+      name: 'Health & Fitness',
+      description: 'Exercise equipment and health monitoring devices',
+      icon: <Heart className="h-8 w-8" />,
+      count: 54,
+      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=400&q=80',
+      color: 'bg-rose-500'
+    },
+    {
+      id: 'education',
+      name: 'Education',
+      description: 'Educational equipment and learning tools',
+      icon: <GraduationCap className="h-8 w-8" />,
+      count: 43,
+      image: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=400&q=80',
+      color: 'bg-teal-500'
+    }
   ];
-
-  // Filter categories based on search if needed
-  const filteredCategories = selectedCategory 
-    ? categories.filter(cat => cat.toLowerCase() === selectedCategory.toLowerCase())
-    : categories;
-
-  useEffect(() => {
-    // Set the selected category from URL if present
-    const categoryParam = searchParams.get('category');
-    if (categoryParam) {
-      setSelectedCategory(categoryParam);
-    }
-    
-    // Set search query from URL if present
-    const searchParam = searchParams.get('search');
-    if (searchParam) {
-      setSearchQuery(searchParam);
-    }
-    
-    // Set location from URL if present
-    const locationParam = searchParams.get('location');
-    if (locationParam) {
-      setLocation(locationParam);
-    }
-  }, [searchParams]);
-
-  const getCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by this browser");
-      return;
-    }
-
-    setIsGettingLocation(true);
-    
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
-          
-          // Try using the browser's built-in reverse geocoding if available
-          // Otherwise fall back to coordinates
-          try {
-            // Use a CORS-friendly geocoding service or fall back to coordinates
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
-              {
-                headers: {
-                  'User-Agent': 'Needyfy App'
-                }
-              }
-            );
-            
-            if (response.ok) {
-              const data = await response.json();
-              if (data && data.display_name) {
-                // Extract city and country from the address
-                const addressParts = data.display_name.split(',');
-                const city = addressParts[0]?.trim();
-                const country = addressParts[addressParts.length - 1]?.trim();
-                const address = city && country ? `${city}, ${country}` : data.display_name;
-                setLocation(address);
-                toast.success("Location detected successfully");
-                return;
-              }
-            }
-          } catch (geocodeError) {
-            console.log("Geocoding failed, using coordinates");
-          }
-          
-          // Fallback to coordinates
-          const coordinatesAddress = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-          setLocation(coordinatesAddress);
-          toast.success("GPS coordinates detected");
-        } catch (error) {
-          console.error("Error getting location:", error);
-          toast.error("Could not get location");
-        } finally {
-          setIsGettingLocation(false);
-        }
-      },
-      (error) => {
-        setIsGettingLocation(false);
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            toast.error("Location access denied. Please enable location permissions.");
-            break;
-          case error.POSITION_UNAVAILABLE:
-            toast.error("Location information is unavailable.");
-            break;
-          case error.TIMEOUT:
-            toast.error("Location request timed out.");
-            break;
-          default:
-            toast.error("An unknown error occurred while getting location.");
-            break;
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000
-      }
-    );
-  };
-
-  const handleSearch = (e?: React.FormEvent) => {
-    if (e) {
-      e.preventDefault();
-    }
-    
-    if (!searchQuery.trim()) {
-      toast.error("Please enter what you're looking for");
-      return;
-    }
-
-    // Show search results in the existing page
-    toast.success(`Searching for "${searchQuery}"${location ? ` in ${location}` : ''}...`);
-    
-    // Here you would typically make an API call to search for equipment
-    // For now, we'll just update the display
-    console.log('Search parameters:', {
-      query: searchQuery,
-      location: location,
-      dateRange: dateRange
-    });
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
-        <div className="bg-gray-50 py-6">
+        {/* Hero Section */}
+        <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
           <div className="container mx-auto px-4">
-            <form onSubmit={handleSearch} className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 items-end">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <Input 
-                  type="text" 
-                  placeholder="What do you need? (tools, vehicles, electronics...)"
-                  className="pl-10 w-full border-gray-200" 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              
-              <div className="flex gap-2 flex-1">
-                <div className="relative flex-1">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <Input 
-                    type="text" 
-                    placeholder="Your location"
-                    className="pl-10 w-full border-gray-200" 
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                  />
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={getCurrentLocation}
-                  disabled={isGettingLocation}
-                  className="px-3"
-                >
-                  {isGettingLocation ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <MapPin className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              
-              <div className="flex-1">
-                <DateRangePicker
-                  value={dateRange}
-                  onChange={setDateRange}
-                  placeholder="Select rental dates"
-                  className="w-full"
-                />
-              </div>
-              
-              <Button 
-                type="submit" 
-                className="whitespace-nowrap px-6 bg-needyfy-blue hover:bg-blue-600"
-              >
-                Search Now
-              </Button>
-            </form>
-          </div>
-        </div>
-        
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-2">Equipment Categories</h1>
-          {selectedCategory && (
-            <div className="mb-4">
-              <p className="text-lg">
-                Showing results for <span className="font-semibold text-needyfy-blue">{selectedCategory}</span>
-                {searchQuery && <> matching "<span className="font-semibold">{searchQuery}</span>"</>}
-                {location && <> in <span className="font-semibold">{location}</span></>}
-                {dateRange?.from && <> for <span className="font-semibold">{dateRange.from.toLocaleDateString()}{dateRange.to ? ` - ${dateRange.to.toLocaleDateString()}` : ''}</span></>}
+            <div className="text-center mb-12">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">Equipment Categories</h1>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                Discover thousands of tools and equipment available for rent across various categories. 
+                Find exactly what you need for your next project.
               </p>
-              <Button 
-                variant="link" 
-                className="text-needyfy-blue p-0" 
-                onClick={() => setSelectedCategory('')}
-              >
-                View all categories
+            </div>
+          </div>
+        </section>
+
+        {/* Categories Grid */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {categories.map((category) => (
+                <Card key={category.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src={category.image} 
+                      alt={category.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute top-4 right-4">
+                      <Badge variant="secondary" className="bg-white/90 text-foreground">
+                        {category.count} items
+                      </Badge>
+                    </div>
+                    <div className="absolute bottom-4 left-4">
+                      <div className={`p-3 rounded-full ${category.color} text-white`}>
+                        {category.icon}
+                      </div>
+                    </div>
+                  </div>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-xl text-foreground group-hover:text-primary transition-colors">
+                      {category.name}
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      {category.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <Button asChild className="w-full">
+                      <Link to={`/equipment?category=${category.id}`}>
+                        Browse {category.name}
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Call to Action */}
+        <section className="py-16 bg-muted/30">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold mb-4 text-foreground">Can't Find What You Need?</h2>
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+              We're constantly adding new categories and equipment. If you have something specific in mind, 
+              let us know and we'll help you find it.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" asChild>
+                <Link to="/contact">Request Equipment</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link to="/list-equipment">List Your Equipment</Link>
               </Button>
             </div>
-          )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-            {filteredCategories.map((category) => (
-              <div 
-                key={category} 
-                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 cursor-pointer"
-                onClick={() => setSelectedCategory(category.toLowerCase())}
-              >
-                <h3 className="text-xl font-semibold mb-2">{category}</h3>
-                <p className="text-gray-600 mb-4">Find high-quality {category.toLowerCase()} equipment for rent.</p>
-                <span className="text-needyfy-blue hover:underline">Browse {category} →</span>
-              </div>
-            ))}
           </div>
-        </div>
+        </section>
       </main>
       <Footer />
     </div>
