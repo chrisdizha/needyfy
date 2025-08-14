@@ -85,6 +85,43 @@ const resources = {
         admin: 'Admin',
         support: 'Support'
       },
+      hero: {
+        tagline: 'Rent Anything, Anytime',
+        subtitle: 'Connect. Share. Thrive.',
+        searchPlaceholder: 'What do you need to rent?',
+        locationPlaceholder: 'Enter your location',
+        datesPlaceholder: 'Select dates',
+        topCategories: 'Popular Categories'
+      },
+      categories: {
+        construction: 'Construction Tools',
+        vehicles: 'Vehicles & Transport',
+        electronics: 'Electronics',
+        eventEquipment: 'Event Equipment',
+        homeGarden: 'Home & Garden',
+        photography: 'Photography Equipment'
+      },
+      errors: {
+        searchRequired: 'Please enter a search term',
+        invalidCredentials: 'Invalid email or password',
+        accountCreated: 'Account created successfully',
+        emailVerificationSent: 'Verification email sent',
+        emailVerified: 'Email verified successfully',
+        loginRequired: 'Please log in to continue',
+        accessDenied: 'Access denied',
+        sessionExpired: 'Your session has expired',
+        loggedOut: 'You have been logged out',
+        weakPassword: 'Password must be at least 8 characters',
+        emailInUse: 'This email is already registered',
+        userNotFound: 'User not found',
+        emailRequired: 'Email is required',
+        passwordRequired: 'Password is required',
+        confirmPasswordRequired: 'Please confirm your password',
+        passwordMismatch: 'Passwords do not match',
+        firstNameRequired: 'First name is required',
+        lastNameRequired: 'Last name is required',
+        validEmailRequired: 'Please enter a valid email address'
+      },
       auth: {
         welcomeBack: 'Welcome back',
         signInMessage: 'Enter your credentials to access your account',
@@ -109,25 +146,7 @@ const resources = {
         resetLinkSent: 'A password reset link has been sent to your email',
         newPassword: 'New Password',
         updatePassword: 'Update Password',
-        passwordUpdated: 'Password updated successfully',
-        invalidCredentials: 'Invalid email or password',
-        accountCreated: 'Account created successfully',
-        emailVerificationSent: 'Verification email sent',
-        emailVerified: 'Email verified successfully',
-        loginRequired: 'Please log in to continue',
-        accessDenied: 'Access denied',
-        sessionExpired: 'Your session has expired',
-        loggedOut: 'You have been logged out',
-        weakPassword: 'Password must be at least 8 characters',
-        emailInUse: 'This email is already registered',
-        userNotFound: 'User not found',
-        emailRequired: 'Email is required',
-        passwordRequired: 'Password is required',
-        confirmPasswordRequired: 'Please confirm your password',
-        passwordMismatch: 'Passwords do not match',
-        firstNameRequired: 'First name is required',
-        lastNameRequired: 'Last name is required',
-        validEmailRequired: 'Please enter a valid email address'
+        passwordUpdated: 'Password updated successfully'
       },
       navigation: {
         home: 'Home',
@@ -164,7 +183,27 @@ const resources = {
         confirm: 'Confirmar',
         back: 'Atrás',
         next: 'Siguiente',
-        previous: 'Anterior'
+        previous: 'Anterior',
+        search: 'Buscar'
+      },
+      hero: {
+        tagline: 'Alquila Cualquier Cosa, En Cualquier Momento',
+        subtitle: 'Conecta. Comparte. Prospera.',
+        searchPlaceholder: '¿Qué necesitas alquilar?',
+        locationPlaceholder: 'Ingresa tu ubicación',
+        datesPlaceholder: 'Selecciona fechas',
+        topCategories: 'Categorías Populares'
+      },
+      categories: {
+        construction: 'Herramientas de Construcción',
+        vehicles: 'Vehículos y Transporte',
+        electronics: 'Electrónicos',
+        eventEquipment: 'Equipo para Eventos',
+        homeGarden: 'Hogar y Jardín',
+        photography: 'Equipo de Fotografía'
+      },
+      errors: {
+        searchRequired: 'Por favor ingresa un término de búsqueda'
       },
       auth: {
         welcomeBack: 'Bienvenido de nuevo',
@@ -214,7 +253,27 @@ const resources = {
         confirm: 'Confirmer',
         back: 'Retour',
         next: 'Suivant',
-        previous: 'Précédent'
+        previous: 'Précédent',
+        search: 'Rechercher'
+      },
+      hero: {
+        tagline: 'Louez Tout, À Tout Moment',
+        subtitle: 'Connectez. Partagez. Prospérez.',
+        searchPlaceholder: 'Que voulez-vous louer?',
+        locationPlaceholder: 'Entrez votre emplacement',
+        datesPlaceholder: 'Sélectionnez les dates',
+        topCategories: 'Catégories Populaires'
+      },
+      categories: {
+        construction: 'Outils de Construction',
+        vehicles: 'Véhicules et Transport',
+        electronics: 'Électronique',
+        eventEquipment: 'Équipement d\'Événement',
+        homeGarden: 'Maison et Jardin',
+        photography: 'Équipement Photo'
+      },
+      errors: {
+        searchRequired: 'Veuillez entrer un terme de recherche'
       },
       auth: {
         welcomeBack: 'Bon retour',
@@ -264,7 +323,27 @@ const resources = {
         confirm: 'Bestätigen',
         back: 'Zurück',
         next: 'Weiter',
-        previous: 'Vorherige'
+        previous: 'Vorherige',
+        search: 'Suchen'
+      },
+      hero: {
+        tagline: 'Miete Alles, Jederzeit',
+        subtitle: 'Verbinden. Teilen. Gedeihen.',
+        searchPlaceholder: 'Was möchten Sie mieten?',
+        locationPlaceholder: 'Geben Sie Ihren Standort ein',
+        datesPlaceholder: 'Termine auswählen',
+        topCategories: 'Beliebte Kategorien'
+      },
+      categories: {
+        construction: 'Bauwerkzeuge',
+        vehicles: 'Fahrzeuge und Transport',
+        electronics: 'Elektronik',
+        eventEquipment: 'Veranstaltungsausrüstung',
+        homeGarden: 'Haus und Garten',
+        photography: 'Fotoausrüstung'
+      },
+      errors: {
+        searchRequired: 'Bitte geben Sie einen Suchbegriff ein'
       },
       auth: {
         welcomeBack: 'Willkommen zurück',
