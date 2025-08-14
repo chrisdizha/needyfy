@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { useI18n } from '@/hooks/useI18n';
+import { SafeLink } from '@/components/navigation/SafeLink';
 
 const Equipment = () => {
   const { loading } = useAuth();
@@ -60,12 +61,12 @@ const Equipment = () => {
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-6">
           <nav className="text-sm text-muted-foreground mb-4">
-            <span>{t('common.home')}</span>
-            <span className="mx-2">{'>'}</span>
-            <span>{t('nav.categories')}</span>
+            <SafeLink to="/" className="hover:text-primary">{t('common.home')}</SafeLink>
+            <span className="mx-2">&gt;</span>
+            <SafeLink to="/categories" className="hover:text-primary">{t('nav.categories')}</SafeLink>
             {category && (
               <>
-                <span className="mx-2">{'>'}</span>
+                <span className="mx-2">&gt;</span>
                 <span className="text-foreground">{getCategoryTitle()}</span>
               </>
             )}

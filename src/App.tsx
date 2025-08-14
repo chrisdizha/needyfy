@@ -27,6 +27,9 @@ import {
   LazyProviderResources,
   LazyProviderGuidelines,
   LazyProviderFAQ,
+  LazyRenterSafety,
+  LazyBookingHelp,
+  LazyRenterFAQ,
  } from "@/components/routing/LazyRoutes";
 
 // Optimized QueryClient with better cache configuration
@@ -103,6 +106,9 @@ function App() {
                       <Route path="/provider-resources" element={<LazyProviderResources />} />
                       <Route path="/provider-guidelines" element={<LazyProviderGuidelines />} />
                       <Route path="/provider-faq" element={<LazyProviderFAQ />} />
+                      <Route path="/renter-safety" element={<LazyRenterSafety />} />
+                      <Route path="/booking-help" element={<LazyBookingHelp />} />
+                      <Route path="/renter-faq" element={<LazyRenterFAQ />} />
                       <Route path="*" element={<LazyNotFound />} />
                     </Routes>
                   </main>
