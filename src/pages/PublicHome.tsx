@@ -77,16 +77,15 @@ const PublicHome = () => {
   });
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="w-full">
       <SitemapGenerator />
-      <SectionWrapper name="Navbar">
-        <Navbar />
-      </SectionWrapper>
       
-      <main className="flex-grow">
-        <Suspense fallback={<div className="h-96 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>}>
+      <main className="w-full">
+        <Suspense fallback={
+          <div className="h-96 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        }>
           <SectionWrapper name="HeroSection">
             <HeroSection />
           </SectionWrapper>
@@ -128,10 +127,6 @@ const PublicHome = () => {
           </SectionWrapper>
         </Suspense>
       </main>
-      
-      <SectionWrapper name="Footer">
-        <Footer />
-      </SectionWrapper>
     </div>
   );
 };
