@@ -102,28 +102,28 @@ const CategorySection = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
           <CategoryCard 
             title={t('categories.electronics')} 
-            description="Smartphones, laptops, cameras, and tech gadgets"
+            description={t('categories.electronicsDesc')}
             icon={<Smartphone className="h-6 w-6 text-white" />}
             backgroundImage={electronicsImage}
             onClick={() => handleCategoryClick('electronics')}
           />
           <CategoryCard 
             title={t('categories.homeGarden')} 
-            description="Garden tools, power drills, and home equipment"
+            description={t('categories.homeGardenDesc')}
             icon={<Hammer className="h-6 w-6 text-white" />}
             backgroundImage={homeGardenImage}
             onClick={() => handleCategoryClick('home-garden')}
           />
           <CategoryCard 
             title={t('categories.photography')} 
-            description="Professional cameras, lenses, and lighting equipment"
+            description={t('categories.photographyDesc')}
             icon={<Camera className="h-6 w-6 text-white" />}
             backgroundImage={photographyImage}
             onClick={() => handleCategoryClick('photography')}
           />
           <CategoryCard 
-            title="Sports & Outdoor" 
-            description="Bicycles, camping gear, kayaks, and sports equipment"
+            title={t('categories.sportsOutdoor')} 
+            description={t('categories.sportsOutdoorDesc')}
             icon={<Bike className="h-6 w-6 text-white" />}
             backgroundImage={sportsOutdoorImage}
             onClick={() => handleCategoryClick('sports-outdoor')}
