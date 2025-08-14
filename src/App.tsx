@@ -24,6 +24,7 @@ import Profile from '@/pages/Profile'
 import Admin from '@/pages/Admin'
 import Terms from '@/pages/Terms'
 import Privacy from '@/pages/Privacy'
+import CookiePolicy from '@/pages/CookiePolicy'
 import Blog from '@/pages/Blog'
 import HowItWorks from '@/pages/HowItWorks'
 import Pricing from '@/pages/Pricing'
@@ -74,6 +75,7 @@ function App() {
                     <Route path="/help" element={<Terms />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/cookies" element={<CookiePolicy />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/how-it-works" element={<HowItWorks />} />
                     <Route path="/pricing" element={<Pricing />} />
