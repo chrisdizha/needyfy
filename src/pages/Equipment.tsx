@@ -61,11 +61,11 @@ const Equipment = () => {
         <div className="mb-6">
           <nav className="text-sm text-muted-foreground mb-4">
             <span>{t('common.home')}</span>
-            <span className="mx-2">></span>
+            <span className="mx-2">{'>'}</span>
             <span>{t('nav.categories')}</span>
             {category && (
               <>
-                <span className="mx-2">></span>
+                <span className="mx-2">{'>'}</span>
                 <span className="text-foreground">{getCategoryTitle()}</span>
               </>
             )}
