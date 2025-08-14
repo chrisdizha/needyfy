@@ -5,7 +5,7 @@ import { OptimizedAuthProvider } from '@/contexts/OptimizedAuthContext'
 import { SecurityProvider } from '@/components/security/SecurityProvider'
 import { Toaster } from '@/components/ui/sonner'
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider'
-import Navbar from '@/components/layout/Navbar'
+import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { AdminRoute } from '@/components/auth/AdminRoute'
 import { SecureRoute } from '@/components/auth/SecureRoute'
@@ -14,6 +14,7 @@ import Categories from '@/pages/Categories'
 import ListEquipment from '@/pages/ListEquipment'
 import PublicHome from '@/pages/PublicHome'
 import Login from '@/pages/Login'
+import Register from '@/pages/Register'
 import Dashboard from '@/pages/Dashboard'
 import EquipmentDetails from '@/pages/EquipmentDetails'
 import BookingSuccess from '@/pages/BookingSuccess'
@@ -23,6 +24,11 @@ import Profile from '@/pages/Profile'
 import Admin from '@/pages/Admin'
 import Terms from '@/pages/Terms'
 import Privacy from '@/pages/Privacy'
+import Blog from '@/pages/Blog'
+import HowItWorks from '@/pages/HowItWorks'
+import Pricing from '@/pages/Pricing'
+import Rewards from '@/pages/Rewards'
+import ResetPassword from '@/pages/ResetPassword'
 import NotFound from '@/pages/NotFound'
 
 const queryClient = new QueryClient({
@@ -43,18 +49,25 @@ function App() {
           <AnalyticsProvider>
             <Router>
               <div className="min-h-screen bg-background flex flex-col">
-                <Navbar />
+                <Header />
                 <main className="flex-1">
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/category/:category" element={<Categories />} />
                     <Route path="/search" element={<PublicHome />} />
                     <Route path="/auth" element={<Login />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/equipment/:id" element={<EquipmentDetails />} />
                     <Route path="/booking-confirmation/:sessionId" element={<BookingSuccess />} />
                     <Route path="/help" element={<Terms />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/how-it-works" element={<HowItWorks />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/rewards" element={<Rewards />} />
                     
                     {/* Protected Routes */}
                     <Route path="/dashboard" element={<SecureRoute><Dashboard /></SecureRoute>} />

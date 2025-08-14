@@ -1,12 +1,9 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Clock, User } from "lucide-react";
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 
 const Blog = () => {
   const blogPosts = [
@@ -445,128 +442,120 @@ const Blog = () => {
   if (selectedPost) {
     const post = blogPosts.find(p => p.id === selectedPost);
     return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-grow bg-gradient-to-br from-background to-muted/20">
-          <div className="container mx-auto px-4 py-8">
-            <Button 
-              variant="outline" 
-              onClick={() => setSelectedPost(null)}
-              className="mb-6"
-            >
-              ← Back to Blog
-            </Button>
+      <main className="flex-grow bg-gradient-to-br from-background to-muted/20">
+        <div className="container mx-auto px-4 py-8">
+          <Button 
+            variant="outline" 
+            onClick={() => setSelectedPost(null)}
+            className="mb-6"
+          >
+            ← Back to Blog
+          </Button>
+          
+          <article className="max-w-4xl mx-auto">
+            <div className="mb-8">
+              <Badge className="mb-4">{post.category}</Badge>
+              <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+              <div className="flex items-center gap-4 text-muted-foreground mb-6">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span>{post.author}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CalendarDays className="h-4 w-4" />
+                  <span>{new Date(post.date).toLocaleDateString()}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  <span>{post.readTime}</span>
+                </div>
+              </div>
+            </div>
             
-            <article className="max-w-4xl mx-auto">
-              <div className="mb-8">
-                <Badge className="mb-4">{post.category}</Badge>
-                <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-                <div className="flex items-center gap-4 text-muted-foreground mb-6">
-                  <div className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    <span>{post.author}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CalendarDays className="h-4 w-4" />
-                    <span>{new Date(post.date).toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
-                    <span>{post.readTime}</span>
-                  </div>
-                </div>
+            <div className="prose prose-lg max-w-none">
+              <div dangerouslySetInnerHTML={{ __html: post.content }} />
+            </div>
+            
+            <div className="mt-12 p-6 bg-muted/50 rounded-lg">
+              <h3 className="text-lg font-semibold mb-3">Ready to Get Started?</h3>
+              <p className="text-muted-foreground mb-4">
+                Join thousands of equipment owners and renters who trust our platform for safe, reliable rentals.
+              </p>
+              <div className="flex gap-4">
+                <Button asChild>
+                  <Link to="/register">Start Renting</Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link to="/list-equipment">List Equipment</Link>
+                </Button>
               </div>
-              
-              <div className="prose prose-lg max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: post.content }} />
-              </div>
-              
-              <div className="mt-12 p-6 bg-muted/50 rounded-lg">
-                <h3 className="text-lg font-semibold mb-3">Ready to Get Started?</h3>
-                <p className="text-muted-foreground mb-4">
-                  Join thousands of equipment owners and renters who trust our platform for safe, reliable rentals.
-                </p>
-                <div className="flex gap-4">
-                  <Button asChild>
-                    <Link to="/register">Start Renting</Link>
-                  </Button>
-                  <Button variant="outline" asChild>
-                    <Link to="/list-equipment">List Equipment</Link>
-                  </Button>
-                </div>
-              </div>
-            </article>
-          </div>
-        </main>
-        <Footer />
-      </div>
+            </div>
+          </article>
+        </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow bg-gradient-to-br from-background to-muted/20">
-        <div className="container mx-auto px-4 py-12">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">Equipment Rental Blog</h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Expert insights, tips, and best practices for equipment rental success
-            </p>
-          </div>
+    <main className="flex-grow bg-gradient-to-br from-background to-muted/20">
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4">Equipment Rental Blog</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Expert insights, tips, and best practices for equipment rental success
+          </p>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post) => (
-              <Card key={post.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setSelectedPost(post.id)}>
-                <div className="aspect-video bg-muted rounded-t-lg mb-4 overflow-hidden">
-                  <img 
-                    src={post.image} 
-                    alt={post.title}
-                    className="w-full h-full object-cover"
-                  />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {blogPosts.map((post) => (
+            <Card key={post.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setSelectedPost(post.id)}>
+              <div className="aspect-video bg-muted rounded-t-lg mb-4 overflow-hidden">
+                <img 
+                  src={post.image} 
+                  alt={post.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <CardHeader>
+                <div className="flex items-center justify-between mb-2">
+                  <Badge variant="secondary">{post.category}</Badge>
+                  <span className="text-sm text-muted-foreground">{post.readTime}</span>
                 </div>
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge variant="secondary">{post.category}</Badge>
-                    <span className="text-sm text-muted-foreground">{post.readTime}</span>
+                <CardTitle className="line-clamp-2">{post.title}</CardTitle>
+                <CardDescription className="line-clamp-3">{post.excerpt}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <User className="h-4 w-4" />
+                    <span>{post.author}</span>
                   </div>
-                  <CardTitle className="line-clamp-2">{post.title}</CardTitle>
-                  <CardDescription className="line-clamp-3">{post.excerpt}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <User className="h-4 w-4" />
-                      <span>{post.author}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CalendarDays className="h-4 w-4" />
-                      <span>{new Date(post.date).toLocaleDateString()}</span>
-                    </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CalendarDays className="h-4 w-4" />
+                    <span>{new Date(post.date).toLocaleDateString()}</span>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
-          <div className="text-center mt-12">
-            <h2 className="text-2xl font-semibold mb-4">Stay Updated</h2>
-            <p className="text-muted-foreground mb-6">
-              Get the latest tips and insights delivered to your inbox
-            </p>
-            <div className="flex gap-4 justify-center max-w-md mx-auto">
-              <Button asChild>
-                <Link to="/register">Join Our Community</Link>
-              </Button>
-              <Button variant="outline" asChild>
-                <Link to="/contact">Contact Us</Link>
-              </Button>
-            </div>
+        <div className="text-center mt-12">
+          <h2 className="text-2xl font-semibold mb-4">Stay Updated</h2>
+          <p className="text-muted-foreground mb-6">
+            Get the latest tips and insights delivered to your inbox
+          </p>
+          <div className="flex gap-4 justify-center max-w-md mx-auto">
+            <Button asChild>
+              <Link to="/register">Join Our Community</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/contact">Contact Us</Link>
+            </Button>
           </div>
         </div>
-      </main>
-      <Footer />
-    </div>
+      </div>
+    </main>
   );
 };
 
