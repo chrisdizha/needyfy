@@ -1,10 +1,10 @@
-
 import React from 'react'
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { OptimizedAuthProvider } from '@/contexts/OptimizedAuthContext'
+import { ThemeProvider } from "@/providers/ThemeProvider"
 import Index from "./pages/Index"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
@@ -28,48 +28,50 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <OptimizedAuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/home" element={<PublicHome />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/dashboard" element={
-                <SecureRoute>
-                  <Dashboard />
-                </SecureRoute>
-              } />
-              <Route path="/profile" element={
-                <SecureRoute>
-                  <Profile />
-                </SecureRoute>
-              } />
-              <Route path="/bookings" element={
-                <SecureRoute>
-                  <BookingDashboard />
-                </SecureRoute>
-              } />
-              <Route path="/equipment" element={<Equipment />} />
-              <Route path="/equipment/:id" element={<EquipmentDetails />} />
-              <Route path="/categories" element={<Categories />} />
-              <Route path="/list-equipment" element={
-                <SecureRoute>
-                  <ListEquipment />
-                </SecureRoute>
-              } />
-              <Route path="/admin/*" element={
-                <SecureRoute>
-                  <Admin />
-                </SecureRoute>
-              } />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </OptimizedAuthProvider>
+      <ThemeProvider defaultTheme="light" storageKey="needyfy-ui-theme">
+        <OptimizedAuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/home" element={<PublicHome />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/dashboard" element={
+                  <SecureRoute>
+                    <Dashboard />
+                  </SecureRoute>
+                } />
+                <Route path="/profile" element={
+                  <SecureRoute>
+                    <Profile />
+                  </SecureRoute>
+                } />
+                <Route path="/bookings" element={
+                  <SecureRoute>
+                    <BookingDashboard />
+                  </SecureRoute>
+                } />
+                <Route path="/equipment" element={<Equipment />} />
+                <Route path="/equipment/:id" element={<EquipmentDetails />} />
+                <Route path="/categories" element={<Categories />} />
+                <Route path="/list-equipment" element={
+                  <SecureRoute>
+                    <ListEquipment />
+                  </SecureRoute>
+                } />
+                <Route path="/admin/*" element={
+                  <SecureRoute>
+                    <Admin />
+                  </SecureRoute>
+                } />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </OptimizedAuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }
