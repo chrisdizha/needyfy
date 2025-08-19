@@ -13,7 +13,7 @@ const Index = () => {
 
   useEffect(() => {
     console.log('Index useEffect triggered:', { user: !!user, loading });
-    // Redirect authenticated users to dashboard
+    // Only redirect if we have a confirmed authentication state
     if (!loading && user) {
       console.log('Redirecting authenticated user to dashboard');
       navigate('/dashboard', { replace: true });
@@ -36,9 +36,13 @@ const Index = () => {
     return <PublicHome />;
   }
 
-  console.log('Index component fallback return null');
-  // This shouldn't render due to the useEffect redirect, but just in case
-  return null;
+  // Fallback: if user exists but hasn't been redirected yet, show loading
+  console.log('Index component fallback - user exists, should redirect soon');
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
+  );
 };
 
 export default Index;

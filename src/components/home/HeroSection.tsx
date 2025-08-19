@@ -110,7 +110,7 @@ const HeroSection = () => {
           </form>
           
           <div className="mt-10">
-            <p className="text-muted-foreground mb-4 text-sm font-medium">{t('hero.topCategories')}</p>
+            <p className="text-muted-foreground mb-4 text-sm font-medium">{t('categories.popularCategories')}</p>
             <div className="flex flex-wrap justify-center gap-3">
               {[
                 { key: 'construction', label: t('categories.construction') },

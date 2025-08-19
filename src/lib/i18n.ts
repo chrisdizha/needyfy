@@ -86,8 +86,8 @@ const resources = {
         support: 'Support'
       },
       hero: {
-        tagline: 'Rent Anything, Anytime',
-        subtitle: 'Connect. Share. Thrive.',
+        tagline: 'List. Rent. Earn.',
+        subtitle: 'Everything you need, just when you need it!',
         searchPlaceholder: 'What do you need to rent?',
         locationPlaceholder: 'Enter your location',
         datesPlaceholder: 'Select dates',
@@ -99,7 +99,26 @@ const resources = {
         electronics: 'Electronics',
         eventEquipment: 'Event Equipment',
         homeGarden: 'Home & Garden',
-        photography: 'Photography Equipment'
+        photography: 'Photography Equipment',
+        popularCategories: 'Popular Categories',
+        browseCategories: 'Browse Categories',
+        browseCategoriesDesc: 'Explore our wide range of rental categories'
+      },
+      dashboard: {
+        welcome: 'Welcome',
+        welcomeMessage: 'Here\'s an overview of your rental activity',
+        totalEarnings: 'Total Earnings',
+        activeBookings: 'Active Bookings',
+        pendingRequests: 'Pending Requests',
+        recentActivity: 'Recent Activity',
+        noRecentActivity: 'No recent activity to display',
+        listEquipment: 'List Equipment',
+        listEquipmentDesc: 'Add new items to rent out',
+        myBookings: 'My Bookings',
+        myBookingsDesc: 'View and manage your bookings',
+        browse: 'Browse Equipment',
+        browseDesc: 'Find items to rent',
+        bookingActivity: 'Booking Activity'
       },
       errors: {
         searchRequired: 'Please enter a search term',
@@ -187,8 +206,8 @@ const resources = {
         search: 'Buscar'
       },
       hero: {
-        tagline: 'Alquila Cualquier Cosa, En Cualquier Momento',
-        subtitle: 'Conecta. Comparte. Prospera.',
+        tagline: 'Lista. Alquila. Gana.',
+        subtitle: '¡Todo lo que necesitas, justo cuando lo necesitas!',
         searchPlaceholder: '¿Qué necesitas alquilar?',
         locationPlaceholder: 'Ingresa tu ubicación',
         datesPlaceholder: 'Selecciona fechas',
@@ -200,7 +219,26 @@ const resources = {
         electronics: 'Electrónicos',
         eventEquipment: 'Equipo para Eventos',
         homeGarden: 'Hogar y Jardín',
-        photography: 'Equipo de Fotografía'
+        photography: 'Equipo de Fotografía',
+        popularCategories: 'Categorías Populares',
+        browseCategories: 'Explorar Categorías',
+        browseCategoriesDesc: 'Explora nuestra amplia gama de categorías de alquiler'
+      },
+      dashboard: {
+        welcome: 'Bienvenido',
+        welcomeMessage: 'Aquí tienes un resumen de tu actividad de alquiler',
+        totalEarnings: 'Ganancias Totales',
+        activeBookings: 'Reservas Activas',
+        pendingRequests: 'Solicitudes Pendientes',
+        recentActivity: 'Actividad Reciente',
+        noRecentActivity: 'No hay actividad reciente para mostrar',
+        listEquipment: 'Listar Equipo',
+        listEquipmentDesc: 'Agrega nuevos artículos para alquilar',
+        myBookings: 'Mis Reservas',
+        myBookingsDesc: 'Ver y gestionar tus reservas',
+        browse: 'Explorar Equipo',
+        browseDesc: 'Encuentra artículos para alquilar',
+        bookingActivity: 'Actividad de Reservas'
       },
       errors: {
         searchRequired: 'Por favor ingresa un término de búsqueda'
@@ -257,8 +295,8 @@ const resources = {
         search: 'Rechercher'
       },
       hero: {
-        tagline: 'Louez Tout, À Tout Moment',
-        subtitle: 'Connectez. Partagez. Prospérez.',
+        tagline: 'Lister. Louer. Gagner.',
+        subtitle: 'Tout ce dont vous avez besoin, juste quand vous en avez besoin !',
         searchPlaceholder: 'Que voulez-vous louer?',
         locationPlaceholder: 'Entrez votre emplacement',
         datesPlaceholder: 'Sélectionnez les dates',
@@ -270,7 +308,26 @@ const resources = {
         electronics: 'Électronique',
         eventEquipment: 'Équipement d\'Événement',
         homeGarden: 'Maison et Jardin',
-        photography: 'Équipement Photo'
+        photography: 'Équipement Photo',
+        popularCategories: 'Catégories Populaires',
+        browseCategories: 'Parcourir les Catégories',
+        browseCategoriesDesc: 'Explorez notre large gamme de catégories de location'
+      },
+      dashboard: {
+        welcome: 'Bienvenue',
+        welcomeMessage: 'Voici un aperçu de votre activité de location',
+        totalEarnings: 'Gains Totaux',
+        activeBookings: 'Réservations Actives',
+        pendingRequests: 'Demandes en Attente',
+        recentActivity: 'Activité Récente',
+        noRecentActivity: 'Aucune activité récente à afficher',
+        listEquipment: 'Lister du Matériel',
+        listEquipmentDesc: 'Ajouter de nouveaux articles à louer',
+        myBookings: 'Mes Réservations',
+        myBookingsDesc: 'Voir et gérer vos réservations',
+        browse: 'Parcourir le Matériel',
+        browseDesc: 'Trouvez des articles à louer',
+        bookingActivity: 'Activité de Réservation'
       },
       errors: {
         searchRequired: 'Veuillez entrer un terme de recherche'
@@ -327,8 +384,8 @@ const resources = {
         search: 'Suchen'
       },
       hero: {
-        tagline: 'Miete Alles, Jederzeit',
-        subtitle: 'Verbinden. Teilen. Gedeihen.',
+        tagline: 'Auflisten. Mieten. Verdienen.',
+        subtitle: 'Alles was Sie brauchen, genau dann wenn Sie es brauchen!',
         searchPlaceholder: 'Was möchten Sie mieten?',
         locationPlaceholder: 'Geben Sie Ihren Standort ein',
         datesPlaceholder: 'Termine auswählen',
@@ -340,7 +397,26 @@ const resources = {
         electronics: 'Elektronik',
         eventEquipment: 'Veranstaltungsausrüstung',
         homeGarden: 'Haus und Garten',
-        photography: 'Fotoausrüstung'
+        photography: 'Fotoausrüstung',
+        popularCategories: 'Beliebte Kategorien',
+        browseCategories: 'Kategorien durchsuchen',
+        browseCategoriesDesc: 'Entdecken Sie unser breites Spektrum an Mietkategorien'
+      },
+      dashboard: {
+        welcome: 'Willkommen',
+        welcomeMessage: 'Hier ist eine Übersicht Ihrer Mietaktivitäten',
+        totalEarnings: 'Gesamteinnahmen',
+        activeBookings: 'Aktive Buchungen',
+        pendingRequests: 'Ausstehende Anfragen',
+        recentActivity: 'Letzte Aktivität',
+        noRecentActivity: 'Keine aktuelle Aktivität anzuzeigen',
+        listEquipment: 'Ausrüstung auflisten',
+        listEquipmentDesc: 'Neue Artikel zum Vermieten hinzufügen',
+        myBookings: 'Meine Buchungen',
+        myBookingsDesc: 'Buchungen anzeigen und verwalten',
+        browse: 'Ausrüstung durchsuchen',
+        browseDesc: 'Artikel zum Mieten finden',
+        bookingActivity: 'Buchungsaktivität'
       },
       errors: {
         searchRequired: 'Bitte geben Sie einen Suchbegriff ein'
