@@ -67,7 +67,10 @@ const SuccessStories = () => {
             <div className="md:flex">
               <div className="md:w-1/3 bg-gray-50 p-6 flex flex-col items-center justify-center text-center">
                 <Avatar className="h-24 w-24 mb-4">
-                  <AvatarImage src={`/avatars/${story.avatar}.png`} alt={story.name} />
+                  <AvatarImage 
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(story.name)}&backgroundColor=b6e3f4,c0aede,d1d4f9`} 
+                    alt={story.name} 
+                  />
                   <AvatarFallback className="text-2xl">{story.avatar}</AvatarFallback>
                 </Avatar>
                 <h3 className="font-bold text-xl">{story.name}</h3>
