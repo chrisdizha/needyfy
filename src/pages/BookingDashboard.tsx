@@ -1,25 +1,43 @@
 
 import { useState } from 'react';
-import Navbar from '@/components/layout/Navbar';
+import { useAuth } from '@/contexts/OptimizedAuthContext';
+import { Navigate } from 'react-router-dom';
+import AuthenticatedNavbar from '@/components/layout/AuthenticatedNavbar';
 import Footer from '@/components/layout/Footer';
 import BookingHistory from '@/components/bookings/BookingHistory';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookingFilters } from '@/types/booking';
+import { useBookings } from '@/hooks/useBookings';
 
 const BookingDashboard = () => {
+  const { user, loading } = useAuth();
+  const { bookings } = useBookings();
   const [activeTab, setActiveTab] = useState('all');
-  const [filters, setFilters] = useState<BookingFilters>({});
 
-  const handleFilterChange = (status?: 'pending' | 'confirmed' | 'cancelled' | 'completed') => {
-    setFilters({ ...filters, status });
-    setActiveTab(status || 'all');
-  };
+  console.log('BookingDashboard - Auth state:', { user: !!user, loading });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    console.log('BookingDashboard - No user, redirecting to login');
+    return <Navigate to="/login" replace />;
+  }
+
+  const confirmedBookings = bookings.filter(b => b.status === 'confirmed');
+  const pendingBookings = bookings.filter(b => b.status === 'pending');
+  const completedBookings = bookings.filter(b => b.status === 'completed');
+  const totalRevenue = completedBookings.reduce((sum, booking) => sum + (booking.total_price / 100), 0);
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <AuthenticatedNavbar />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
@@ -35,9 +53,7 @@ const BookingDashboard = () => {
               <CardDescription>All-time booking count</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold">
-                {JSON.parse(localStorage.getItem('bookings') || '[]').length}
-              </p>
+              <p className="text-4xl font-bold">{bookings.length}</p>
             </CardContent>
           </Card>
           
@@ -47,10 +63,7 @@ const BookingDashboard = () => {
               <CardDescription>Currently ongoing</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold">
-                {JSON.parse(localStorage.getItem('bookings') || '[]')
-                  .filter((b: any) => b.status === 'confirmed').length}
-              </p>
+              <p className="text-4xl font-bold">{confirmedBookings.length}</p>
             </CardContent>
           </Card>
           
@@ -60,31 +73,18 @@ const BookingDashboard = () => {
               <CardDescription>From all bookings</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold">
-                ${JSON.parse(localStorage.getItem('bookings') || '[]')
-                  .reduce((sum: number, booking: any) => sum + booking.totalPrice, 0)}
-              </p>
+              <p className="text-4xl font-bold">${totalRevenue.toFixed(2)}</p>
             </CardContent>
           </Card>
         </div>
 
-        <Tabs defaultValue="all" value={activeTab} className="w-full">
+        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-4">
-            <TabsTrigger value="all" onClick={() => handleFilterChange()}>
-              All Bookings
-            </TabsTrigger>
-            <TabsTrigger value="confirmed" onClick={() => handleFilterChange('confirmed')}>
-              Confirmed
-            </TabsTrigger>
-            <TabsTrigger value="pending" onClick={() => handleFilterChange('pending')}>
-              Pending
-            </TabsTrigger>
-            <TabsTrigger value="cancelled" onClick={() => handleFilterChange('cancelled')}>
-              Cancelled
-            </TabsTrigger>
-            <TabsTrigger value="completed" onClick={() => handleFilterChange('completed')}>
-              Completed
-            </TabsTrigger>
+            <TabsTrigger value="all">All Bookings</TabsTrigger>
+            <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
+            <TabsTrigger value="pending">Pending</TabsTrigger>
+            <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
+            <TabsTrigger value="completed">Completed</TabsTrigger>
           </TabsList>
           
           <TabsContent value={activeTab} className="mt-6">
