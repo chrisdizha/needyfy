@@ -31,18 +31,8 @@ const Index = () => {
   }
 
   // Show public home for non-authenticated users
-  if (!user) {
-    console.log('Rendering PublicHome for non-authenticated user');
-    return <PublicHome />;
-  }
-
-  // Fallback: if user exists but hasn't been redirected yet, show loading
-  console.log('Index component fallback - user exists, should redirect soon');
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>
-  );
+  console.log('Rendering PublicHome for non-authenticated user');
+  return <PublicHome />;
 };
 
 export default Index;

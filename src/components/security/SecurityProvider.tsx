@@ -1,12 +1,13 @@
 
-import React, { createContext, useContext, ReactNode, useEffect } from 'react';
-import { SecurityHeaders } from './SecurityHeaders';
-import { useSecureAuthSafe } from '@/hooks/useSecureAuthSafe';
-import { useAuth } from '@/contexts/OptimizedAuthContext';
+import React, { createContext, useContext, useEffect } from 'react';
+import { useCSRFProtection } from '@/hooks/useCSRFProtection';
+import { useSecurityHeaders } from '@/hooks/useSecurityHeaders';
+import { useEnhancedAuth } from '@/hooks/useEnhancedAuth';
 
 interface SecurityContextType {
-  reportSecurityIncident: (incident: string, details?: any) => Promise<void>;
-  isSecurityValidated: boolean;
+  csrfToken: string | null;
+  isSecurityLoading: boolean;
+  enhancedSignOut: () => Promise<void>;
 }
 
 const SecurityContext = createContext<SecurityContextType | undefined>(undefined);
@@ -20,78 +21,45 @@ export const useSecurityContext = () => {
 };
 
 interface SecurityProviderProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export const SecurityProvider = ({ children }: SecurityProviderProps) => {
-  const { user } = useAuth();
-  const { logSecurityEvent, validateSession } = useSecureAuthSafe();
+  const { csrfToken, isLoading: csrfLoading } = useCSRFProtection();
+  const { enhancedSignOut } = useEnhancedAuth();
+  
+  // Apply security headers
+  useSecurityHeaders();
 
-  const reportSecurityIncident = async (incident: string, details?: any) => {
-    await logSecurityEvent({
-      type: 'suspicious_activity',
-      timestamp: Date.now(),
-      details: `Security incident: ${incident} - ${JSON.stringify(details)}`
-    });
-  };
-
-  // Periodic security validation
+  // Device fingerprinting for session security
   useEffect(() => {
-    if (!user) return;
-
-    const securityInterval = setInterval(async () => {
-      const isValid = await validateSession();
-      if (!isValid) {
-        await reportSecurityIncident('Session validation failed during periodic check');
-      }
-    }, 5 * 60 * 1000); // Every 5 minutes
-
-    return () => clearInterval(securityInterval);
-  }, [user]);
-
-  // Monitor for suspicious browser activity
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // User switched tabs/minimized - normal behavior
-        return;
-      } else {
-        // User returned - validate session
-        if (user) {
-          validateSession().then(isValid => {
-            if (!isValid) {
-              reportSecurityIncident('Session invalid on tab focus');
-            }
-          });
-        }
-      }
+    const generateDeviceFingerprint = () => {
+      const fingerprint = [
+        navigator.userAgent,
+        navigator.language,
+        screen.width,
+        screen.height,
+        new Date().getTimezoneOffset(),
+        navigator.platform
+      ].join('|');
+      
+      const hash = btoa(fingerprint).slice(0, 32);
+      localStorage.setItem('device_fingerprint', hash);
     };
 
-    const handleBeforeUnload = () => {
-      // Clear sensitive data from memory
-      if (user) {
-        localStorage.removeItem('last_form_submit');
-        sessionStorage.removeItem('temp_data');
-      }
-    };
+    if (!localStorage.getItem('device_fingerprint')) {
+      generateDeviceFingerprint();
+    }
+  }, []);
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [user]);
-
-  const value: SecurityContextType = {
-    reportSecurityIncident,
-    isSecurityValidated: true
+  const value = {
+    csrfToken,
+    isSecurityLoading: csrfLoading,
+    enhancedSignOut
   };
 
   return (
     <SecurityContext.Provider value={value}>
-      <SecurityHeaders />
       {children}
     </SecurityContext.Provider>
   );
