@@ -1,7 +1,7 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/OptimizedAuthContext';
 
 export type EquipmentListing = {
   id: string;
@@ -23,30 +23,59 @@ export type EquipmentListing = {
   is_verified: boolean;
 };
 
+export type PublicEquipmentPreview = {
+  id: string;
+  title: string;
+  category: string;
+  price: number;
+  price_unit: string;
+  photos: string[];
+  rating: number;
+  total_ratings: number;
+  is_verified: boolean;
+  general_location: string;
+  created_at: string;
+};
+
 export const useEquipmentListings = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const {
     data: listings,
     isLoading,
     error
   } = useQuery({
-    queryKey: ['equipment-listings'],
+    queryKey: ['equipment-listings', user ? 'authenticated' : 'public'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('equipment_listings')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+      if (user) {
+        // Authenticated users get full equipment details
+        const { data, error } = await supabase
+          .from('equipment_listings')
+          .select('*')
+          .eq('status', 'active')
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data as EquipmentListing[];
+        if (error) throw error;
+        return data as EquipmentListing[];
+      } else {
+        // Anonymous users get limited preview data
+        const { data, error } = await supabase
+          .from('public_equipment_preview')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data as PublicEquipmentPreview[];
+      }
     },
   });
 
   const createListing = useMutation({
     mutationFn: async (listing: Omit<EquipmentListing, 'id' | 'created_at' | 'updated_at' | 'rating' | 'total_ratings'>) => {
+      if (!user) throw new Error('Authentication required');
+      
       const { data, error } = await supabase
         .from('equipment_listings')
         .insert(listing)
@@ -79,12 +108,14 @@ export const useEquipmentListings = () => {
     error,
     createListing: createListing.mutate,
     isCreating: createListing.isPending,
+    isAuthenticated: !!user,
   };
 };
 
 export const useUserEquipmentListings = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const {
     data: userListings,
@@ -93,7 +124,6 @@ export const useUserEquipmentListings = () => {
   } = useQuery({
     queryKey: ['user-equipment-listings'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -105,6 +135,7 @@ export const useUserEquipmentListings = () => {
       if (error) throw error;
       return data as EquipmentListing[];
     },
+    enabled: !!user,
   });
 
   const updateListing = useMutation({

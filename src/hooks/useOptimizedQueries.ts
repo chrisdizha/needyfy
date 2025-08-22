@@ -2,48 +2,72 @@
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOptimizedDatabase } from './useOptimizedDatabase';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/OptimizedAuthContext';
 
 export const useOptimizedQueries = () => {
   const queryClient = useQueryClient();
   const { executeQuery, paginatedQuery, invalidateRelatedCache } = useOptimizedDatabase();
+  const { user } = useAuth();
 
-  // Optimized equipment queries
+  // Optimized equipment queries with authentication-aware data access
   const useOptimizedEquipmentList = (filters: any = {}) => {
     return useQuery({
-      queryKey: ['equipment', 'list', filters],
+      queryKey: ['equipment', 'list', filters, user ? 'authenticated' : 'public'],
       queryFn: () => executeQuery(
         async () => {
-          let query = supabase
-            .from('equipment_listings')
-            .select(`
-              *,
-              profiles:owner_id (
-                id,
-                full_name,
-                avatar_url
-              )
-            `);
+          if (user) {
+            // Authenticated users get full equipment details
+            let query = supabase
+              .from('equipment_listings')
+              .select(`
+                *,
+                profiles:owner_id (
+                  id,
+                  full_name,
+                  avatar_url
+                )
+              `);
 
-          if (filters.category) {
-            query = query.eq('category', filters.category);
-          }
-          
-          if (filters.location) {
-            query = query.ilike('location', `%${filters.location}%`);
-          }
-          
-          if (filters.minPrice) {
-            query = query.gte('price', filters.minPrice);
-          }
-          
-          if (filters.maxPrice) {
-            query = query.lte('price', filters.maxPrice);
-          }
+            if (filters.category) {
+              query = query.eq('category', filters.category);
+            }
+            
+            if (filters.location) {
+              query = query.ilike('location', `%${filters.location}%`);
+            }
+            
+            if (filters.minPrice) {
+              query = query.gte('price', filters.minPrice);
+            }
+            
+            if (filters.maxPrice) {
+              query = query.lte('price', filters.maxPrice);
+            }
 
-          return query.eq('status', 'active');
+            return query.eq('status', 'active');
+          } else {
+            // Anonymous users get limited preview data
+            let query = supabase
+              .from('public_equipment_preview')
+              .select('*');
+
+            if (filters.category) {
+              query = query.eq('category', filters.category);
+            }
+            
+            if (filters.minPrice) {
+              query = query.gte('price', filters.minPrice);
+            }
+            
+            if (filters.maxPrice) {
+              query = query.lte('price', filters.maxPrice);
+            }
+
+            return query;
+          }
         },
         {
-          cacheKey: `equipment_list_${JSON.stringify(filters)}`,
+          cacheKey: `equipment_list_${JSON.stringify(filters)}_${user ? 'auth' : 'anon'}`,
           cacheTTL: 10 * 60 * 1000 // 10 minutes
         }
       ),
