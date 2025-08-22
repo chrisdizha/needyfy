@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { resources } from './i18n';
 
 // Type definitions for translation keys
@@ -79,7 +80,7 @@ export const getMissingTranslationKeys = (): Record<string, string[]> => {
 };
 
 // Development component to display missing translations
-export const TranslationDebugger = () => {
+export const TranslationDebugger: React.FC = () => {
   if (process.env.NODE_ENV !== 'development') {
     return null;
   }
