@@ -14,12 +14,15 @@ export const useI18n = () => {
 
     const translation = originalT(key, options);
     
+    // Ensure we return a string (cast the result to string)
+    const result = typeof translation === 'string' ? translation : String(translation);
+    
     // Return the key itself if translation is missing (fallback behavior)
-    if (translation === key && process.env.NODE_ENV === 'development') {
+    if (result === key && process.env.NODE_ENV === 'development') {
       console.warn(`🌐 Translation missing: "${key}" - displaying key as fallback`);
     }
     
-    return translation;
+    return result;
   };
   
   const changeLanguage = (lng: string) => {
