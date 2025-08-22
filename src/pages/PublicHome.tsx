@@ -1,6 +1,6 @@
 
 import { Suspense } from 'react';
-import Navbar from '@/components/layout/Navbar';
+import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/home/HeroSection';
 import CategorySection from '@/components/home/CategorySection';
@@ -77,10 +77,11 @@ const PublicHome = () => {
   });
   
   return (
-    <div className="w-full">
+    <div className="min-h-screen flex flex-col">
       <SitemapGenerator />
+      <Header />
       
-      <main className="w-full">
+      <main className="flex-1">
         <Suspense fallback={
           <div className="h-96 flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -127,6 +128,8 @@ const PublicHome = () => {
           </SectionWrapper>
         </Suspense>
       </main>
+      
+      <Footer />
     </div>
   );
 };
