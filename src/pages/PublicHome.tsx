@@ -15,13 +15,22 @@ import AddToHomePrompt from '@/components/pwa/AddToHomePrompt';
 import SitemapGenerator from '@/components/seo/SitemapGenerator';
 import { useSEO, generateOrganizationStructuredData, generateWebsiteStructuredData } from '@/hooks/useSEO';
 
-// Component wrapper with error boundary
+// Simple error boundary component
+const ErrorFallback = ({ error, name }: { error: Error; name: string }) => {
+  console.error(`Error in ${name} section:`, error);
+  return (
+    <div className="bg-red-50 border border-red-200 rounded-lg p-4 m-4">
+      <p className="text-red-800">Error loading {name} section. Please refresh the page.</p>
+    </div>
+  );
+};
+
+// Component wrapper with simple error boundary
 const SectionWrapper = ({ children, name }: { children: React.ReactNode; name: string }) => {
   try {
     return <>{children}</>;
   } catch (error) {
-    console.error(`Error in ${name} section:`, error);
-    return null;
+    return <ErrorFallback error={error as Error} name={name} />;
   }
 };
 
@@ -76,57 +85,59 @@ const PublicHome = () => {
     ]
   });
   
+  const LoadingSkeleton = () => (
+    <div className="h-96 flex items-center justify-center bg-background">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
+  );
+  
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <SitemapGenerator />
       <Header />
       
       <main className="flex-1">
-        <Suspense fallback={
-          <div className="h-96 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        }>
-          <SectionWrapper name="HeroSection">
-            <HeroSection />
-          </SectionWrapper>
-          
-          <SectionWrapper name="CategorySection">
-            <CategorySection />
-          </SectionWrapper>
-          
+        <SectionWrapper name="HeroSection">
+          <HeroSection />
+        </SectionWrapper>
+        
+        <SectionWrapper name="CategorySection">
+          <CategorySection />
+        </SectionWrapper>
+        
+        <Suspense fallback={<LoadingSkeleton />}>
           <SectionWrapper name="FeaturedEquipment">
             <FeaturedEquipment />
           </SectionWrapper>
-          
-          <SectionWrapper name="HowItWorks">
-            <HowItWorks />
-          </SectionWrapper>
-          
-          <SectionWrapper name="UserFeatures">
-            <UserFeatures />
-          </SectionWrapper>
-          
-          <SectionWrapper name="ProviderFeatures">
-            <ProviderFeatures />
-          </SectionWrapper>
-          
-          <SectionWrapper name="Testimonials">
-            <Testimonials />
-          </SectionWrapper>
-          
-          <SectionWrapper name="AppAnnouncementBanner">
-            <AppAnnouncementBanner />
-          </SectionWrapper>
-          
-          <SectionWrapper name="CallToAction">
-            <CallToAction />
-          </SectionWrapper>
-          
-          <SectionWrapper name="AddToHomePrompt">
-            <AddToHomePrompt />
-          </SectionWrapper>
         </Suspense>
+        
+        <SectionWrapper name="HowItWorks">
+          <HowItWorks />
+        </SectionWrapper>
+        
+        <SectionWrapper name="UserFeatures">
+          <UserFeatures />
+        </SectionWrapper>
+        
+        <SectionWrapper name="ProviderFeatures">
+          <ProviderFeatures />
+        </SectionWrapper>
+        
+        <SectionWrapper name="Testimonials">
+          <Testimonials />
+        </SectionWrapper>
+        
+        <SectionWrapper name="AppAnnouncementBanner">
+          <AppAnnouncementBanner />
+        </SectionWrapper>
+        
+        <SectionWrapper name="CallToAction">
+          <CallToAction />
+        </SectionWrapper>
+        
+        <SectionWrapper name="AddToHomePrompt">
+          <AddToHomePrompt />
+        </SectionWrapper>
       </main>
       
       <Footer />
