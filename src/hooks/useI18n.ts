@@ -1,8 +1,26 @@
 
 import { useTranslation as useI18nTranslation } from 'react-i18next';
+import { validateTranslationKey } from '@/lib/translationValidator';
 
 export const useI18n = () => {
-  const { t, i18n } = useI18nTranslation();
+  const { t: originalT, i18n } = useI18nTranslation();
+  
+  // Enhanced translation function with validation
+  const t = (key: string, options?: any): string => {
+    // Validate key in development
+    if (process.env.NODE_ENV === 'development') {
+      validateTranslationKey(key, i18n.language);
+    }
+
+    const translation = originalT(key, options);
+    
+    // Return the key itself if translation is missing (fallback behavior)
+    if (translation === key && process.env.NODE_ENV === 'development') {
+      console.warn(`🌐 Translation missing: "${key}" - displaying key as fallback`);
+    }
+    
+    return translation;
+  };
   
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);

@@ -1,7 +1,9 @@
+
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import './lib/i18n'
+import { TranslationDebugger } from './lib/translationValidator'
 
 console.log('🚀 Starting application initialization...');
 
@@ -36,7 +38,12 @@ try {
 
 try {
   console.log('🎨 Rendering App component...');
-  root.render(<App />);
+  root.render(
+    <>
+      <App />
+      <TranslationDebugger />
+    </>
+  );
   console.log('✅ App rendered successfully');
 } catch (error) {
   console.error('❌ Failed to render App:', error);

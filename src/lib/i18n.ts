@@ -1,4 +1,3 @@
-
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -7,7 +6,7 @@ const resources = {
     translation: {
       common: {
         email: 'Email',
-        password: 'Password',
+        password: 'Password', 
         login: 'Log In',
         register: 'Sign Up',
         submit: 'Submit',
@@ -83,7 +82,8 @@ const resources = {
         reports: 'Reports',
         users: 'Users',
         admin: 'Admin',
-        support: 'Support'
+        support: 'Support',
+        getStarted: 'Get Started'
       },
       hero: {
         tagline: 'List. Rent. Earn.',
@@ -92,6 +92,18 @@ const resources = {
         locationPlaceholder: 'Enter your location',
         datesPlaceholder: 'Select dates',
         topCategories: 'Popular Categories'
+      },
+      howItWorks: {
+        title: 'How It Works',
+        subtitle: 'Get started with Needyfy in just 4 simple steps',
+        step1Title: 'Create Your Account',
+        step1Desc: 'Sign up quickly and easily to start your rental journey with us.',
+        step2Title: 'Find Equipment',
+        step2Desc: 'Browse through thousands of available items in your area.',
+        step3Title: 'Book Securely',
+        step3Desc: 'Make secure payments and coordinate pickup details.',
+        step4Title: 'Enjoy & Return',
+        step4Desc: 'Use the equipment and return it when you\'re done.'
       },
       categories: {
         construction: 'Construction Tools',
@@ -180,6 +192,9 @@ const resources = {
         messages: 'Messages',
         earnings: 'Earnings',
         disputes: 'Disputes'
+      },
+      nav: {
+        browseEquipment: 'Browse Equipment'
       }
     }
   },
@@ -203,7 +218,8 @@ const resources = {
         back: 'Atrás',
         next: 'Siguiente',
         previous: 'Anterior',
-        search: 'Buscar'
+        search: 'Buscar',
+        getStarted: 'Comenzar'
       },
       hero: {
         tagline: 'Lista. Alquila. Gana.',
@@ -212,6 +228,18 @@ const resources = {
         locationPlaceholder: 'Ingresa tu ubicación',
         datesPlaceholder: 'Selecciona fechas',
         topCategories: 'Categorías Populares'
+      },
+      howItWorks: {
+        title: 'Cómo Funciona',
+        subtitle: 'Comienza con Needyfy en solo 4 pasos simples',
+        step1Title: 'Crea Tu Cuenta',
+        step1Desc: 'Regístrate rápida y fácilmente para comenzar tu viaje de alquiler con nosotros.',
+        step2Title: 'Encuentra Equipo',
+        step2Desc: 'Navega entre miles de artículos disponibles en tu área.',
+        step3Title: 'Reserva Seguro',
+        step3Desc: 'Realiza pagos seguros y coordina detalles de recogida.',
+        step4Title: 'Disfruta y Devuelve',
+        step4Desc: 'Usa el equipo y devuélvelo cuando hayas terminado.'
       },
       categories: {
         construction: 'Herramientas de Construcción',
@@ -269,6 +297,9 @@ const resources = {
         blog: 'Blog',
         rewards: 'Recompensas',
         listEquipment: 'Listar equipo'
+      },
+      nav: {
+        browseEquipment: 'Explorar Equipo'
       }
     }
   },
@@ -292,7 +323,8 @@ const resources = {
         back: 'Retour',
         next: 'Suivant',
         previous: 'Précédent',
-        search: 'Rechercher'
+        search: 'Rechercher',
+        getStarted: 'Commencer'
       },
       hero: {
         tagline: 'Lister. Louer. Gagner.',
@@ -301,6 +333,18 @@ const resources = {
         locationPlaceholder: 'Entrez votre emplacement',
         datesPlaceholder: 'Sélectionnez les dates',
         topCategories: 'Catégories Populaires'
+      },
+      howItWorks: {
+        title: 'Comment Ça Marche',
+        subtitle: 'Commencez avec Needyfy en seulement 4 étapes simples',
+        step1Title: 'Créez Votre Compte',
+        step1Desc: 'Inscrivez-vous rapidement et facilement pour commencer votre voyage de location avec nous.',
+        step2Title: 'Trouvez du Matériel',
+        step2Desc: 'Parcourez des milliers d\'articles disponibles dans votre région.',
+        step3Title: 'Réservez en Sécurité',
+        step3Desc: 'Effectuez des paiements sécurisés et coordonnez les détails de récupération.',
+        step4Title: 'Profitez et Retournez',
+        step4Desc: 'Utilisez l\'équipement et retournez-le quand vous avez terminé.'
       },
       categories: {
         construction: 'Outils de Construction',
@@ -358,6 +402,9 @@ const resources = {
         blog: 'Blog',
         rewards: 'Récompenses',
         listEquipment: 'Lister équipement'
+      },
+      nav: {
+        browseEquipment: 'Parcourir le Matériel'
       }
     }
   },
@@ -381,7 +428,8 @@ const resources = {
         back: 'Zurück',
         next: 'Weiter',
         previous: 'Vorherige',
-        search: 'Suchen'
+        search: 'Suchen',
+        getStarted: 'Loslegen'
       },
       hero: {
         tagline: 'Auflisten. Mieten. Verdienen.',
@@ -390,6 +438,18 @@ const resources = {
         locationPlaceholder: 'Geben Sie Ihren Standort ein',
         datesPlaceholder: 'Termine auswählen',
         topCategories: 'Beliebte Kategorien'
+      },
+      howItWorks: {
+        title: 'Wie Es Funktioniert',
+        subtitle: 'Beginnen Sie mit Needyfy in nur 4 einfachen Schritten',
+        step1Title: 'Erstellen Sie Ihr Konto',
+        step1Desc: 'Melden Sie sich schnell und einfach an, um Ihre Mietreise mit uns zu beginnen.',
+        step2Title: 'Finden Sie Ausrüstung',
+        step2Desc: 'Durchsuchen Sie Tausende von verfügbaren Artikeln in Ihrer Nähe.',
+        step3Title: 'Sicher Buchen',
+        step3Desc: 'Tätigen Sie sichere Zahlungen und koordinieren Sie Abholdetails.',
+        step4Title: 'Genießen und Zurückgeben',
+        step4Desc: 'Verwenden Sie die Ausrüstung und geben Sie sie zurück, wenn Sie fertig sind.'
       },
       categories: {
         construction: 'Bauwerkzeuge',
@@ -447,6 +507,9 @@ const resources = {
         blog: 'Blog',
         rewards: 'Belohnungen',
         listEquipment: 'Ausrüstung auflisten'
+      },
+      nav: {
+        browseEquipment: 'Ausrüstung durchsuchen'
       }
     }
   }
@@ -456,7 +519,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'en',
+    lng: localStorage.getItem('language') || 'en',
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,
