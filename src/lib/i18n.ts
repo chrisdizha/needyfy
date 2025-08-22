@@ -107,14 +107,42 @@ export const resources = {
       },
       categories: {
         construction: 'Construction Tools',
+        constructionDesc: 'Professional construction equipment and tools for all your building needs',
         vehicles: 'Vehicles & Transport',
+        vehiclesDesc: 'Cars, trucks, motorcycles and transportation solutions',
         electronics: 'Electronics',
+        electronicsDesc: 'Cameras, laptops, audio equipment and tech gadgets',
         eventEquipment: 'Event Equipment',
+        eventEquipmentDesc: 'Party supplies, sound systems, and event essentials',
         homeGarden: 'Home & Garden',
+        homeGardenDesc: 'Lawn mowers, garden tools, and home improvement equipment',
         photography: 'Photography Equipment',
+        photographyDesc: 'Professional cameras, lenses, lighting and studio equipment',
+        sportsOutdoor: 'Sports & Outdoor',
+        sportsOutdoorDesc: 'Camping gear, sports equipment, and outdoor adventure tools',
+        trucksTrailers: 'Trucks & Trailers',
+        trucksTrailersDesc: 'Moving trucks, cargo trailers, and heavy-duty vehicles',
+        carsVehicles: 'Cars & Vehicles',
+        carsVehiclesDesc: 'Personal vehicles, luxury cars, and specialty transportation',
+        constructionEquipment: 'Construction Equipment',
+        constructionEquipmentDesc: 'Heavy machinery, power tools, and construction supplies',
+        eventParty: 'Event & Party',
+        eventPartyDesc: 'Party decorations, catering equipment, and celebration essentials',
         popularCategories: 'Popular Categories',
         browseCategories: 'Browse Categories',
         browseCategoriesDesc: 'Explore our wide range of rental categories'
+      },
+      cta: {
+        needEquipment: 'Need Equipment?',
+        needEquipmentDesc: 'Find thousands of items available for rent in your area',
+        rentEquipment: 'Browse Equipment',
+        ownEquipment: 'Own Equipment?',
+        ownEquipmentDesc: 'List your items and start earning money today',
+        listEquipment: 'List Your Items',
+        joinCommunity: 'Join Our Community',
+        equipmentItems: '10,000+ Equipment Items',
+        providers: '5,000+ Trusted Providers',
+        customers: '25,000+ Happy Customers'
       },
       dashboard: {
         welcome: 'Welcome',
@@ -194,7 +222,8 @@ export const resources = {
         disputes: 'Disputes'
       },
       nav: {
-        browseEquipment: 'Browse Equipment'
+        browseEquipment: 'Browse Equipment',
+        browseAll: 'Browse All'
       }
     }
   },
@@ -243,14 +272,42 @@ export const resources = {
       },
       categories: {
         construction: 'Herramientas de Construcción',
+        constructionDesc: 'Equipos y herramientas de construcción profesionales para todas tus necesidades de construcción',
         vehicles: 'Vehículos y Transporte',
+        vehiclesDesc: 'Autos, camiones, motocicletas y soluciones de transporte',
         electronics: 'Electrónicos',
+        electronicsDesc: 'Cámaras, laptops, equipos de audio y gadgets tecnológicos',
         eventEquipment: 'Equipo para Eventos',
+        eventEquipmentDesc: 'Suministros para fiestas, sistemas de sonido y elementos esenciales para eventos',
         homeGarden: 'Hogar y Jardín',
+        homeGardenDesc: 'Cortadoras de césped, herramientas de jardín y equipos de mejoras para el hogar',
         photography: 'Equipo de Fotografía',
+        photographyDesc: 'Cámaras profesionales, lentes, iluminación y equipos de estudio',
+        sportsOutdoor: 'Deportes y Exterior',
+        sportsOutdoorDesc: 'Equipo de camping, equipos deportivos y herramientas de aventura al aire libre',
+        trucksTrailers: 'Camiones y Remolques',
+        trucksTrailersDesc: 'Camiones de mudanza, remolques de carga y vehículos pesados',
+        carsVehicles: 'Autos y Vehículos',
+        carsVehiclesDesc: 'Vehículos personales, autos de lujo y transporte especializado',
+        constructionEquipment: 'Equipo de Construcción',
+        constructionEquipmentDesc: 'Maquinaria pesada, herramientas eléctricas y suministros de construcción',
+        eventParty: 'Eventos y Fiestas',
+        eventPartyDesc: 'Decoraciones para fiestas, equipos de catering y elementos esenciales para celebraciones',
         popularCategories: 'Categorías Populares',
         browseCategories: 'Explorar Categorías',
         browseCategoriesDesc: 'Explora nuestra amplia gama de categorías de alquiler'
+      },
+      cta: {
+        needEquipment: '¿Necesitas Equipo?',
+        needEquipmentDesc: 'Encuentra miles de artículos disponibles para alquilar en tu área',
+        rentEquipment: 'Explorar Equipo',
+        ownEquipment: '¿Tienes Equipo?',
+        ownEquipmentDesc: 'Lista tus artículos y comienza a ganar dinero hoy',
+        listEquipment: 'Lista Tus Artículos',
+        joinCommunity: 'Únete a Nuestra Comunidad',
+        equipmentItems: '10,000+ Artículos de Equipo',
+        providers: '5,000+ Proveedores Confiables',
+        customers: '25,000+ Clientes Satisfechos'
       },
       dashboard: {
         welcome: 'Bienvenido',
@@ -299,7 +356,8 @@ export const resources = {
         listEquipment: 'Listar equipo'
       },
       nav: {
-        browseEquipment: 'Explorar Equipo'
+        browseEquipment: 'Explorar Equipo',
+        browseAll: 'Explorar Todo'
       }
     }
   },
@@ -348,14 +406,42 @@ export const resources = {
       },
       categories: {
         construction: 'Outils de Construction',
+        constructionDesc: 'Équipements et outils de construction professionnels pour tous vos besoins de construction',
         vehicles: 'Véhicules et Transport',
+        vehiclesDesc: 'Voitures, camions, motos et solutions de transport',
         electronics: 'Électronique',
+        electronicsDesc: 'Caméras, ordinateurs portables, équipements audio et gadgets technologiques',
         eventEquipment: 'Équipement d\'Événement',
+        eventEquipmentDesc: 'Fournitures de fête, systèmes audio et éléments essentiels d\'événement',
         homeGarden: 'Maison et Jardin',
+        homeGardenDesc: 'Tondeuses, outils de jardinage et équipements d\'amélioration de la maison',
         photography: 'Équipement Photo',
+        photographyDesc: 'Caméras professionnelles, objectifs, éclairage et équipements de studio',
+        sportsOutdoor: 'Sports et Extérieur',
+        sportsOutdoorDesc: 'Équipement de camping, équipements sportifs et outils d\'aventure en plein air',
+        trucksTrailers: 'Camions et Remorques',
+        trucksTrailersDesc: 'Camions de déménagement, remorques de fret et véhicules lourds',
+        carsVehicles: 'Voitures et Véhicules',
+        carsVehiclesDesc: 'Véhicules personnels, voitures de luxe et transport spécialisé',
+        constructionEquipment: 'Équipement de Construction',
+        constructionEquipmentDesc: 'Machines lourdes, outils électriques et fournitures de construction',
+        eventParty: 'Événement et Fête',
+        eventPartyDesc: 'Décorations de fête, équipements de restauration et éléments essentiels de célébration',
         popularCategories: 'Catégories Populaires',
         browseCategories: 'Parcourir les Catégories',
         browseCategoriesDesc: 'Explorez notre large gamme de catégories de location'
+      },
+      cta: {
+        needEquipment: 'Besoin d\'Équipement?',
+        needEquipmentDesc: 'Trouvez des milliers d\'articles disponibles à la location dans votre région',
+        rentEquipment: 'Parcourir l\'Équipement',
+        ownEquipment: 'Vous Possédez de l\'Équipement?',
+        ownEquipmentDesc: 'Listez vos articles et commencez à gagner de l\'argent aujourd\'hui',
+        listEquipment: 'Listez Vos Articles',
+        joinCommunity: 'Rejoignez Notre Communauté',
+        equipmentItems: '10 000+ Articles d\'Équipement',
+        providers: '5 000+ Fournisseurs de Confiance',
+        customers: '25 000+ Clients Satisfaits'
       },
       dashboard: {
         welcome: 'Bienvenue',
@@ -404,7 +490,8 @@ export const resources = {
         listEquipment: 'Lister équipement'
       },
       nav: {
-        browseEquipment: 'Parcourir le Matériel'
+        browseEquipment: 'Parcourir le Matériel',
+        browseAll: 'Parcourir Tout'
       }
     }
   },
@@ -453,14 +540,42 @@ export const resources = {
       },
       categories: {
         construction: 'Bauwerkzeuge',
+        constructionDesc: 'Professionelle Bauausrüstung und Werkzeuge für alle Ihre Baubedürfnisse',
         vehicles: 'Fahrzeuge und Transport',
+        vehiclesDesc: 'Autos, LKWs, Motorräder und Transportlösungen',
         electronics: 'Elektronik',
+        electronicsDesc: 'Kameras, Laptops, Audiogeräte und Tech-Gadgets',
         eventEquipment: 'Veranstaltungsausrüstung',
+        eventEquipmentDesc: 'Partyzubehör, Soundsysteme und Event-Essentials',
         homeGarden: 'Haus und Garten',
+        homeGardenDesc: 'Rasenmäher, Gartengeräte und Heimwerkerausrüstung',
         photography: 'Fotoausrüstung',
+        photographyDesc: 'Professionelle Kameras, Objektive, Beleuchtung und Studioausrüstung',
+        sportsOutdoor: 'Sport und Outdoor',
+        sportsOutdoorDesc: 'Campingausrüstung, Sportgeräte und Outdoor-Abenteuer-Tools',
+        trucksTrailers: 'LKWs und Anhänger',
+        trucksTrailersDesc: 'Umzugswagen, Frachtanhänger und schwere Fahrzeuge',
+        carsVehicles: 'Autos und Fahrzeuge',
+        carsVehiclesDesc: 'Privatfahrzeuge, Luxusautos und Spezialtransport',
+        constructionEquipment: 'Bauausrüstung',
+        constructionEquipmentDesc: 'Schwere Maschinen, Elektrowerkzeuge und Baumaterialien',
+        eventParty: 'Event und Party',
+        eventPartyDesc: 'Partydekorationen, Catering-Ausrüstung und Feier-Essentials',
         popularCategories: 'Beliebte Kategorien',
         browseCategories: 'Kategorien durchsuchen',
         browseCategoriesDesc: 'Entdecken Sie unser breites Spektrum an Mietkategorien'
+      },
+      cta: {
+        needEquipment: 'Brauchen Sie Ausrüstung?',
+        needEquipmentDesc: 'Finden Sie Tausende von Artikeln zum Mieten in Ihrer Nähe',
+        rentEquipment: 'Ausrüstung durchsuchen',
+        ownEquipment: 'Besitzen Sie Ausrüstung?',
+        ownEquipmentDesc: 'Listen Sie Ihre Artikel auf und verdienen Sie heute Geld',
+        listEquipment: 'Listen Sie Ihre Artikel auf',
+        joinCommunity: 'Werden Sie Teil unserer Gemeinschaft',
+        equipmentItems: '10.000+ Ausrüstungsgegenstände',
+        providers: '5.000+ Vertrauensvolle Anbieter',
+        customers: '25.000+ Zufriedene Kunden'
       },
       dashboard: {
         welcome: 'Willkommen',
@@ -509,7 +624,8 @@ export const resources = {
         listEquipment: 'Ausrüstung auflisten'
       },
       nav: {
-        browseEquipment: 'Ausrüstung durchsuchen'
+        browseEquipment: 'Ausrüstung durchsuchen',
+        browseAll: 'Alles durchsuchen'
       }
     }
   }
