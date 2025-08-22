@@ -34,37 +34,42 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-6">
-            <SafeLink to="/categories" className="text-muted-foreground hover:text-primary font-medium">
+            <SafeLink to="/categories" className="text-muted-foreground hover:text-primary font-medium transition-colors">
               Categories
             </SafeLink>
-            <SafeLink to="/how-it-works" className="text-muted-foreground hover:text-primary font-medium">
+            <SafeLink to="/how-it-works" className="text-muted-foreground hover:text-primary font-medium transition-colors">
               How It Works
             </SafeLink>
-            <SafeLink to="/pricing" className="text-muted-foreground hover:text-primary font-medium">
+            <SafeLink to="/pricing" className="text-muted-foreground hover:text-primary font-medium transition-colors">
               Pricing
             </SafeLink>
-            <SafeLink to="/blog" className="text-muted-foreground hover:text-primary font-medium">
+            <SafeLink to="/blog" className="text-muted-foreground hover:text-primary font-medium transition-colors">
               Blog
             </SafeLink>
-            <SafeLink to="/rewards" className="text-muted-foreground hover:text-primary font-medium">
+            <SafeLink to="/rewards" className="text-muted-foreground hover:text-primary font-medium transition-colors">
               Rewards
             </SafeLink>
-            <SafeLink to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium">
+            <SafeLink to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium transition-colors">
               List Equipment
             </SafeLink>
-            <LanguageSelector />
-            <ThemeToggle />
-            <SafeLink to="/login">
-              <Button variant="outline" size="sm" className="mr-2">
-                Log In
-              </Button>
-            </SafeLink>
-            <SafeLink to="/register">
-              <Button size="sm">Sign Up</Button>
-            </SafeLink>
+            <div className="flex items-center space-x-2">
+              <LanguageSelector />
+              <ThemeToggle />
+            </div>
+            <div className="flex items-center space-x-2">
+              <SafeLink to="/login">
+                <Button variant="outline" size="sm">
+                  Log In
+                </Button>
+              </SafeLink>
+              <SafeLink to="/register">
+                <Button size="sm">Sign Up</Button>
+              </SafeLink>
+            </div>
           </div>
 
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center space-x-2">
+            <ThemeToggle />
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md p-1"
@@ -100,28 +105,31 @@ const Navbar = () => {
           id="mobile-menu"
           className={cn(
             "md:hidden absolute left-0 right-0 bg-background shadow-md transition-all duration-300 ease-in-out z-40 border-b",
-            isMenuOpen ? "max-h-64 py-4" : "max-h-0 py-0 overflow-hidden"
+            isMenuOpen ? "max-h-96 py-4" : "max-h-0 py-0 overflow-hidden"
           )}
         >
           <div className="container mx-auto px-4 flex flex-col space-y-3">
-            <SafeLink to="/categories" className="text-muted-foreground hover:text-primary font-medium py-2">
+            <SafeLink to="/categories" className="text-muted-foreground hover:text-primary font-medium py-2 transition-colors" onClick={() => setIsMenuOpen(false)}>
               Categories
             </SafeLink>
-            <SafeLink to="/how-it-works" className="text-muted-foreground hover:text-primary font-medium py-2">
+            <SafeLink to="/how-it-works" className="text-muted-foreground hover:text-primary font-medium py-2 transition-colors" onClick={() => setIsMenuOpen(false)}>
               How It Works
             </SafeLink>
-            <SafeLink to="/pricing" className="text-muted-foreground hover:text-primary font-medium py-2">
+            <SafeLink to="/pricing" className="text-muted-foreground hover:text-primary font-medium py-2 transition-colors" onClick={() => setIsMenuOpen(false)}>
               Pricing
             </SafeLink>
-            <SafeLink to="/blog" className="text-muted-foreground hover:text-primary font-medium py-2">
+            <SafeLink to="/blog" className="text-muted-foreground hover:text-primary font-medium py-2 transition-colors" onClick={() => setIsMenuOpen(false)}>
               Blog
             </SafeLink>
-            <SafeLink to="/rewards" className="text-muted-foreground hover:text-primary font-medium py-2">
+            <SafeLink to="/rewards" className="text-muted-foreground hover:text-primary font-medium py-2 transition-colors" onClick={() => setIsMenuOpen(false)}>
               Rewards
             </SafeLink>
-            <SafeLink to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium py-2">
+            <SafeLink to="/list-equipment" className="text-muted-foreground hover:text-primary font-medium py-2 transition-colors" onClick={() => setIsMenuOpen(false)}>
               List Equipment
             </SafeLink>
+            <div className="flex items-center space-x-2 py-2">
+              <LanguageSelector />
+            </div>
             <div className="flex flex-col space-y-2 pt-2">
               <SafeLink to="/login">
                 <Button variant="outline" className="w-full">Log In</Button>
