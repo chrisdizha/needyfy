@@ -1,4 +1,3 @@
-
 import { memo, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import OptimizedEquipmentCard from '../equipment/OptimizedEquipmentCard';
@@ -6,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/OptimizedAuthContext';
 import { Link } from 'react-router-dom';
+import type { EquipmentListing, PublicEquipmentPreview } from '@/hooks/useEquipmentListings';
 
 const OptimizedFeaturedEquipment = memo(() => {
   const { user } = useAuth();
@@ -23,17 +23,34 @@ const OptimizedFeaturedEquipment = memo(() => {
           .limit(4);
 
         if (error) throw error;
-        return data || [];
+        return data as EquipmentListing[];
       } else {
         // Anonymous users get limited preview data
         const { data, error } = await supabase
-          .from('public_equipment_preview')
-          .select('*')
+          .from('equipment_listings')
+          .select('id, title, category, price, price_unit, photos, rating, total_ratings, is_verified, location, created_at')
+          .eq('status', 'active')
           .order('created_at', { ascending: false })
           .limit(4);
 
         if (error) throw error;
-        return data || [];
+        
+        // Transform the data to match PublicEquipmentPreview format
+        return data?.map(item => ({
+          id: item.id,
+          title: item.title,
+          category: item.category,
+          price: item.price,
+          price_unit: item.price_unit,
+          photos: item.photos ? [item.photos[0]] : [],
+          rating: item.rating || 0,
+          total_ratings: item.total_ratings || 0,
+          is_verified: item.is_verified || false,
+          general_location: item.location ? 
+            item.location.split(',')[0] + ', ' + item.location.split(',').slice(-1)[0] : 
+            'Location not specified',
+          created_at: item.created_at
+        })) as PublicEquipmentPreview[];
       }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -54,23 +71,45 @@ const OptimizedFeaturedEquipment = memo(() => {
   const equipmentCards = useMemo(() => {
     if (!equipment || equipment.length === 0) return null;
     
-    return equipment.map((item) => (
-      <OptimizedEquipmentCard 
-        key={item.id} 
-        id={item.id}
-        title={item.title}
-        category={item.category}
-        price={item.price}
-        priceUnit={item.price_unit}
-        image={item.photos?.[0] || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'}
-        location={user ? item.location : undefined}
-        generalLocation={!user ? item.general_location : undefined}
-        rating={item.rating || 0}
-        totalRatings={item.total_ratings || 0}
-        isVerified={item.is_verified || false}
-        ownerId={user ? item.owner_id : undefined}
-      />
-    ));
+    return equipment.map((item) => {
+      // Type-safe access to properties based on user authentication
+      if (user) {
+        const fullItem = item as EquipmentListing;
+        return (
+          <OptimizedEquipmentCard 
+            key={fullItem.id} 
+            id={fullItem.id}
+            title={fullItem.title}
+            category={fullItem.category}
+            price={fullItem.price}
+            priceUnit={fullItem.price_unit}
+            image={fullItem.photos?.[0] || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'}
+            location={fullItem.location}
+            rating={fullItem.rating || 0}
+            totalRatings={fullItem.total_ratings || 0}
+            isVerified={fullItem.is_verified || false}
+            ownerId={fullItem.owner_id}
+          />
+        );
+      } else {
+        const previewItem = item as PublicEquipmentPreview;
+        return (
+          <OptimizedEquipmentCard 
+            key={previewItem.id} 
+            id={previewItem.id}
+            title={previewItem.title}
+            category={previewItem.category}
+            price={previewItem.price}
+            priceUnit={previewItem.price_unit}
+            image={previewItem.photos?.[0] || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'}
+            generalLocation={previewItem.general_location}
+            rating={previewItem.rating || 0}
+            totalRatings={previewItem.total_ratings || 0}
+            isVerified={previewItem.is_verified || false}
+          />
+        );
+      }
+    });
   }, [equipment, user]);
 
   return (

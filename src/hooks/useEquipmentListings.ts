@@ -60,13 +60,37 @@ export const useEquipmentListings = () => {
         if (error) throw error;
         return data as EquipmentListing[];
       } else {
-        // Anonymous users get limited preview data
-        const { data, error } = await supabase
-          .from('public_equipment_preview')
-          .select('*')
-          .order('created_at', { ascending: false });
+        // Anonymous users get limited preview data using raw SQL
+        const { data, error } = await supabase.rpc('get_public_equipment_preview');
 
-        if (error) throw error;
+        if (error) {
+          // Fallback: use basic select with limited fields
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from('equipment_listings')
+            .select('id, title, category, price, price_unit, photos, rating, total_ratings, is_verified, location, created_at')
+            .eq('status', 'active')
+            .order('created_at', { ascending: false });
+
+          if (fallbackError) throw fallbackError;
+          
+          // Transform the data to match PublicEquipmentPreview format
+          return fallbackData?.map(item => ({
+            id: item.id,
+            title: item.title,
+            category: item.category,
+            price: item.price,
+            price_unit: item.price_unit,
+            photos: item.photos ? [item.photos[0]] : [],
+            rating: item.rating || 0,
+            total_ratings: item.total_ratings || 0,
+            is_verified: item.is_verified || false,
+            general_location: item.location ? 
+              item.location.split(',')[0] + ', ' + item.location.split(',').slice(-1)[0] : 
+              'Location not specified',
+            created_at: item.created_at
+          })) as PublicEquipmentPreview[];
+        }
+
         return data as PublicEquipmentPreview[];
       }
     },

@@ -3,6 +3,7 @@ import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tansta
 import { useOptimizedDatabase } from './useOptimizedDatabase';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/OptimizedAuthContext';
+import type { EquipmentListing, PublicEquipmentPreview } from './useEquipmentListings';
 
 export const useOptimizedQueries = () => {
   const queryClient = useQueryClient();
@@ -44,12 +45,16 @@ export const useOptimizedQueries = () => {
               query = query.lte('price', filters.maxPrice);
             }
 
-            return query.eq('status', 'active');
+            query = query.eq('status', 'active');
+            
+            const { data, error } = await query;
+            if (error) throw error;
+            return data as EquipmentListing[];
           } else {
             // Anonymous users get limited preview data
             let query = supabase
-              .from('public_equipment_preview')
-              .select('*');
+              .from('equipment_listings')
+              .select('id, title, category, price, price_unit, photos, rating, total_ratings, is_verified, location, created_at');
 
             if (filters.category) {
               query = query.eq('category', filters.category);
@@ -63,7 +68,27 @@ export const useOptimizedQueries = () => {
               query = query.lte('price', filters.maxPrice);
             }
 
-            return query;
+            query = query.eq('status', 'active');
+            
+            const { data, error } = await query;
+            if (error) throw error;
+            
+            // Transform to PublicEquipmentPreview format
+            return data?.map(item => ({
+              id: item.id,
+              title: item.title,
+              category: item.category,
+              price: item.price,
+              price_unit: item.price_unit,
+              photos: item.photos ? [item.photos[0]] : [],
+              rating: item.rating || 0,
+              total_ratings: item.total_ratings || 0,
+              is_verified: item.is_verified || false,
+              general_location: item.location ? 
+                item.location.split(',')[0] + ', ' + item.location.split(',').slice(-1)[0] : 
+                'Location not specified',
+              created_at: item.created_at
+            })) as PublicEquipmentPreview[];
           }
         },
         {
@@ -97,7 +122,6 @@ export const useOptimizedQueries = () => {
     });
   };
 
-  // Optimized single equipment query
   const useOptimizedEquipmentDetails = (id: string) => {
     return useQuery({
       queryKey: ['equipment', 'details', id],
@@ -135,7 +159,6 @@ export const useOptimizedQueries = () => {
     });
   };
 
-  // Optimized mutation with cache updates
   const useOptimizedEquipmentMutation = () => {
     return useMutation({
       mutationFn: async (equipmentData: any) => {
@@ -159,7 +182,6 @@ export const useOptimizedQueries = () => {
     });
   };
 
-  // Optimized user bookings
   const useOptimizedUserBookings = (userId: string) => {
     return useQuery({
       queryKey: ['bookings', 'user', userId],
