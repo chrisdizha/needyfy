@@ -1,3 +1,4 @@
+
 import React, { memo, useMemo } from 'react';
 import { FixedSizeGrid as Grid } from 'react-window';
 import { useOptimizedEquipmentQuery } from '@/hooks/useOptimizedQueries';
@@ -61,7 +62,7 @@ const VirtualizedCell = memo(({
         price={item.price}
         priceUnit={item.price_unit}
         image={item.photos?.[0]}
-        location={item.location}
+        location={item.location || item.general_location}
         rating={item.rating}
         totalRatings={item.total_ratings}
         isVerified={item.is_verified}
@@ -71,7 +72,7 @@ const VirtualizedCell = memo(({
 });
 
 // Grid layout component
-const GridLayout = memo(({ equipment, isLoading }: { equipment: any[]; isLoading: boolean }) => {
+const GridLayout = memo(({ equipment = [], isLoading }: { equipment: any[]; isLoading: boolean }) => {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -82,7 +83,7 @@ const GridLayout = memo(({ equipment, isLoading }: { equipment: any[]; isLoading
     );
   }
 
-  if (equipment.length === 0) {
+  if (!equipment || equipment.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-muted-foreground">No equipment found</p>
@@ -101,7 +102,7 @@ const GridLayout = memo(({ equipment, isLoading }: { equipment: any[]; isLoading
           price={item.price}
           priceUnit={item.price_unit}
           image={item.photos?.[0]}
-          location={item.location}
+          location={item.location || item.general_location}
           rating={item.rating}
           totalRatings={item.total_ratings}
           isVerified={item.is_verified}
@@ -112,7 +113,7 @@ const GridLayout = memo(({ equipment, isLoading }: { equipment: any[]; isLoading
 });
 
 // Virtualized grid layout
-const VirtualizedGridLayout = memo(({ equipment }: { equipment: any[] }) => {
+const VirtualizedGridLayout = memo(({ equipment = [] }: { equipment: any[] }) => {
   const columnCount = 3;
   const rowCount = Math.ceil(equipment.length / columnCount);
   const itemWidth = 320;
@@ -143,9 +144,9 @@ const OptimizedEquipmentList = memo(({
   const { data: equipment = [], isLoading } = useOptimizedEquipmentQuery(limit, filters);
 
   // Memoize the equipment data to prevent unnecessary re-renders
-  const memoizedEquipment = useMemo(() => equipment, [equipment]);
+  const memoizedEquipment = useMemo(() => Array.isArray(equipment) ? equipment : [], [equipment]);
 
-  if (useVirtualization && equipment.length > 50) {
+  if (useVirtualization && memoizedEquipment.length > 50) {
     return <VirtualizedGridLayout equipment={memoizedEquipment} />;
   }
 

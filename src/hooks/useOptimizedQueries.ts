@@ -14,88 +14,82 @@ export const useOptimizedQueries = () => {
   const useOptimizedEquipmentList = (filters: any = {}) => {
     return useQuery({
       queryKey: ['equipment', 'list', filters, user ? 'authenticated' : 'public'],
-      queryFn: () => executeQuery(
-        async () => {
-          if (user) {
-            // Authenticated users get full equipment details
-            let query = supabase
-              .from('equipment_listings')
-              .select(`
-                *,
-                profiles:owner_id (
-                  id,
-                  full_name,
-                  avatar_url
-                )
-              `);
+      queryFn: async () => {
+        if (user) {
+          // Authenticated users get full equipment details
+          let query = supabase
+            .from('equipment_listings')
+            .select(`
+              *,
+              profiles:owner_id (
+                id,
+                full_name,
+                avatar_url
+              )
+            `);
 
-            if (filters.category) {
-              query = query.eq('category', filters.category);
-            }
-            
-            if (filters.location) {
-              query = query.ilike('location', `%${filters.location}%`);
-            }
-            
-            if (filters.minPrice) {
-              query = query.gte('price', filters.minPrice);
-            }
-            
-            if (filters.maxPrice) {
-              query = query.lte('price', filters.maxPrice);
-            }
-
-            query = query.eq('status', 'active');
-            
-            const { data, error } = await query;
-            if (error) throw error;
-            return data as EquipmentListing[];
-          } else {
-            // Anonymous users get limited preview data
-            let query = supabase
-              .from('equipment_listings')
-              .select('id, title, category, price, price_unit, photos, rating, total_ratings, is_verified, location, created_at');
-
-            if (filters.category) {
-              query = query.eq('category', filters.category);
-            }
-            
-            if (filters.minPrice) {
-              query = query.gte('price', filters.minPrice);
-            }
-            
-            if (filters.maxPrice) {
-              query = query.lte('price', filters.maxPrice);
-            }
-
-            query = query.eq('status', 'active');
-            
-            const { data, error } = await query;
-            if (error) throw error;
-            
-            // Transform to PublicEquipmentPreview format
-            return data?.map(item => ({
-              id: item.id,
-              title: item.title,
-              category: item.category,
-              price: item.price,
-              price_unit: item.price_unit,
-              photos: item.photos ? [item.photos[0]] : [],
-              rating: item.rating || 0,
-              total_ratings: item.total_ratings || 0,
-              is_verified: item.is_verified || false,
-              general_location: item.location ? 
-                item.location.split(',')[0] + ', ' + item.location.split(',').slice(-1)[0] : 
-                'Location not specified',
-              created_at: item.created_at
-            })) as PublicEquipmentPreview[];
+          if (filters.category) {
+            query = query.eq('category', filters.category);
           }
-        },
-        {
-          cacheKey: `equipment_list_${JSON.stringify(filters)}_${user ? 'auth' : 'anon'}`,
-          cacheTTL: 10 * 60 * 1000 // 10 minutes
+          
+          if (filters.location) {
+            query = query.ilike('location', `%${filters.location}%`);
+          }
+          
+          if (filters.minPrice) {
+            query = query.gte('price', filters.minPrice);
+          }
+          
+          if (filters.maxPrice) {
+            query = query.lte('price', filters.maxPrice);
+          }
+
+          query = query.eq('status', 'active');
+          
+          const { data, error } = await query;
+          if (error) throw error;
+          return data as EquipmentListing[];
+        } else {
+          // Anonymous users get limited preview data
+          let query = supabase
+            .from('equipment_listings')
+            .select('id, title, category, price, price_unit, photos, rating, total_ratings, is_verified, location, created_at');
+
+          if (filters.category) {
+            query = query.eq('category', filters.category);
+          }
+          
+          if (filters.minPrice) {
+            query = query.gte('price', filters.minPrice);
+          }
+          
+          if (filters.maxPrice) {
+            query = query.lte('price', filters.maxPrice);
+          }
+
+          query = query.eq('status', 'active');
+          
+          const { data, error } = await query;
+          if (error) throw error;
+          
+          // Transform to PublicEquipmentPreview format
+          return data?.map(item => ({
+            id: item.id,
+            title: item.title,
+            category: item.category,
+            price: item.price,
+            price_unit: item.price_unit,
+            photos: item.photos ? [item.photos[0]] : [],
+            rating: item.rating || 0,
+            total_ratings: item.total_ratings || 0,
+            is_verified: item.is_verified || false,
+            general_location: item.location ? 
+              item.location.split(',')[0] + ', ' + item.location.split(',').slice(-1)[0] : 
+              'Location not specified',
+            created_at: item.created_at
+          })) as PublicEquipmentPreview[];
         }
-      ),
+      },
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 30 * 60 * 1000 // 30 minutes
     });
