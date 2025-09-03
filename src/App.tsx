@@ -85,9 +85,7 @@ function App() {
           <SecurityProvider>
             <TooltipProvider>
               <Toaster />
-              <BrowserRouter>
-                <AppContent />
-              </BrowserRouter>
+              <AppContent />
             </TooltipProvider>
           </SecurityProvider>
         </OptimizedAuthProvider>
