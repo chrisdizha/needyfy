@@ -1093,6 +1093,16 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      get_masked_profile: {
+        Args: { profile_user_id: string }
+        Returns: {
+          avatar_url: string
+          full_name: string
+          id: string
+          phone: string
+          updated_at: string
+        }[]
+      }
       get_my_profile: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -1145,6 +1155,10 @@ export type Database = {
           suspended_at: string
           suspension_reason: string
         }[]
+      }
+      get_security_status: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_unread_count: {
         Args: { p_user_id?: string }
@@ -1232,6 +1246,14 @@ export type Database = {
       mark_notification_read: {
         Args: { p_notification_id: string }
         Returns: undefined
+      }
+      mask_financial_data: {
+        Args: {
+          p_record: Json
+          p_requesting_user_id: string
+          p_table_name: string
+        }
+        Returns: Json
       }
       send_notification: {
         Args: {
