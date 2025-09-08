@@ -2,8 +2,7 @@
 import React from 'react'
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom"
 import { OptimizedAuthProvider } from '@/contexts/OptimizedAuthContext'
 import { SecurityProvider } from '@/components/security/SecurityProvider'
 import { ThemeProvider } from "@/providers/ThemeProvider"
@@ -24,8 +23,6 @@ import { SecureRoute } from "@/components/auth/SecureRoute"
 import { useSecurityMonitoring } from "@/hooks/useSecurityMonitoring"
 
 console.log('App.tsx - Component initializing');
-
-const queryClient = new QueryClient()
 
 function AppContent() {
   // Initialize security monitoring
@@ -79,18 +76,14 @@ function App() {
   console.log('App.tsx - Rendering App component');
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="needyfy-ui-theme">
-        <OptimizedAuthProvider>
-          <SecurityProvider>
-            <TooltipProvider>
-              <Toaster />
-              <AppContent />
-            </TooltipProvider>
-          </SecurityProvider>
-        </OptimizedAuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <OptimizedAuthProvider>
+      <SecurityProvider>
+        <TooltipProvider>
+          <Toaster />
+          <AppContent />
+        </TooltipProvider>
+      </SecurityProvider>
+    </OptimizedAuthProvider>
   )
 }
 
