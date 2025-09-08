@@ -1002,6 +1002,30 @@ export type Database = {
           user_id: string
         }[]
       }
+      admin_get_full_booking_details: {
+        Args: { booking_id: string }
+        Returns: {
+          base_price: number
+          created_at: string
+          end_date: string
+          equipment_id: string
+          equipment_title: string
+          escrow_status: string
+          hold_amount: number
+          id: string
+          owner_id: string
+          platform_fee: number
+          provider_fee: number
+          released_amount: number
+          renter_fee: number
+          start_date: string
+          status: string
+          stripe_connect_account_id: string
+          stripe_session_id: string
+          total_price: number
+          user_id: string
+        }[]
+      }
       admin_get_profile: {
         Args: { target_user_id: string }
         Returns: {
@@ -1175,6 +1199,20 @@ export type Database = {
         Args: { provider_user_id: string }
         Returns: number
       }
+      get_provider_safe_bookings: {
+        Args: { provider_user_id?: string }
+        Returns: {
+          base_price: number
+          created_at: string
+          end_date: string
+          equipment_id: string
+          equipment_title: string
+          id: string
+          net_earnings: number
+          start_date: string
+          status: string
+        }[]
+      }
       get_public_profiles: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -1187,6 +1225,22 @@ export type Database = {
       get_referrer_by_code: {
         Args: { p_code: string }
         Returns: string
+      }
+      get_renter_booking_details: {
+        Args: { renter_user_id?: string }
+        Returns: {
+          base_price: number
+          created_at: string
+          end_date: string
+          equipment_id: string
+          equipment_title: string
+          id: string
+          payment_method: string
+          renter_fee: number
+          start_date: string
+          status: string
+          total_price: number
+        }[]
       }
       get_secure_user_profile_summary: {
         Args: { target_user_id?: string }
