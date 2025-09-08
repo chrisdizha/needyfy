@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/OptimizedAuthContext';
 import { Navigate } from 'react-router-dom';
-import AuthenticatedNavbar from '@/components/layout/AuthenticatedNavbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Home } from 'lucide-react';
@@ -37,8 +36,6 @@ const Reviews = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50">
-      <AuthenticatedNavbar />
-      
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Navigation Header */}

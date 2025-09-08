@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/OptimizedAuthContext';
 import { Navigate } from 'react-router-dom';
-import AuthenticatedNavbar from '@/components/layout/AuthenticatedNavbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -170,8 +169,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AuthenticatedNavbar />
-      
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">

@@ -5,7 +5,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { CheckCircle, Loader2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useBookings } from '@/hooks/useBookings';
@@ -63,7 +62,6 @@ const BookingSuccess = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto text-center p-8 border rounded-lg shadow-lg">
           {loading ? (

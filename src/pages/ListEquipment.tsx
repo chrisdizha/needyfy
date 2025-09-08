@@ -4,7 +4,6 @@ import EquipmentForm from "@/components/equipment/EquipmentForm";
 import { Wrench, ArrowLeft, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import {
   Breadcrumb,
@@ -18,7 +17,6 @@ import {
 const ListEquipment = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50">
-      <Header />
       <main className="flex-grow container mx-auto px-4 py-8 max-w-4xl">
         {/* Navigation Header */}
         <div className="flex items-center justify-between mb-6">

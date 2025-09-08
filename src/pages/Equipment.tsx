@@ -1,7 +1,6 @@
 
 import { useAuth } from '@/contexts/OptimizedAuthContext';
 import { useSearchParams } from 'react-router-dom';
-import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { useI18n } from '@/hooks/useI18n';
 import { SafeLink } from '@/components/navigation/SafeLink';
@@ -57,7 +56,6 @@ const Equipment = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-6">
           <nav className="text-sm text-muted-foreground mb-4">

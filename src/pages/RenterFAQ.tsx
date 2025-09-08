@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { HelpCircle } from 'lucide-react';
-import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { useSEO } from '@/hooks/useSEO';
 
@@ -60,7 +59,6 @@ const RenterFAQ = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <main className="flex-grow">
         <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
           <div className="container mx-auto px-4">

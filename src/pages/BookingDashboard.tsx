@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/OptimizedAuthContext';
 import { Navigate } from 'react-router-dom';
-import AuthenticatedNavbar from '@/components/layout/AuthenticatedNavbar';
 import Footer from '@/components/layout/Footer';
 import BookingHistory from '@/components/bookings/BookingHistory';
 import { Button } from '@/components/ui/button';
@@ -37,7 +36,6 @@ const BookingDashboard = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AuthenticatedNavbar />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>

@@ -1,7 +1,6 @@
 
 import { useAuth } from '@/contexts/OptimizedAuthContext';
 import { Navigate, Link } from 'react-router-dom';
-import AuthenticatedNavbar from '@/components/layout/AuthenticatedNavbar';
 import Footer from '@/components/layout/Footer';
 import ProfileManagement from '@/components/profile/ProfileManagement';
 import BookingHistory from '@/components/bookings/BookingHistory';
@@ -32,8 +31,6 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AuthenticatedNavbar />
-      
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
