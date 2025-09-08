@@ -982,6 +982,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_get_booking_details: {
+        Args: { booking_id: string }
+        Returns: {
+          base_price: number
+          created_at: string
+          end_date: string
+          equipment_id: string
+          equipment_title: string
+          id: string
+          owner_id: string
+          platform_fee: number
+          provider_fee: number
+          renter_fee: number
+          start_date: string
+          status: string
+          stripe_session_id: string
+          total_price: number
+          user_id: string
+        }[]
+      }
       admin_get_profile: {
         Args: { target_user_id: string }
         Returns: {
@@ -1118,6 +1138,29 @@ export type Database = {
           suspension_reason: string
           updated_at: string
           visa_card_verified: boolean
+        }[]
+      }
+      get_provider_booking_view: {
+        Args: { booking_id: string }
+        Returns: {
+          base_price: number
+          created_at: string
+          end_date: string
+          equipment_id: string
+          equipment_title: string
+          id: string
+          provider_earnings: number
+          start_date: string
+          status: string
+        }[]
+      }
+      get_provider_earnings_summary: {
+        Args: { provider_user_id?: string }
+        Returns: {
+          completed_earnings: number
+          pending_earnings: number
+          total_bookings: number
+          total_earnings: number
         }[]
       }
       get_provider_escrow_balance: {
