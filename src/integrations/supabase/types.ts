@@ -263,13 +263,6 @@ export type Database = {
             referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "disputes_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: false
-            referencedRelation: "safe_booking_view"
-            referencedColumns: ["id"]
-          },
         ]
       }
       equipment_documents: {
@@ -419,13 +412,6 @@ export type Database = {
             referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "escrow_releases_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: false
-            referencedRelation: "safe_booking_view"
-            referencedColumns: ["id"]
-          },
         ]
       }
       feedback: {
@@ -495,13 +481,6 @@ export type Database = {
             columns: ["booking_id"]
             isOneToOne: false
             referencedRelation: "bookings"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "messages_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: false
-            referencedRelation: "safe_booking_view"
             referencedColumns: ["id"]
           },
         ]
@@ -864,13 +843,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "reviews_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: false
-            referencedRelation: "safe_booking_view"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "reviews_equipment_id_fkey"
             columns: ["equipment_id"]
             isOneToOne: false
@@ -1007,51 +979,7 @@ export type Database = {
       }
     }
     Views: {
-      safe_booking_view: {
-        Row: {
-          created_at: string | null
-          end_date: string | null
-          equipment_id: string | null
-          equipment_title: string | null
-          id: string | null
-          owner_id: string | null
-          start_date: string | null
-          status: string | null
-          stripe_connect_account_id: string | null
-          stripe_session_id: string | null
-          total_price: number | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          end_date?: string | null
-          equipment_id?: string | null
-          equipment_title?: string | null
-          id?: string | null
-          owner_id?: string | null
-          start_date?: string | null
-          status?: string | null
-          stripe_connect_account_id?: never
-          stripe_session_id?: never
-          total_price?: number | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          end_date?: string | null
-          equipment_id?: string | null
-          equipment_title?: string | null
-          id?: string | null
-          owner_id?: string | null
-          start_date?: string | null
-          status?: string | null
-          stripe_connect_account_id?: never
-          stripe_session_id?: never
-          total_price?: number | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       admin_get_profile: {
@@ -1116,6 +1044,33 @@ export type Database = {
       create_test_notification: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      get_booking_select_fields: {
+        Args: { booking_row: Database["public"]["Tables"]["bookings"]["Row"] }
+        Returns: {
+          base_price: number | null
+          created_at: string
+          end_date: string
+          equipment_id: string
+          equipment_title: string | null
+          escrow_status: string | null
+          hold_amount: number | null
+          id: string
+          owner_id: string
+          payment_method: string | null
+          platform_fee: number | null
+          provider_fee: number | null
+          release_schedule: string | null
+          released_amount: number | null
+          renter_fee: number | null
+          scheduled_releases: Json | null
+          start_date: string
+          status: string
+          stripe_connect_account_id: string | null
+          stripe_session_id: string | null
+          total_price: number
+          user_id: string
+        }
       }
       get_feedback_stats: {
         Args: Record<PropertyKey, never>
