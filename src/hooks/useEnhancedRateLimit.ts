@@ -33,13 +33,12 @@ export const useEnhancedRateLimit = () => {
         return { allowed: false, remaining: 0, resetTime: parseInt(blockUntil), violationCount };
       }
 
-      // Call the rate limiting function
-      const { data, error } = await supabase.functions.invoke('rate-limiter', {
-        body: {
-          requests: config.maxRequests,
-          windowSeconds: config.windowSeconds,
-          identifier: config.identifier || `${Date.now()}_${Math.random()}`
-        }
+      // Call the enhanced rate limiting function
+      const { data, error } = await supabase.rpc('check_enhanced_rate_limit', {
+        p_identifier: config.identifier || `${Date.now()}_${Math.random()}`,
+        p_max_requests: config.maxRequests,
+        p_window_minutes: Math.ceil(config.windowSeconds / 60),
+        p_action_type: config.identifier?.split('_')[0] || 'general'
       });
 
       if (error) {
@@ -47,53 +46,42 @@ export const useEnhancedRateLimit = () => {
         return { allowed: true, remaining: config.maxRequests, resetTime: Date.now() + config.windowSeconds * 1000, violationCount };
       }
 
-      if (!data.allowed) {
+      if (!data) {
+        return { allowed: true, remaining: config.maxRequests, resetTime: Date.now() + config.windowSeconds * 1000, violationCount };
+      }
+
+      // Type-safe data handling
+      const rateLimitData = data as any;
+      
+      if (!rateLimitData.allowed) {
         const newViolationCount = violationCount + 1;
         setViolationCount(newViolationCount);
         
-        // Progressive blocking
-        let blockDuration = 0;
-        if (config.progressiveDelay) {
-          blockDuration = Math.min(Math.pow(2, newViolationCount) * 1000, 300000); // Max 5 minutes
-        }
-        
-        if (blockDuration > 0) {
-          const blockUntil = Date.now() + blockDuration;
+        // Progressive blocking handled by backend function
+        if (rateLimitData.block_until) {
+          const blockUntil = new Date(rateLimitData.block_until).getTime();
           localStorage.setItem(blockKey, blockUntil.toString());
           setIsBlocked(true);
           
           setTimeout(() => {
             setIsBlocked(false);
             localStorage.removeItem(blockKey);
-          }, blockDuration);
+          }, blockUntil - Date.now());
         }
         
-        // Log security event for repeated violations
-        if (newViolationCount >= 3) {
-          await supabase.rpc('log_security_event', {
-            p_user_id: (await supabase.auth.getUser()).data.user?.id || null,
-            p_event_type: 'rate_limit_violation',
-            p_event_details: {
-              identifier: config.identifier,
-              violation_count: newViolationCount,
-              max_requests: config.maxRequests,
-              window_seconds: config.windowSeconds
-            },
-            p_risk_level: newViolationCount >= 5 ? 'high' : 'medium'
-          });
-        }
-        
-        const resetTime = new Date(data.resetTime).toLocaleTimeString();
-        toast.error(`Rate limit exceeded. Try again at ${resetTime}`);
+        const resetTime = rateLimitData.reset_time 
+          ? new Date(rateLimitData.reset_time).toLocaleTimeString()
+          : 'later';
+        toast.error(rateLimitData.message || `Rate limit exceeded. Try again at ${resetTime}`);
       } else {
         // Reset violation count on successful request
         setViolationCount(0);
       }
 
       return {
-        allowed: data.allowed,
-        remaining: data.remaining,
-        resetTime: data.resetTime,
+        allowed: rateLimitData.allowed || false,
+        remaining: rateLimitData.remaining || 0,
+        resetTime: rateLimitData.reset_time || Date.now() + config.windowSeconds * 1000,
         violationCount
       };
     } catch (error) {

@@ -1162,6 +1162,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      log_high_risk_operation: {
+        Args: { p_details?: Json; p_operation: string; p_user_id?: string }
+        Returns: string
+      }
       log_payment_action: {
         Args: {
           p_action: string
@@ -1229,6 +1233,19 @@ export type Database = {
       validate_payout_access: {
         Args: { payout_provider_id: string }
         Returns: boolean
+      }
+      validate_request_origin: {
+        Args: { p_operation: string; p_origin?: string; p_user_agent?: string }
+        Returns: boolean
+      }
+      validate_security_completeness: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          check_name: string
+          details: string
+          severity: string
+          status: string
+        }[]
       }
       validate_security_migration: {
         Args: Record<PropertyKey, never>

@@ -38,21 +38,78 @@ export const SecureFileUpload = ({
   const { validateSecureFile } = useSecureFormValidation();
 
   const handleFileValidation = useCallback(async (file: File): Promise<boolean> => {
-    const validation = await validateSecureFile(file, allowedTypes, maxSize);
-    if (!validation.isValid) {
-      toast.error(validation.error || 'File validation failed');
+    // Enhanced file validation with security checks
+    try {
+      // Check file size
+      if (file.size > maxSize) {
+        toast.error(`File size exceeds ${Math.round(maxSize / 1024 / 1024)}MB limit`);
+        return false;
+      }
+
+      // Check file type
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('File type not allowed');
+        return false;
+      }
+
+      // Check for dangerous file extensions
+      const dangerousExtensions = ['.exe', '.bat', '.cmd', '.scr', '.pif', '.vbs', '.js', '.jar', '.php', '.asp'];
+      if (dangerousExtensions.some(ext => file.name.toLowerCase().endsWith(ext))) {
+        toast.error('File type not permitted for security reasons');
+        return false;
+      }
+
+      // Validate file signature for images
+      if (file.type.startsWith('image/')) {
+        const buffer = await file.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        
+        // Check for common image signatures
+        const isValidImage = (
+          (bytes[0] === 0xFF && bytes[1] === 0xD8) || // JPEG
+          (bytes[0] === 0x89 && bytes[1] === 0x50) || // PNG
+          (bytes[0] === 0x47 && bytes[1] === 0x49) || // GIF
+          (bytes[0] === 0x42 && bytes[1] === 0x4D) || // BMP
+          (bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[8] === 0x57 && bytes[9] === 0x45) // WEBP
+        );
+        
+        if (!isValidImage) {
+          toast.error('Invalid image file format');
+          return false;
+        }
+      }
+
+      // Use secure validation hook for additional checks
+      const validation = await validateSecureFile(file, allowedTypes, maxSize);
+      if (!validation.isValid) {
+        toast.error(validation.error || 'File validation failed');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('File validation error:', error);
+      toast.error('File validation failed');
       return false;
     }
-    return true;
   }, [validateSecureFile, allowedTypes, maxSize]);
 
   const uploadFile = useCallback(async (fileStatus: FileUploadStatus): Promise<void> => {
     try {
-      // Generate secure file name
+      // Generate secure file name with enhanced security
       const timestamp = Date.now();
-      const randomId = Math.random().toString(36).substring(2);
-      const extension = fileStatus.file.name.split('.').pop();
-      const secureFileName = `${timestamp}_${randomId}.${extension}`;
+      const randomId = crypto.getRandomValues(new Uint8Array(16))
+        .reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+      
+      // Sanitize and validate file extension
+      const originalExtension = fileStatus.file.name.split('.').pop()?.toLowerCase();
+      const allowedExtensions = allowedTypes.map(type => type.split('/')[1]);
+      
+      if (!originalExtension || !allowedExtensions.includes(originalExtension)) {
+        throw new Error('Invalid file extension');
+      }
+      
+      const secureFileName = `${timestamp}_${randomId}.${originalExtension}`;
       const filePath = folder ? `${folder}/${secureFileName}` : secureFileName;
 
       // Update status to uploading

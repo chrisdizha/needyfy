@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Users, FileText, Calendar, AlertTriangle } from "lucide-react";
 import SecurityMigrationValidator from "@/components/admin/SecurityMigrationValidator";
 import { EnhancedSecurityMonitoring } from "@/components/security/EnhancedSecurityMonitoring";
+import { SecurityValidationDashboard } from "@/components/security/SecurityValidationDashboard";
 
 const AdminDashboard = () => {
   const { data: stats, isLoading } = useQuery({
@@ -84,24 +85,8 @@ const AdminDashboard = () => {
         </TabsList>
 
         <TabsContent value="security" className="space-y-6">
+          <SecurityValidationDashboard />
           <SecurityMigrationValidator />
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5" />
-                Security Status
-              </CardTitle>
-              <CardDescription>
-                System security configuration and validation results
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Security enhancements have been applied. Database functions are secured,
-                RLS policies are enforced, and admin verification is required for sensitive operations.
-              </p>
-            </CardContent>
-          </Card>
         </TabsContent>
 
         <TabsContent value="monitoring">
