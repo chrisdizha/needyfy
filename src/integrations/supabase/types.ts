@@ -1002,6 +1002,14 @@ export type Database = {
           visa_card_verified: boolean
         }[]
       }
+      audit_sensitive_access: {
+        Args: {
+          p_access_type: string
+          p_record_id?: string
+          p_table_name: string
+        }
+        Returns: undefined
+      }
       award_points: {
         Args: {
           p_points: number
