@@ -1053,6 +1053,15 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      final_security_check: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          check_name: string
+          details: string
+          severity: string
+          status: string
+        }[]
+      }
       get_booking_select_fields: {
         Args: { booking_row: Database["public"]["Tables"]["bookings"]["Row"] }
         Returns: {
@@ -1167,6 +1176,15 @@ export type Database = {
           p_old_values?: Json
           p_record_id?: string
           p_table_name?: string
+        }
+        Returns: undefined
+      }
+      log_critical_operation: {
+        Args: {
+          p_details?: Json
+          p_operation: string
+          p_record_id?: string
+          p_table_name: string
         }
         Returns: undefined
       }
