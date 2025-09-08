@@ -263,6 +263,13 @@ export type Database = {
             referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "disputes_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "safe_booking_view"
+            referencedColumns: ["id"]
+          },
         ]
       }
       equipment_documents: {
@@ -412,6 +419,13 @@ export type Database = {
             referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "escrow_releases_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "safe_booking_view"
+            referencedColumns: ["id"]
+          },
         ]
       }
       feedback: {
@@ -481,6 +495,13 @@ export type Database = {
             columns: ["booking_id"]
             isOneToOne: false
             referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "safe_booking_view"
             referencedColumns: ["id"]
           },
         ]
@@ -843,6 +864,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "safe_booking_view"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "reviews_equipment_id_fkey"
             columns: ["equipment_id"]
             isOneToOne: false
@@ -979,7 +1007,51 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      safe_booking_view: {
+        Row: {
+          created_at: string | null
+          end_date: string | null
+          equipment_id: string | null
+          equipment_title: string | null
+          id: string | null
+          owner_id: string | null
+          start_date: string | null
+          status: string | null
+          stripe_connect_account_id: string | null
+          stripe_session_id: string | null
+          total_price: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          end_date?: string | null
+          equipment_id?: string | null
+          equipment_title?: string | null
+          id?: string | null
+          owner_id?: string | null
+          start_date?: string | null
+          status?: string | null
+          stripe_connect_account_id?: never
+          stripe_session_id?: never
+          total_price?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string | null
+          equipment_id?: string | null
+          equipment_title?: string | null
+          id?: string | null
+          owner_id?: string | null
+          start_date?: string | null
+          status?: string | null
+          stripe_connect_account_id?: never
+          stripe_session_id?: never
+          total_price?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_get_profile: {
@@ -1019,6 +1091,14 @@ export type Database = {
           p_total_amount: number
         }
         Returns: Json
+      }
+      can_access_financial_data: {
+        Args: { target_user_id: string }
+        Returns: boolean
+      }
+      can_access_signature_data: {
+        Args: { form_booking_id: string }
+        Returns: boolean
       }
       check_enhanced_rate_limit: {
         Args: {
@@ -1189,6 +1269,10 @@ export type Database = {
       }
       validate_payment_operation: {
         Args: { p_amount?: number; p_operation: string; p_user_id: string }
+        Returns: boolean
+      }
+      validate_payout_access: {
+        Args: { payout_provider_id: string }
         Returns: boolean
       }
       validate_security_migration: {
